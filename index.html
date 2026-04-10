@@ -3774,6 +3774,20 @@ function pagRender(){
     container.innerHTML = '<div class="pag-empty">Nenhum registro encontrado para este mês.</div>';
   }
 }
+function pagLoadFromOneDrive(){
+  const oneDriveUrl = 'https://1drv.ms/x/c/7da7535e53137f72/IQCBI9nBEMbjRLq4JPdAC5HJAVsJOQ4-fjZatvj9ibRUwRg?e=0KgSPF';
+  const downloadUrl = oneDriveUrl.replace('?e=0KgSPF', '&download=1').replace('https://1drv.ms/x/', 'https://onedrive.live.com/download?resid=').replace('/IQCBI9nBEMbjRLq4JPdAC5HJAVsJOQ4-fjZatvj9ibRUwRg', '');
+  const apiUrl = 'https://onedrive.live.com/download?resid=7da7535e53137f72!179&authkey=!AJfGWvhPxEVYJWE';
+  
+  fetch(apiUrl)
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => pagLoadFile(arrayBuffer))
+    .catch(err => {
+      console.error('Erro ao carregar planilha do OneDrive:', err);
+      pagShowUpload();
+    });
+}
+
 function pagSetupUpload(){
   const zone = document.getElementById('pag-drop-zone');
   const input = document.getElementById('pag-file-input');
@@ -3801,7 +3815,12 @@ function pagSetupUpload(){
     }
   });
   zone.addEventListener('click', e => { if(e.target.tagName !== 'BUTTON') input.click(); });
-  if(window.pagData && window.pagData.length) pagShowDashboard(); else pagShowUpload();
+  
+  if(window.pagData && window.pagData.length) {
+    pagShowDashboard();
+  } else {
+    pagLoadFromOneDrive();
+  }
 }
 window._pagReady = false;
 </script>
