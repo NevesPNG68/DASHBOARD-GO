@@ -670,6 +670,141 @@ a:hover{text-decoration:underline}
 .pag-filtro-wrap select{min-width:140px;padding:10px 12px;border-radius:12px;border:1px solid rgba(163,255,18,.24);background:rgba(255,255,255,.06);color:#fff;outline:none}
 .pag-filtro-wrap select option{background:#10151f;color:#fff}
 </style>
+
+<style id="responsive-overrides">
+/* ===== responsividade sem alterar o visual base ===== */
+img, svg, canvas{max-width:100%; height:auto}
+
+@media (max-width: 1024px){
+  .wrap{padding:20px 14px 34px}
+  .hero, .panel, .filters-panel, .daypage .hero2{border-radius:18px}
+  .pc, .filters-body{padding:12px}
+  .ph, .filters-head{padding:12px}
+  .chart-card, .flow-left, .kpi-card{padding:12px}
+}
+
+@media (max-width: 760px){
+  #main-nav{
+    height:auto;
+    min-height:56px;
+    padding:10px 12px;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+  }
+  .nav-logo{
+    width:100%;
+    margin:0;
+    text-align:center;
+    font-size:15px;
+    letter-spacing:.14em;
+  }
+  .nav-tab{
+    flex:1 1 calc(33.333% - 6px);
+    min-width:0;
+    padding:10px 8px;
+    font-size:12px;
+    text-align:center;
+  }
+  #rec-page{padding-top:108px}
+  #desp-frame{
+    top:108px;
+    height:calc(100vh - 108px);
+  }
+
+  .wrap{padding:16px 10px 28px}
+  .hero{padding:14px 12px 12px}
+  h1{font-size:18px}
+  .meta, .tag, .hint, .smallnote{font-size:12px}
+  .hline, .ph, .filters-head, .row-h, .heat-head, .flow-head{
+    align-items:flex-start;
+  }
+
+  .filters-head .right{
+    width:100%;
+    justify-content:stretch;
+  }
+  .filters-head .right .btn{
+    flex:1 1 0;
+    text-align:center;
+  }
+
+  .filters-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:8px;
+  }
+  .f{grid-column:span 1 !important}
+  .ms-btn{padding:10px 11px}
+  .chips{gap:6px}
+
+  .cards{grid-template-columns:repeat(2, minmax(0,1fr))}
+  .card{
+    grid-column:span 1 !important;
+    min-width:0;
+  }
+  .top3{grid-template-columns:1fr}
+  .chart-row{grid-template-columns:1fr}
+  .flow-wrap{grid-template-columns:1fr}
+  .flow-right{flex-direction:column}
+  .summary-table th,
+  .summary-table td{padding:8px 7px}
+}
+
+@media (max-width: 520px){
+  #main-nav{
+    padding:10px 8px;
+    gap:6px;
+  }
+  .nav-logo{font-size:14px}
+  .nav-tab{
+    font-size:11px;
+    padding:9px 6px;
+    border-radius:14px;
+  }
+  #rec-page{padding-top:104px}
+  #desp-frame{
+    top:104px;
+    height:calc(100vh - 104px);
+  }
+
+  .wrap{padding:14px 8px 22px}
+  .hero{border-radius:16px}
+  .tags{gap:6px}
+  .tag{padding:7px 9px}
+  .filters-grid{grid-template-columns:1fr}
+  .filters-head .right{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .filters-head .right .btn:first-child{
+    grid-column:1 / -1;
+  }
+
+  .cards{grid-template-columns:1fr}
+  .card .v{font-size:20px}
+  .kpi-v{font-size:22px}
+  .flow-svg{height:220px}
+  .svg-wrap{overflow-x:auto}
+  .table-wrap{overflow-x:auto}
+  .heat-scroll{padding-bottom:10px}
+  .jump{gap:6px}
+  .jump a{font-size:11px; padding:7px 9px}
+  #chartTip{display:none !important}
+}
+
+@media (max-width: 380px){
+  .nav-tab{font-size:10px; padding:8px 4px}
+  h1{font-size:17px}
+  .filters-head .right{
+    grid-template-columns:1fr;
+  }
+  .filters-head .right .btn:first-child{
+    grid-column:auto;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -763,10 +898,10 @@ a:hover{text-decoration:underline}
       <!-- Conteúdo inicial: escolha de arquivo -->
       <div id="dropContent" class="drop-content">
         <div class="cup">☕</div>
-        <div class="h1">Conectando à sua planilha</div>
-        <div class="p">Tentando localizar automaticamente <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> na mesma pasta do HTML.<br/>Se não encontrar, você ainda pode selecionar manualmente</div>
+        <div class="h1">Carregue sua planilha</div>
+        <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
         <label for="fileInput" id="bootPick" class="boot-btn" style="display:inline-block">SELECIONAR ARQUIVO</label>
-        <div class="p2">No GitHub Pages, basta manter o arquivo XLSX junto do HTML no mesmo repositório.</div>
+        <div class="p2">Sempre que atualizar a planilha, basta carregar novamente.</div>
       </div>
 
       <!-- Donut de progresso: aparece após selecionar o arquivo -->
@@ -1805,144 +1940,6 @@ els.fileInput.addEventListener('change', (ev)=> {
   reader.readAsArrayBuffer(file);
 });
 
-// Auto-load local workbook from same folder/repo (works on GitHub/HTTP; file:// may block fetch)
-async function autoLoadWorkbookFromSameFolder(){
-  const candidates = [
-    './DRE GO COFFEE_COMPETENCIA.xlsx',
-    'DRE%20GO%20COFFEE_COMPETENCIA.xlsx',
-    './DRE_GO_COFFEE_COMPETENCIA.xlsx'
-  ];
-
-  const bootMsg = document.getElementById('bootMsg');
-  const drop = document.getElementById('dropZone');
-  const dropContent = document.getElementById('dropContent');
-  const prog = document.getElementById('bootProg');
-
-  function bootState(pct, msg){
-    try{
-      if(dropContent) dropContent.classList.add('hidden-soft');
-      if(prog) prog.classList.add('visible');
-      if(drop) drop.classList.add('processing');
-      if(window.__bootSetProg) window.__bootSetProg(pct, msg);
-      if(bootMsg) bootMsg.textContent = msg || 'Carregando base…';
-    }catch(_){}
-  }
-
-  async function fetchFirstAvailable(){
-    let lastErr = null;
-    for(const url of candidates){
-      try{
-        const res = await fetch(url, {cache:'no-store'});
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        return {buf: await res.arrayBuffer(), url};
-      }catch(err){
-        lastErr = err;
-      }
-    }
-    throw lastErr || new Error('Arquivo não encontrado');
-  }
-
-  try{
-    bootState(8, 'Conectando à base do Excel…');
-    const {buf, url} = await fetchFirstAvailable();
-
-    bootState(35, 'Lendo arquivo…');
-    const wb = XLSX.read(buf, {type:'array'});
-    const sh = wb.Sheets['DADOS'] || wb.Sheets[wb.SheetNames[0]];
-
-    bootState(55, 'Processando aba DADOS…');
-    const rows = XLSX.utils.sheet_to_json(sh, {defval:''});
-
-    const pick = (obj, keys)=> {
-      for(const k of keys){
-        if(obj[k]!==undefined && obj[k]!==null && String(obj[k]).trim()!=='') return obj[k];
-      }
-      return '';
-    };
-
-    const parsed = [];
-    for(const r of rows){
-      const data = pick(r, ['date','DATA','Data','DATA ','DATA DA ORDEM','Data da Ordem','DATA DA ORDEM ']);
-      const faixa = pick(r, ['faixa','FAIXA','Faixa','FAIXA DE HORA','FAIXA HORA']);
-      const total = pick(r, ['total','Total','TOTAL','Valor','V','LIQUIDO','Líquido','VLR LIQ']);
-
-      let iso = '';
-      if(typeof data === 'number'){
-        const dtc = XLSX.SSF.parse_date_code(data);
-        if(dtc) iso = `${dtc.y}-${pad2(dtc.m)}-${pad2(dtc.d)}`;
-      } else {
-        const s = String(data).trim();
-        const m = s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-        if(m) iso = `${m[3]}-${m[2]}-${m[1]}`;
-        else if(/^\d{4}-\d{2}-\d{2}$/.test(s)) iso = s;
-      }
-      if(!iso || !faixa) continue;
-
-      let num = 0;
-      if(typeof total === 'number') num = total;
-      else {
-        const s = String(total).replace(/\s/g,'').replace(/R\$/g,'');
-        num = Number(s.replace(/\./g,'').replace(/,/g,'.')) || 0;
-      }
-
-      const dt = new Date(iso+'T00:00:00');
-      const fs = parseFaixaStart(faixa);
-      if(isNaN(dt) || fs===null) continue;
-
-      parsed.push({
-        date: iso,
-        faixa: String(faixa).trim(),
-        total: num,
-        faixaStart: fs,
-        semana: weekOfMonth(dt),
-        mes: monthLabelPt(dt),
-        ano: dt.getFullYear(),
-        diaSemana: weekdayPt(dt)
-      });
-    }
-
-    bootState(78, 'Atualizando dashboard…');
-    BASE_N = parsed;
-    refreshFilterOptions();
-    limpar();
-
-    try{
-      var despFrame = document.getElementById('desp-frame');
-      if (despFrame && despFrame.contentWindow) {
-        despFrame.contentWindow.postMessage({
-          type: 'LOAD_FILE',
-          arrayBuffer: buf,
-          fileName: url.split('/').pop()
-        }, '*');
-      }
-    }catch(_){}
-
-    try{
-      if(typeof pagLoadFile === 'function') pagLoadFile(buf, url.split('/').pop());
-    }catch(_){}
-
-    bootState(100, 'Base carregada com sucesso');
-    setTimeout(()=>{ if(window.__bootDone) window.__bootDone(); }, 350);
-  }catch(err){
-    console.error('autoLoadWorkbookFromSameFolder error:', err);
-    try{
-      if(dropContent) dropContent.classList.remove('hidden-soft');
-      if(prog) prog.classList.remove('visible');
-      if(drop) drop.classList.remove('processing');
-      const p = document.querySelector('#dropContent .p');
-      const p2 = document.querySelector('#dropContent .p2');
-      const h1 = document.querySelector('#dropContent .h1');
-      if(h1) h1.textContent = 'Não foi possível carregar automaticamente';
-      if(p) p.innerHTML = 'Coloque o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> na mesma pasta do HTML ou use o botão para selecionar.';
-      if(p2) p2.textContent = 'No GitHub Pages funciona automaticamente; em arquivo local (file://) o navegador pode bloquear a leitura.';
-    }catch(_){}
-  }
-}
-
-window.addEventListener('load', ()=>{
-  setTimeout(autoLoadWorkbookFromSameFolder, 120);
-});
-
 msInit('fAno','Ano');
 msInit('fMes','Mês');
 msInit('fDiaSemana','Dia da semana');
@@ -2363,7 +2360,7 @@ generate();
   <div class=&quot;upload-sub&quot;>Dashboard de Despesas &amp; Insumos</div>
   <div class=&quot;upload-zone&quot; id=&quot;drop-zone&quot;>
     <div class=&quot;icon&quot;>☕</div>
-    <strong>Conectando à sua planilha</strong>
+    <strong>Carregue sua planilha</strong>
     <p>Arraste o arquivo <b>DRE_GO_COFFEE_COMPETENCIA.xlsx</b> aqui</p>
     <p>ou clique para selecionar</p>
     <button class=&quot;upload-btn&quot; onclick=&quot;document.getElementById('file-input').click()&quot;>SELECIONAR ARQUIVO</button>
@@ -3198,7 +3195,7 @@ window.addEventListener('message', function(e) {
     <div class="pag-sub">DASHBOARD DE PAGAMENTOS</div>
     <div id="pag-drop-zone">
       <div class="pag-cup">💳</div>
-      <div class="pag-h1">Conectando à sua planilha</div>
+      <div class="pag-h1">Carregue sua planilha</div>
       <div class="pag-p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br>ou clique para selecionar</div>
       <button class="pag-btn" onclick="document.getElementById('pag-file-input').click()">SELECIONAR ARQUIVO</button>
     </div>
@@ -3643,7 +3640,7 @@ function switchTab(tab) {
     <div class="pag-sub">DASHBOARD DE PAGAMENTOS</div>
     <div id="pag-drop-zone">
       <div class="pag-cup">💳</div>
-      <div class="pag-h1">Conectando à sua planilha</div>
+      <div class="pag-h1">Carregue sua planilha</div>
       <div class="pag-p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br>ou clique para selecionar</div>
       <button class="pag-btn" onclick="document.getElementById('pag-file-input').click()">SELECIONAR ARQUIVO</button>
     </div>
