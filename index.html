@@ -765,6 +765,7 @@ a:hover{text-decoration:underline}
         <div class="cup">☕</div>
         <div class="h1">Carregue sua planilha</div>
         <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
+        <button id="btnOneDrive" class="boot-btn" style="display:inline-block;background:linear-gradient(90deg,rgba(0,120,212,.85),rgba(0,80,160,.85));border:1px solid rgba(0,120,212,.5);margin-bottom:10px" onclick="loadFromOneDrive()">☁️ CARREGAR DO GOOGLE DRIVE</button>
         <label for="fileInput" id="bootPick" class="boot-btn" style="display:inline-block">SELECIONAR ARQUIVO</label>
         <div class="p2">Sempre que atualizar a planilha, basta carregar novamente.</div>
       </div>
@@ -1813,6 +1814,57 @@ msInit('fFaixa','Faixa de hora');
 
 refreshFilterOptions();
 generate();
+
+/* ===== CARREGAMENTO AUTOMÁTICO DO GOOGLE DRIVE ===== */
+async function loadFromOneDrive(){
+  // ID do arquivo no Google Drive
+  const FILE_ID = '1C3k4DQE6yNoWg7kusHQaDvCCORSfQ32z';
+  // URL de download direto do Google Drive (funciona com arquivo público)
+  const downloadUrl = `https://drive.google.com/uc?export=download&id=${FILE_ID}&confirm=t`;
+
+  const btn = document.getElementById('btnOneDrive');
+  if(btn){ btn.textContent = '⏳ Baixando…'; btn.disabled = true; }
+
+  try {
+    const resp = await fetch(downloadUrl);
+    if(!resp.ok) throw new Error('Falha HTTP ' + resp.status);
+
+    const arrayBuffer = await resp.arrayBuffer();
+    if(!arrayBuffer || arrayBuffer.byteLength < 1000) throw new Error('Arquivo vazio ou inválido');
+
+    if(btn){ btn.textContent = '✅ Planilha carregada!'; }
+
+    // Cria um File virtual e dispara o mesmo fluxo do upload manual
+    const blob = new Blob([arrayBuffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const file = new File([blob], 'DRE_GO_COFFEE_COMPETENCIA.xlsx', {type: blob.type});
+
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    const fileInput = document.getElementById('fileInput');
+    fileInput.files = dt.files;
+    fileInput.dispatchEvent(new Event('change', {bubbles:true}));
+
+  } catch(err) {
+    console.error('Erro Google Drive:', err);
+    if(btn){
+      btn.textContent = '⚠️ Falha — use upload manual';
+      btn.disabled = false;
+      btn.style.background = 'linear-gradient(90deg,rgba(180,30,30,.85),rgba(120,20,20,.85))';
+    }
+    const pEl = document.querySelector('#dropContent .p');
+    if(pEl) pEl.innerHTML = '<span style="color:rgba(255,80,80,.9)">Não foi possível carregar do Google Drive.<br>Use o botão <b>SELECIONAR ARQUIVO</b> abaixo.</span>';
+  }
+}
+
+// Carrega automaticamente ao abrir a página
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const dropZone = document.getElementById('dropZone');
+    if(dropZone && !dropZone.classList.contains('hidden')){
+      loadFromOneDrive();
+    }
+  }, 800);
+});
 
 </script>
 
@@ -3774,20 +3826,6 @@ function pagRender(){
     container.innerHTML = '<div class="pag-empty">Nenhum registro encontrado para este mês.</div>';
   }
 }
-function pagLoadFromOneDrive(){
-  const oneDriveUrl = 'https://1drv.ms/x/c/7da7535e53137f72/IQCBI9nBEMbjRLq4JPdAC5HJAVsJOQ4-fjZatvj9ibRUwRg?e=0KgSPF';
-  const downloadUrl = oneDriveUrl.replace('?e=0KgSPF', '&download=1').replace('https://1drv.ms/x/', 'https://onedrive.live.com/download?resid=').replace('/IQCBI9nBEMbjRLq4JPdAC5HJAVsJOQ4-fjZatvj9ibRUwRg', '');
-  const apiUrl = 'https://onedrive.live.com/download?resid=7da7535e53137f72!179&authkey=!AJfGWvhPxEVYJWE';
-  
-  fetch(apiUrl)
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => pagLoadFile(arrayBuffer))
-    .catch(err => {
-      console.error('Erro ao carregar planilha do OneDrive:', err);
-      pagShowUpload();
-    });
-}
-
 function pagSetupUpload(){
   const zone = document.getElementById('pag-drop-zone');
   const input = document.getElementById('pag-file-input');
@@ -3815,12 +3853,7 @@ function pagSetupUpload(){
     }
   });
   zone.addEventListener('click', e => { if(e.target.tagName !== 'BUTTON') input.click(); });
-  
-  if(window.pagData && window.pagData.length) {
-    pagShowDashboard();
-  } else {
-    pagLoadFromOneDrive();
-  }
+  if(window.pagData && window.pagData.length) pagShowDashboard(); else pagShowUpload();
 }
 window._pagReady = false;
 </script>
