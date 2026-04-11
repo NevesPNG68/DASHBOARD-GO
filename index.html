@@ -928,7 +928,7 @@ img, svg, canvas{max-width:100%; height:auto}
 
     <div id="dropZone" class="drop">
       <!-- Conteúdo inicial: escolha de arquivo -->
-      <div id="dropContent" class="drop-content hidden-soft">
+      <div id="dropContent" class="drop-content">
         <div class="cup">☕</div>
         <div class="h1">Carregue sua planilha</div>
         <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
@@ -936,7 +936,7 @@ img, svg, canvas{max-width:100%; height:auto}
       </div>
 
       <!-- Donut de progresso: aparece após selecionar o arquivo -->
-      <div id="bootProg" class="donut-screen visible">
+      <div id="bootProg" class="donut-screen" style="display:none">
         <div class="donutWrap">
           <svg viewBox="0 0 120 120" width="140" height="140">
             <defs>
@@ -1069,6 +1069,67 @@ const els = {
   btnAplicar: document.getElementById('btnAplicar'),
   fileInput: document.getElementById('fileInput')
 };
+
+const __boot = {
+  wrap: document.getElementById('boot'),
+  drop: document.getElementById('dropZone'),
+  content: document.getElementById('dropContent'),
+  prog: document.getElementById('bootProg'),
+  bar: document.getElementById('donutBar'),
+  pct: document.getElementById('donutPct'),
+  msg: document.getElementById('bootMsg')
+};
+let __lastFileBuffer = null;
+let __lastFileName = '';
+const __donutLen = 289;
+function __bootShowChooser(){
+  if(__boot.content) __boot.content.style.display='block';
+  if(__boot.prog) __boot.prog.style.display='none';
+  if(__boot.drop) __boot.drop.classList.remove('processing');
+}
+function __bootShowProgress(){
+  if(__boot.content) __boot.content.style.display='none';
+  if(__boot.prog) __boot.prog.style.display='flex';
+  if(__boot.drop) __boot.drop.classList.add('processing');
+}
+window.__bootSetProg = function(p, msg){
+  __bootShowProgress();
+  const pct = Math.max(0, Math.min(100, Math.round(Number(p)||0)));
+  if(__boot.pct) __boot.pct.textContent = pct + '%';
+  if(__boot.msg) __boot.msg.textContent = msg || 'Lendo arquivo…';
+  if(__boot.bar){
+    const off = __donutLen * (1 - pct/100);
+    __boot.bar.setAttribute('stroke-dasharray', String(__donutLen));
+    __boot.bar.setAttribute('stroke-dashoffset', String(off));
+  }
+};
+window.__bootDone = function(){
+  window.__bootSetProg(100, 'Arquivo carregado');
+  setTimeout(()=>{
+    if(__boot.wrap) __boot.wrap.classList.add('hidden');
+  }, 180);
+};
+if(__boot.drop){
+  __boot.drop.addEventListener('click', function(e){
+    if(e.target.closest('button,a,input')) return;
+    if(els.fileInput) els.fileInput.click();
+  });
+  __boot.drop.addEventListener('dragover', e => { e.preventDefault(); __boot.drop.classList.add('drag'); });
+  __boot.drop.addEventListener('dragleave', () => __boot.drop.classList.remove('drag'));
+  __boot.drop.addEventListener('drop', e => {
+    e.preventDefault();
+    __boot.drop.classList.remove('drag');
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(!f) return;
+    if(els.fileInput){
+      const dt = new DataTransfer();
+      dt.items.add(f);
+      els.fileInput.files = dt.files;
+      els.fileInput.dispatchEvent(new Event('change', {bubbles:true}));
+    }
+  });
+}
+__bootShowChooser();
 /* ===== Multi-select (checkbox dropdown) ===== */
 const MS = {};
 
@@ -1887,6 +1948,8 @@ els.fileInput.addEventListener('change', (ev)=> {
       if(window.__bootSetProg) window.__bootSetProg(70, 'Processando planilha…');
 
       const buf = reader.result;
+      __lastFileBuffer = buf;
+      __lastFileName = file.name || 'planilha.xlsx';
       const wb = XLSX.read(buf, {type:'array'});
       const sh = wb.Sheets['DADOS'] || wb.Sheets[wb.SheetNames[0]];
 
@@ -1953,9 +2016,9 @@ els.fileInput.addEventListener('change', (ev)=> {
           arrayBuffer: buf,
           fileName: file.name
         }, '*');
-        // Enviar também para pagamentos
-        pagLoadFile(buf, file.name);
       }
+      // Enviar também para pagamentos
+      try { pagLoadFile(buf, file.name); } catch(e) {}
 
       setTimeout(()=>{
         setP(100);
@@ -3598,6 +3661,9 @@ function switchTab(tab) {
     if(tabDesp) tabDesp.className='nav-tab active-desp';
     if(despFrame && despFrame.contentWindow){
       try{
+        if(__lastFileBuffer){
+          despFrame.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: __lastFileBuffer, fileName: __lastFileName || 'planilha.xlsx' }, '*');
+        }
         despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
         setTimeout(()=>{ try{ despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*'); }catch(e){} }, 250);
         setTimeout(()=>{ try{ despFrame.contentWindow.dispatchEvent(new Event('resize')); }catch(e){} }, 450);
@@ -3607,7 +3673,11 @@ function switchTab(tab) {
     if(pagPage) pagPage.style.display='block';
     if(tabPag) tabPag.className='nav-tab active-desp';
     if(!window._pagReady){ pagSetupUpload(); window._pagReady = true; }
+    if(__lastFileBuffer && (!window.pagData || !window.pagData.length)){
+      try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx'); }catch(e){}
+    }
     if(window.pagData && window.pagData.length){ pagShowDashboard(); pagRender(); }
+    else { pagShowUpload(); }
   }
 }
 </script>
