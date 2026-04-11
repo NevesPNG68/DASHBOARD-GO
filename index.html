@@ -593,7 +593,7 @@ a:hover{text-decoration:underline}
 .drop-content.hidden-soft{ display:none; }
 .donut-screen{
   padding: 26px 18px 18px;
-  display:flex;
+  display:none;
   flex-direction:column;
   align-items:center;
   justify-content:center;
@@ -898,7 +898,7 @@ img, svg, canvas{max-width:100%; height:auto}
 
     <div id="dropZone" class="drop">
       <!-- Conteúdo inicial: escolha de arquivo -->
-      <div id="dropContent" class="drop-content hidden-soft">
+      <div id="dropContent" class="drop-content">
         <div class="cup">☕</div>
         <div class="h1">Carregue sua planilha</div>
         <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
@@ -906,7 +906,7 @@ img, svg, canvas{max-width:100%; height:auto}
       </div>
 
       <!-- Donut de progresso: aparece após selecionar o arquivo -->
-      <div id="bootProg" class="donut-screen visible">
+      <div id="bootProg" class="donut-screen">
         <div class="donutWrap">
           <svg viewBox="0 0 120 120" width="140" height="140">
             <defs>
@@ -1130,7 +1130,7 @@ function msRender(id, q=''){
       st.selected.has(v) ? st.selected.delete(v) : st.selected.add(v);
       msRender(id, st.search.value || '');
       generate();
-});
+    });
   });
 
   const n = st.selected.size;
@@ -1824,6 +1824,13 @@ els.fileInput.addEventListener('change', (ev)=> {
   const file = ev.target.files && ev.target.files[0];
   if(!file) return;
 
+  const bootEl = document.getElementById('boot');
+  const recPageEl = document.getElementById('rec-page');
+  const dropZoneEl = document.getElementById('dropZone');
+  const bootProgEl = document.getElementById('bootProg');
+  const dropContentEl = document.getElementById('dropContent');
+  const bootMsgEl = document.getElementById('bootMsg');
+
   // show progress
   const show = () => { if(els.uploadWrap) els.uploadWrap.classList.remove('hidden'); };
   const hide = () => { if(els.uploadWrap) els.uploadWrap.classList.add('hidden'); };
@@ -1835,6 +1842,22 @@ els.fileInput.addEventListener('change', (ev)=> {
 
   show();
   setP(0);
+
+  if (bootEl) {
+    bootEl.classList.remove('hidden');
+    bootEl.style.display = 'flex';
+    bootEl.style.opacity = '1';
+    bootEl.style.visibility = 'visible';
+  }
+  if (recPageEl) recPageEl.style.display = 'none';
+  if (dropContentEl) dropContentEl.classList.add('hidden-soft');
+  if (dropZoneEl) dropZoneEl.classList.add('processing');
+  if (bootProgEl) {
+    bootProgEl.classList.add('visible');
+    bootProgEl.style.display = 'flex';
+  }
+  if (window.__bootSetProg) window.__bootSetProg(1, 'Preparando leitura…');
+  if (bootMsgEl) bootMsgEl.textContent = 'Preparando leitura…';
 
   const reader = new FileReader();
   reader.onprogress = (e) => {
@@ -1925,15 +1948,30 @@ els.fileInput.addEventListener('change', (ev)=> {
         pagLoadFile(buf, file.name);
       }
 
-      setTimeout(()=>{
-        setP(100);
-        if(window.__bootDone) window.__bootDone();
-        setTimeout(hide, 400);
-      }, 300);
+      setP(96);
+      if(window.__bootSetProg) window.__bootSetProg(96, 'Renderizando dashboard…');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTimeout(()=>{
+            setP(100);
+            if(window.__bootSetProg) window.__bootSetProg(100, 'Concluído! ✓');
+            setTimeout(()=>{
+              if(window.__bootDone) window.__bootDone();
+              hide();
+            }, 900);
+          }, 250);
+        });
+      });
 
     }catch(err){
       if(els.uploadTxt) els.uploadTxt.textContent = 'Erro ao processar a planilha.';
-      setTimeout(hide, 2500);
+      if(window.__bootSetProg) window.__bootSetProg(100, 'Erro ao processar a planilha.');
+      setTimeout(()=>{
+        hide();
+        const recPageEl = document.getElementById('rec-page');
+        if (recPageEl) recPageEl.style.display = '';
+      }, 2500);
     }
   };
 
@@ -1982,6 +2020,8 @@ generate();
   const realInput = document.getElementById('fileInput');
 
   const C = 289;
+  const BOOT_MIN_MS = 1200;
+  const bootStartedAt = Date.now();
 
   function setProg(p, m){
     const clamped = Math.max(0, Math.min(100, p));
@@ -1995,61 +2035,31 @@ generate();
   window.__bootSetProg = setProg;
 
   function showDonut(filename){
-    if(boot){
-      boot.classList.remove('hidden');
-      boot.style.display = 'flex';
-      boot.style.visibility = 'visible';
-      boot.style.opacity = '1';
-    }
-    if(dropContent){
-      dropContent.classList.add('hidden-soft');
-      dropContent.style.display = 'none';
-    }
+    if(dropContent) dropContent.classList.add('hidden-soft');
     if(dz) dz.classList.add('processing');
-    if(prog){
-      prog.classList.add('visible');
-      prog.style.display = 'flex';
-      prog.style.visibility = 'visible';
-      prog.style.opacity = '1';
-    }
+    if(prog) prog.classList.add('visible');
     setProg(0, filename ? 'Lendo: ' + filename : 'Lendo arquivo…');
   }
 
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
-    app.style.display='';
-    if(boot){
-      boot.classList.remove('hidden');
-      boot.style.display='flex';
-      boot.style.visibility='visible';
-      boot.style.opacity='1';
-    }
+    const wait = Math.max(420, BOOT_MIN_MS - (Date.now() - bootStartedAt));
     setTimeout(()=>{
-      if(boot){
-        boot.classList.add('hidden');
-        boot.style.display='none';
-      }
-    }, 1400);
+      boot.classList.add('hidden');
+      boot.style.display='none';
+      app.style.display='';
+    }, wait);
   };
 
   // estado inicial
-  app.style.display='none';
-  if(boot){
+  if (boot) {
     boot.classList.remove('hidden');
     boot.style.display = 'flex';
-    boot.style.visibility = 'visible';
     boot.style.opacity = '1';
+    boot.style.visibility = 'visible';
   }
-  if(dropContent){
-    dropContent.classList.add('hidden-soft');
-    dropContent.style.display = 'none';
-  }
-  if(prog){
-    prog.classList.add('visible');
-    prog.style.display = 'flex';
-    prog.style.visibility = 'visible';
-    prog.style.opacity = '1';
-  }
+  app.style.display='none';
+  showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
   setProg(3, 'Iniciando leitura…');
 
   // quando seleciona o arquivo → mostra donut
@@ -2090,6 +2100,7 @@ generate();
     try{
       showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
       setProg(12, 'Localizando planilha…');
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       const url = 'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now();
       const resp = await fetch(url, {cache:'no-store'});
       if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -2106,10 +2117,10 @@ generate();
     }catch(err){
       setProg(100, 'Não foi possível localizar a planilha automática.');
       if(msg) msg.textContent = 'Não foi possível localizar a planilha automática. Verifique se o XLSX está na mesma pasta do index.html no GitHub.';
-      if(boot){
-        boot.classList.remove('hidden');
-        boot.style.display='flex';
-      }
+      setTimeout(()=>{
+        boot.classList.add('hidden');
+        boot.style.display='none';
+      }, 1400);
     }
   }
 
@@ -3388,10 +3399,10 @@ function pagPopularFiltros() {
 
   if (combos.length > 0) {
     const now = new Date();
-    const currentAno = String(now.getFullYear());
-    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    const hasCurrent = combos.some(c => c.ano === currentAno && c.mes === currentMes);
-    const chosen = hasCurrent ? { ano: currentAno, mes: currentMes } : combos[combos.length - 1];
+    const anoAtual = String(now.getFullYear());
+    const mesAtual = PAG_MONTH_ORDER[now.getMonth()] || '';
+    const existeAtual = combos.find(c => c.ano === anoAtual && c.mes === mesAtual);
+    const chosen = existeAtual || combos[combos.length - 1];
     pagAnoAtivo = chosen.ano;
     pagMesAtivo = chosen.mes;
     anoSel.value = pagAnoAtivo;
@@ -3855,19 +3866,16 @@ function pagPopularFiltros(){
   if(!anoSel || !mesSel) return;
   const anos = [...new Set(window.pagData.map(d => d.anoPgto).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
   anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
-  const combos = window.pagData
-    .filter(d => d && d.mesPgto && d.anoPgto)
-    .map(d => ({ano:String(d.anoPgto).trim(), mes:String(d.mesPgto).trim()}))
-    .sort((a,b)=>{
-      if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
-      return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
-    });
+  const combos = window.pagData.map(d => ({ano:d.anoPgto, mes:d.mesPgto})).sort((a,b)=>{
+    if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
+    return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
+  });
   if(combos.length){
     const now = new Date();
-    const currentAno = String(now.getFullYear());
-    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    const current = combos.find(c => c.ano === currentAno && c.mes === currentMes);
-    const chosen = current || combos[combos.length-1];
+    const anoAtual = String(now.getFullYear());
+    const mesAtual = PAG_MONTH_ORDER[now.getMonth()] || '';
+    const atual = combos.find(c => String(c.ano) === anoAtual && c.mes === mesAtual);
+    const chosen = atual || combos[combos.length-1];
     pagAnoAtivo = chosen.ano;
     pagMesAtivo = chosen.mes;
     anoSel.value = pagAnoAtivo;
@@ -3880,11 +3888,7 @@ function pagPopularMesesDoAno(){
   const meses = [...new Set(window.pagData.filter(d => String(d.anoPgto) === String(pagAnoAtivo)).map(d => d.mesPgto).filter(Boolean))]
     .sort((a,b)=>PAG_MONTH_ORDER.indexOf(a)-PAG_MONTH_ORDER.indexOf(b));
   mesSel.innerHTML = meses.map(m => `<option value="${m}">${pagMonthLabel(m)}</option>`).join('');
-  if(!meses.includes(pagMesAtivo)){
-    const now = new Date();
-    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    pagMesAtivo = meses.includes(currentMes) ? currentMes : (meses[meses.length-1] || '');
-  }
+  if(!meses.includes(pagMesAtivo)) pagMesAtivo = meses[meses.length-1] || '';
   mesSel.value = pagMesAtivo;
 }
 function pagFiltrar(){
