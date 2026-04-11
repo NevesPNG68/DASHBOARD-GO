@@ -593,7 +593,7 @@ a:hover{text-decoration:underline}
 .drop-content.hidden-soft{ display:none; }
 .donut-screen{
   padding: 26px 18px 18px;
-  display:none;
+  display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
@@ -898,7 +898,7 @@ img, svg, canvas{max-width:100%; height:auto}
 
     <div id="dropZone" class="drop">
       <!-- Conteúdo inicial: escolha de arquivo -->
-      <div id="dropContent" class="drop-content">
+      <div id="dropContent" class="drop-content hidden-soft">
         <div class="cup">☕</div>
         <div class="h1">Carregue sua planilha</div>
         <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
@@ -906,7 +906,7 @@ img, svg, canvas{max-width:100%; height:auto}
       </div>
 
       <!-- Donut de progresso: aparece após selecionar o arquivo -->
-      <div id="bootProg" class="donut-screen">
+      <div id="bootProg" class="donut-screen visible">
         <div class="donutWrap">
           <svg viewBox="0 0 120 120" width="140" height="140">
             <defs>
@@ -1983,8 +1983,6 @@ generate();
   const realInput = document.getElementById('fileInput');
 
   const C = 289;
-  const BOOT_MIN_MS = 1200;
-  const bootStartedAt = Date.now();
 
   function setProg(p, m){
     const clamped = Math.max(0, Math.min(100, p));
@@ -2006,24 +2004,15 @@ generate();
 
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
-    const wait = Math.max(420, BOOT_MIN_MS - (Date.now() - bootStartedAt));
     setTimeout(()=>{
       boot.classList.add('hidden');
       boot.style.display='none';
       app.style.display='';
-    }, wait);
+    }, 420);
   };
 
   // estado inicial
-  if (boot) {
-    boot.classList.remove('hidden');
-    boot.style.display = 'flex';
-    boot.style.opacity = '1';
-    boot.style.visibility = 'visible';
-  }
   app.style.display='none';
-  showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
-  setProg(3, 'Iniciando leitura…');
 
   // quando seleciona o arquivo → mostra donut
   if(realInput){
@@ -2063,7 +2052,6 @@ generate();
     try{
       showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
       setProg(12, 'Localizando planilha…');
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       const url = 'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now();
       const resp = await fetch(url, {cache:'no-store'});
       if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -3362,10 +3350,10 @@ function pagPopularFiltros() {
 
   if (combos.length > 0) {
     const now = new Date();
-    const anoAtual = String(now.getFullYear());
-    const mesAtual = PAG_MONTH_ORDER[now.getMonth()] || '';
-    const existeAtual = combos.find(c => c.ano === anoAtual && c.mes === mesAtual);
-    const chosen = existeAtual || combos[combos.length - 1];
+    const currentAno = String(now.getFullYear());
+    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
+    const hasCurrent = combos.some(c => c.ano === currentAno && c.mes === currentMes);
+    const chosen = hasCurrent ? { ano: currentAno, mes: currentMes } : combos[combos.length - 1];
     pagAnoAtivo = chosen.ano;
     pagMesAtivo = chosen.mes;
     anoSel.value = pagAnoAtivo;
@@ -3834,13 +3822,9 @@ function pagPopularFiltros(){
     return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
   });
   if(combos.length){
-    const now = new Date();
-    const anoAtual = String(now.getFullYear());
-    const mesAtual = PAG_MONTH_ORDER[now.getMonth()] || '';
-    const atual = combos.find(c => String(c.ano) === anoAtual && c.mes === mesAtual);
-    const chosen = atual || combos[combos.length-1];
-    pagAnoAtivo = chosen.ano;
-    pagMesAtivo = chosen.mes;
+    const last = combos[combos.length-1];
+    pagAnoAtivo = last.ano;
+    pagMesAtivo = last.mes;
     anoSel.value = pagAnoAtivo;
   }
   pagPopularMesesDoAno();
