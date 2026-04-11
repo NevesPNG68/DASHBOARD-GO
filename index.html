@@ -1130,7 +1130,8 @@ function msRender(id, q=''){
       st.selected.has(v) ? st.selected.delete(v) : st.selected.add(v);
       msRender(id, st.search.value || '');
       generate();
-    });
+    if(window.__bootDone) window.__bootDone();
+});
   });
 
   const n = st.selected.size;
@@ -1824,13 +1825,6 @@ els.fileInput.addEventListener('change', (ev)=> {
   const file = ev.target.files && ev.target.files[0];
   if(!file) return;
 
-  const bootEl = document.getElementById('boot');
-  const recPageEl = document.getElementById('rec-page');
-  const dropZoneEl = document.getElementById('dropZone');
-  const bootProgEl = document.getElementById('bootProg');
-  const dropContentEl = document.getElementById('dropContent');
-  const bootMsgEl = document.getElementById('bootMsg');
-
   // show progress
   const show = () => { if(els.uploadWrap) els.uploadWrap.classList.remove('hidden'); };
   const hide = () => { if(els.uploadWrap) els.uploadWrap.classList.add('hidden'); };
@@ -1842,22 +1836,7 @@ els.fileInput.addEventListener('change', (ev)=> {
 
   show();
   setP(0);
-
-  if (bootEl) {
-    bootEl.classList.remove('hidden');
-    bootEl.style.display = 'flex';
-    bootEl.style.opacity = '1';
-    bootEl.style.visibility = 'visible';
-  }
-  if (recPageEl) recPageEl.style.display = 'none';
-  if (dropContentEl) dropContentEl.classList.add('hidden-soft');
-  if (dropZoneEl) dropZoneEl.classList.add('processing');
-  if (bootProgEl) {
-    bootProgEl.classList.add('visible');
-    bootProgEl.style.display = 'flex';
-  }
-  if (window.__bootSetProg) window.__bootSetProg(1, 'Preparando leitura…');
-  if (bootMsgEl) bootMsgEl.textContent = 'Preparando leitura…';
+  if(window.__bootUploadStart) window.__bootUploadStart(file.name);
 
   const reader = new FileReader();
   reader.onprogress = (e) => {
@@ -1948,30 +1927,21 @@ els.fileInput.addEventListener('change', (ev)=> {
         pagLoadFile(buf, file.name);
       }
 
-      setP(96);
-      if(window.__bootSetProg) window.__bootSetProg(96, 'Renderizando dashboard…');
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          setP(100);
+          if(window.__bootSetProg) window.__bootSetProg(98, 'Finalizando dashboard…');
           setTimeout(()=>{
-            setP(100);
-            if(window.__bootSetProg) window.__bootSetProg(100, 'Concluído! ✓');
-            setTimeout(()=>{
-              if(window.__bootDone) window.__bootDone();
-              hide();
-            }, 900);
-          }, 250);
+            if(window.__bootDone) window.__bootDone();
+            setTimeout(hide, 900);
+          }, 900);
         });
       });
 
     }catch(err){
       if(els.uploadTxt) els.uploadTxt.textContent = 'Erro ao processar a planilha.';
       if(window.__bootSetProg) window.__bootSetProg(100, 'Erro ao processar a planilha.');
-      setTimeout(()=>{
-        hide();
-        const recPageEl = document.getElementById('rec-page');
-        if (recPageEl) recPageEl.style.display = '';
-      }, 2500);
+      setTimeout(hide, 2500);
     }
   };
 
@@ -2035,18 +2005,30 @@ generate();
   window.__bootSetProg = setProg;
 
   function showDonut(filename){
+    if(!boot) return;
+    boot.classList.remove('hidden');
+    boot.style.display = 'flex';
+    boot.style.opacity = '1';
+    boot.style.visibility = 'visible';
     if(dropContent) dropContent.classList.add('hidden-soft');
     if(dz) dz.classList.add('processing');
     if(prog) prog.classList.add('visible');
     setProg(0, filename ? 'Lendo: ' + filename : 'Lendo arquivo…');
   }
 
+  window.__bootUploadStart = (filename)=>{
+    showDonut(filename || 'arquivo');
+    setProg(2, filename ? 'Preparando: ' + filename : 'Preparando arquivo…');
+  };
+
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
-    const wait = Math.max(420, BOOT_MIN_MS - (Date.now() - bootStartedAt));
+    const wait = Math.max(900, BOOT_MIN_MS - (Date.now() - bootStartedAt));
     setTimeout(()=>{
-      boot.classList.add('hidden');
-      boot.style.display='none';
+      if(boot){
+        boot.classList.add('hidden');
+        boot.style.display='none';
+      }
       app.style.display='';
     }, wait);
   };
@@ -2067,6 +2049,7 @@ generate();
     realInput.addEventListener('change', ()=>{
       const f = realInput.files?.[0];
       showDonut(f ? f.name : '');
+      setProg(4, f ? 'Lendo: ' + f.name : 'Lendo arquivo…');
     }, true);
   }
 
