@@ -837,6 +837,24 @@ img, svg, canvas{max-width:100%; height:auto}
 }
 </style>
 
+
+<style id="mobile-fixes-v3">
+@media (max-width: 760px){
+  .ms-pop{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    top:118px !important;
+    width:auto !important;
+    max-height:72vh !important;
+    z-index:10050 !important;
+  }
+  .ms-list{padding-bottom:8px}
+  .ms-item{padding:12px 14px}
+  .ms-btn{min-height:44px}
+}
+</style>
+
 </head>
 <body>
 
@@ -932,7 +950,7 @@ img, svg, canvas{max-width:100%; height:auto}
         <div class="cup">☕</div>
         <div class="h1">Carregue sua planilha</div>
         <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
-        <div class="p2">Sempre que atualizar a planilha, basta carregar novamente.</div>
+        <div class="p2">Sempre que atualizar a planilha, basta carregar novamente.</div><button type="button" class="boot-btn" onclick="document.getElementById('fileInput').click()">SELECIONAR ARQUIVO</button>
       </div>
 
       <!-- Donut de progresso: aparece após selecionar o arquivo -->
@@ -1081,6 +1099,8 @@ const __boot = {
 };
 let __lastFileBuffer = null;
 let __lastFileName = '';
+window.__lastFileBuffer = null;
+window.__lastFileName = '';
 const __donutLen = 289;
 function __bootShowChooser(){
   if(__boot.content) __boot.content.style.display='block';
@@ -1950,6 +1970,8 @@ els.fileInput.addEventListener('change', (ev)=> {
       const buf = reader.result;
       __lastFileBuffer = buf;
       __lastFileName = file.name || 'planilha.xlsx';
+      window.__lastFileBuffer = __lastFileBuffer;
+      window.__lastFileName = __lastFileName;
       const wb = XLSX.read(buf, {type:'array'});
       const sh = wb.Sheets['DADOS'] || wb.Sheets[wb.SheetNames[0]];
 
@@ -2282,8 +2304,12 @@ generate();
     .topbar { padding:.75rem .85rem; }
     .filters { width:100%; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:.35rem; }
     .filter-group { min-width:160px; }
-    #insumos-grid { grid-template-columns:1fr !important; }
+    #insumos-grid { display:grid !important; grid-template-columns:1fr !important; }
+    #insumos-grid > * { min-width:0 !important; width:100% !important; }
     .chart-card { padding:1rem; overflow:hidden; }
+    html, body { overflow-x:hidden !important; }
+    canvas { max-width:100% !important; }
+    .main { overflow-x:hidden !important; }
     .chart-wrap { min-height:240px; }
     #chart-mensal, #chart-insumos-bar, #chart-linha, #chart-rosca { height:240px !important; max-height:none !important; }
     #chart-rosca { height:220px !important; }
@@ -3317,8 +3343,7 @@ function pagLoadFile(arrayBuffer, fileName) {
 
     pagPopularFiltros();
     pagRender();
-    document.getElementById('pag-upload-screen').style.display = 'none';
-    document.getElementById('pag-dashboard').style.display = 'block';
+    pagShowDashboard();
   } catch(e) { console.error('Erro pagamentos:', e); }
 }
 
@@ -3526,6 +3551,32 @@ function pagSetupUpload() {
 
 window._pagReady = false;
 </script>
+
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  try{
+    var boot = document.getElementById('boot');
+    var prog = document.getElementById('bootProg');
+    var content = document.getElementById('dropContent');
+    if (prog) prog.style.display = 'none';
+    if (content) content.style.display = 'block';
+    if (boot) boot.classList.remove('hidden');
+    var df = document.getElementById('desp-frame');
+    if(df){
+      df.addEventListener('load', function(){
+        try{
+          if(window.__lastFileBuffer){
+            df.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: window.__lastFileBuffer, fileName: window.__lastFileName || 'planilha.xlsx' }, '*');
+          }
+          df.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
+        }catch(e){}
+      });
+    }
+    if(!window._pagReady){ try{ pagSetupUpload(); window._pagReady = true; }catch(e){} }
+  }catch(e){}
+});
+</script>
+
 </body>
 </html>
 
@@ -3671,12 +3722,12 @@ function switchTab(tab) {
     }
   }else if(tab==='pag'){
     if(pagPage) pagPage.style.display='block';
-    if(tabPag) tabPag.className='nav-tab active-desp';
+    if(tabPag) tabPag.className='nav-tab active-rec';
     if(!window._pagReady){ pagSetupUpload(); window._pagReady = true; }
     if(__lastFileBuffer && (!window.pagData || !window.pagData.length)){
       try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx'); }catch(e){}
     }
-    if(window.pagData && window.pagData.length){ pagShowDashboard(); pagRender(); }
+    if(window.pagData && window.pagData.length){ try{ document.getElementById('pag-upload-screen').classList.add('hidden'); document.getElementById('pag-dashboard').classList.remove('hidden'); }catch(e){} pagShowDashboard(); pagRender(); }
     else { pagShowUpload(); }
   }
 }
