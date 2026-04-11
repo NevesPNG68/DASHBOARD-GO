@@ -406,7 +406,7 @@ a:hover{text-decoration:underline}
 
 /* ====== Filtros multiopção com checkbox (dropdown) ====== */
 .ms{ position:relative; width:100%; }
-.ms-btn{width:100%;padding:14px 14px;border-radius:12px;border:1px solid rgba(163,255,18,.35);background: rgba(255,255,255,.10);color: rgba(255,255,255,.92);outline:none;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-weight:850;}
+.ms-btn{width:100%;padding:11px 12px;border-radius:12px;border:1px solid rgba(163,255,18,.35);background: rgba(255,255,255,.10);color: rgba(255,255,255,.92);outline:none;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;font-weight:850;}
 .ms-btn .hint{ color: rgba(255,255,255,.70); font-weight:800; font-size:12px; }
 .ms-btn .caret{ opacity:.85; }
 .ms-pop{position:absolute;left:0;right:0;top: calc(100% + 8px);z-index:80;border:1px solid rgba(255,255,255,.12);border-radius:14px;background: rgba(10,12,16,.96);box-shadow: 0 18px 40px rgba(0,0,0,.6);overflow:visible;display:none;}
@@ -417,9 +417,9 @@ a:hover{text-decoration:underline}
 .ms-actions button{appearance:none;border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.04);color: rgba(255,255,255,.85);border-radius:10px;padding:9px 10px;font-weight:850;cursor:pointer;}
 .ms-actions button:hover{ filter:brightness(1.12); }
 .ms-list{ max-height:240px; overflow:auto; -webkit-overflow-scrolling:touch; }
-.ms-item{display:flex;align-items:center;gap:12px;padding:14px 14px;border-bottom:1px solid rgba(255,255,255,.06);font-size:15px;cursor:pointer;}
+.ms-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;cursor:pointer;}
 .ms-item:hover{ background: rgba(255,255,255,.04); }
-.ms-item input{ accent-color: var(--lime); width:22px; height:22px; }
+.ms-item input{ accent-color: var(--lime); width:16px; height:16px; }
 .ms-item .txt{ flex:1; }
 .ms-foot{ padding:10px 12px; color: rgba(255,255,255,.55); font-size:12px; }
 
@@ -446,55 +446,6 @@ a:hover{text-decoration:underline}
 @media (max-width: 520px){
   .ms-pop{ max-height: 85vh; }
 }
-@media (max-width: 760px){
-  .ms-pop{
-    position:fixed !important;
-    left:10px !important;
-    right:10px !important;
-    top:auto !important;
-    bottom:10px !important;
-    width:auto !important;
-    max-height:72vh !important;
-    border-radius:18px !important;
-    box-shadow:0 22px 60px rgba(0,0,0,.72) !important;
-    z-index:10050 !important;
-    padding-top:10px;
-  }
-  .ms-pop::before{
-    content:'';
-    width:54px;
-    height:5px;
-    border-radius:999px;
-    background:rgba(255,255,255,.22);
-    display:block;
-    margin:0 auto 10px;
-    flex:0 0 auto;
-  }
-  .ms-list{ padding-bottom:8px; }
-  .ms-item{
-    padding:16px 16px !important;
-    min-height:58px;
-    font-size:16px !important;
-  }
-  .ms-item input{
-    width:24px !important;
-    height:24px !important;
-  }
-  .ms-btn{
-    min-height:58px;
-    font-size:17px;
-    padding:15px 16px;
-    border-radius:16px;
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .ms-btn > *{ pointer-events:none; }
-  .ms-item{
-    touch-action:manipulation;
-    -webkit-tap-highlight-color:transparent;
-  }
-}
-
 
 /* ====== Ajustes de UI dos filtros ====== */
 .ms-pop.open{ display:flex; flex-direction:column; }
@@ -713,10 +664,6 @@ a:hover{text-decoration:underline}
   width:100%; border:none; height:calc(100vh - 48px);
   position:fixed; top:48px; left:0;
   display:none;
-  overflow:auto;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  background:#0d0d0d;
 }
 
 .pag-filtros-topo{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
@@ -764,7 +711,7 @@ img, svg, canvas{max-width:100%; height:auto}
   #rec-page{padding-top:108px}
   #desp-frame{
     top:108px;
-    height:calc(100dvh - 108px);
+    height:calc(100vh - 108px);
   }
 
   .wrap{padding:16px 10px 28px}
@@ -819,7 +766,7 @@ img, svg, canvas{max-width:100%; height:auto}
   #rec-page{padding-top:104px}
   #desp-frame{
     top:104px;
-    height:calc(100dvh - 104px);
+    height:calc(100vh - 104px);
   }
 
   .wrap{padding:14px 8px 22px}
@@ -1124,42 +1071,11 @@ function msInit(id, label){
   const search = root.querySelector('.ms-search');
   const hint = root.querySelector('.ms-btn .hint');
 
-  function closeSelf(){
-    pop.classList.remove('open');
-    root.classList.remove('is-open');
-  }
-
-  function openSelf(){
-    Object.values(MS).forEach(st=>{
-      if(st && st.pop){
-        st.pop.classList.remove('open');
-        st.root.classList.remove('is-open');
-      }
-    });
-    pop.classList.add('open');
-    root.classList.add('is-open');
-    if(window.innerWidth <= 760){
-      setTimeout(()=>{ try{ list.scrollTop = 0; }catch(_){} }, 0);
-    }
-    if(search && search.offsetParent !== null) search.focus();
-  }
-
   pop.addEventListener('click', (e)=>e.stopPropagation());
-  btn.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    const isOpen = pop.classList.contains('open');
-    isOpen ? closeSelf() : openSelf();
-  });
-  btn.addEventListener('touchend', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    const isOpen = pop.classList.contains('open');
-    isOpen ? closeSelf() : openSelf();
-  }, {passive:false});
-  document.addEventListener('click', ()=> closeSelf());
+  btn.addEventListener('click', (e)=>{ e.stopPropagation(); pop.classList.toggle('open'); search.focus(); });
+  document.addEventListener('click', ()=> pop.classList.remove('open'));
 
-  MS[id] = { selected:new Set(), all:[], root, pop, list, search, hint, closeSelf, openSelf };
+  MS[id] = { selected:new Set(), all:[], root, pop, list, search, hint };
 
   root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); });
   root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); });
@@ -1206,8 +1122,7 @@ function msRender(id, q=''){
   }).join('') : `<div class="ms-item"><div class="txt" style="color:rgba(255,255,255,.55)">Sem opções</div></div>`);
 
   st.list.querySelectorAll('.ms-item[data-i]').forEach(it=>{
-    const toggleItem = (e)=>{
-      e.preventDefault();
+    it.addEventListener('click', (e)=>{
       e.stopPropagation();
       const i = Number(it.getAttribute('data-i'));
       const v = st.all[i];
@@ -1215,13 +1130,8 @@ function msRender(id, q=''){
       st.selected.has(v) ? st.selected.delete(v) : st.selected.add(v);
       msRender(id, st.search.value || '');
       generate();
-      if(window.__bootDone) window.__bootDone();
-      if(MS[id] && MS[id].openSelf && window.innerWidth <= 760){
-        MS[id].openSelf();
-      }
-    };
-    it.addEventListener('click', toggleItem);
-    it.addEventListener('touchend', toggleItem, {passive:false});
+    if(window.__bootDone) window.__bootDone();
+});
   });
 
   const n = st.selected.size;
@@ -1917,7 +1827,6 @@ els.fileInput.addEventListener('change', (ev)=> {
 
   // show progress
   const show = () => { if(els.uploadWrap) els.uploadWrap.classList.remove('hidden'); };
-  if(window.__bootSetProg) window.__bootSetProg(1, 'Preparando leitura…');
   const hide = () => { if(els.uploadWrap) els.uploadWrap.classList.add('hidden'); };
   const setP = (p) => {
     const pct = Math.max(0, Math.min(100, Math.round(p)));
@@ -1927,7 +1836,6 @@ els.fileInput.addEventListener('change', (ev)=> {
 
   show();
   setP(0);
-  if(window.__bootShowDonut) window.__bootShowDonut(file.name);
 
   const reader = new FileReader();
   reader.onprogress = (e) => {
@@ -2075,6 +1983,8 @@ generate();
   const realInput = document.getElementById('fileInput');
 
   const C = 289;
+  const BOOT_MIN_MS = 1200;
+  const bootStartedAt = Date.now();
 
   function setProg(p, m){
     const clamped = Math.max(0, Math.min(100, p));
@@ -2094,13 +2004,9 @@ generate();
     setProg(0, filename ? 'Lendo: ' + filename : 'Lendo arquivo…');
   }
 
-  window.__bootShowDonut = showDonut;
-
-  const __bootStartedAt = Date.now();
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
-    const elapsed = Date.now() - __bootStartedAt;
-    const wait = Math.max(1400, 2200 - elapsed);
+    const wait = Math.max(420, BOOT_MIN_MS - (Date.now() - bootStartedAt));
     setTimeout(()=>{
       boot.classList.add('hidden');
       boot.style.display='none';
@@ -2109,15 +2015,15 @@ generate();
   };
 
   // estado inicial
-  app.style.display='none';
-  // força a rosca a aparecer imediatamente, antes da tentativa de leitura automática
-  showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
-  setProg(2, 'Iniciando leitura automática…');
   if (boot) {
     boot.classList.remove('hidden');
     boot.style.display = 'flex';
-    void boot.offsetHeight;
+    boot.style.opacity = '1';
+    boot.style.visibility = 'visible';
   }
+  app.style.display='none';
+  showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
+  setProg(3, 'Iniciando leitura…');
 
   // quando seleciona o arquivo → mostra donut
   if(realInput){
@@ -2126,12 +2032,6 @@ generate();
       showDonut(f ? f.name : '');
     }, true);
   }
-
-  // Clique para selecionar arquivo
-  dz.addEventListener('click', (e)=>{
-    if(e.target && e.target.closest && e.target.closest('button')) return;
-    if(realInput) realInput.click();
-  });
 
   // Drag & drop funcional
   dz.addEventListener('dragover', (e)=>{ e.preventDefault(); dz.classList.add('drag'); });
@@ -2162,7 +2062,8 @@ generate();
   async function autoLoadWorkbook(){
     try{
       showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
-      setProg(8, 'Localizando planilha…');
+      setProg(12, 'Localizando planilha…');
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       const url = 'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now();
       const resp = await fetch(url, {cache:'no-store'});
       if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -2180,19 +2081,13 @@ generate();
       setProg(100, 'Não foi possível localizar a planilha automática.');
       if(msg) msg.textContent = 'Não foi possível localizar a planilha automática. Verifique se o XLSX está na mesma pasta do index.html no GitHub.';
       setTimeout(()=>{
-        app.style.display='';
-        boot.classList.remove('hidden');
+        boot.classList.add('hidden');
+        boot.style.display='none';
       }, 1400);
     }
   }
 
-  requestAnimationFrame(()=>{
-    setTimeout(()=>{
-      showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
-      setProg(5, 'Preparando leitura automática…');
-      autoLoadWorkbook();
-    }, 260);
-  });
+  autoLoadWorkbook();
 })();
 
 
@@ -2287,14 +2182,14 @@ generate();
   .topbar-divider { width:1px; height:28px; background:var(--border); }
   .filters { display:flex; gap:.75rem; flex-wrap:wrap; flex:1; }
   .filter-group { display:flex; flex-direction:column; gap:.25rem; position:relative; }
-  .filter-group label { font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:rgba(240,236,228,.76); font-weight:700; }
+  .filter-group label { font-size:.65rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
 
   /* MULTI-SELECT DROPDOWN */
   .ms-btn {
     background:var(--card);
     border:1px solid var(--border);
     color:var(--text);
-    padding:.65rem .9rem;
+    padding:.4rem .75rem;
     border-radius:6px;
     font-family:var(--font-body);
     font-size:.85rem;
@@ -2325,12 +2220,12 @@ generate();
   }
   .ms-list { max-height:220px; overflow-y:auto; }
   .ms-item {
-    display:flex; align-items:center; gap:.75rem;
-    padding:.8rem .9rem; cursor:pointer; font-size:.92rem;
+    display:flex; align-items:center; gap:.6rem;
+    padding:.45rem .75rem; cursor:pointer; font-size:.82rem;
     transition:background .15s;
   }
   .ms-item:hover { background:#2a2a2a; }
-  .ms-item input[type=checkbox] { accent-color:var(--accent); width:20px; height:20px; cursor:pointer; flex-shrink:0; }
+  .ms-item input[type=checkbox] { accent-color:var(--accent); width:13px; height:13px; cursor:pointer; flex-shrink:0; }
   .ms-item label { cursor:pointer; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .ms-footer {
     border-top:1px solid var(--border);
@@ -2358,7 +2253,7 @@ generate();
     background:transparent;
     border:1px solid var(--border);
     color:var(--muted);
-    padding:.65rem 1rem;
+    padding:.4rem .9rem;
     border-radius:6px;
     font-size:.8rem;
     cursor:pointer;
@@ -2389,9 +2284,9 @@ generate();
     position:absolute; top:0; left:0; right:0; height:2px;
     background:var(--kpi-color, var(--accent));
   }
-  .kpi-label { font-size:.76rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(240,236,228,.82); margin-bottom:.5rem; font-weight:700; }
+  .kpi-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:.5rem; }
   .kpi-value { font-family:var(--font-head); font-size:1.9rem; letter-spacing:.04em; color:var(--text); line-height:1; }
-  .kpi-sub { font-size:.74rem; color:rgba(240,236,228,.68); margin-top:.35rem; line-height:1.35; }
+  .kpi-sub { font-size:.72rem; color:var(--muted); margin-top:.35rem; }
   .kpi-icon { position:absolute; right:1rem; top:50%; transform:translateY(-50%); font-size:1.8rem; opacity:.12; }
 
   /* SECTION TITLES */
@@ -2399,7 +2294,7 @@ generate();
     font-family:var(--font-head);
     font-size:1.4rem;
     letter-spacing:.08em;
-    color:#fff7ea;
+    color:var(--text);
     margin-bottom:1rem;
     display:flex; align-items:center; gap:.75rem;
   }
@@ -2419,30 +2314,6 @@ generate();
   .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
   .chart-grid-3 { display:grid; grid-template-columns:2fr 1fr; gap:1rem; margin-bottom:1rem; }
   @media(max-width:900px) { .chart-grid, .chart-grid-3 { grid-template-columns:1fr; } }
-  @media(max-width:980px) {
-    #insumos-grid { display:grid !important; grid-template-columns:1fr !important; gap:.9rem !important; }
-    .chart-grid, .chart-grid-3 { grid-template-columns:1fr !important; }
-    .chart-card { overflow:hidden; min-width:0 !important; width:100% !important; }
-    .chart-wrap { min-height:220px; width:100% !important; }
-    #chart-insumos-bar, #chart-linha { height:220px !important; max-height:220px !important; width:100% !important; }
-    #chart-rosca { height:220px !important; max-height:220px !important; width:100% !important; }
-    #rosca-legend { max-height:140px !important; }
-
-    .topbar { position:relative; padding:1rem .9rem; gap:.9rem; }
-    .topbar-divider { display:none; }
-    .filters { width:100%; gap:.9rem; }
-    .filter-group { width:100%; }
-    .ms-btn { min-width:100%; max-width:none; min-height:48px; font-size:.95rem; }
-    .ms-dropdown { position:relative; left:auto; right:auto; top:auto; margin-top:.45rem; min-width:100%; max-width:none; }
-    .ms-list { max-height:50vh; }
-    .ms-footer { padding:.65rem .8rem; }
-    .ms-clear, .ms-apply { min-height:40px; padding:.5rem .9rem; font-size:.82rem; }
-    .reload-btn { width:100%; justify-content:center; margin-left:0; }
-    .file-name { max-width:100%; width:100%; }
-    .main { padding:1rem .8rem 2rem; }
-    .kpi-row { grid-template-columns:1fr; }
-    canvas { touch-action:pan-y; }
-  }
   .chart-card {
     background:var(--card);
     border:1px solid var(--border);
@@ -2975,10 +2846,10 @@ function renderKPIs() {
   const fixoTotal = fixo + fixoVar;
 
   const custokpis = [
-    { label:'FIXO',                 value: fmtBRL(fixo),      sub: total>0 ? `${(fixo/total*100).toFixed(1)}% do total filtrado`      : '—', color:'#277DA1', icon:'🔒' },
-    { label:'FIXO/VARIÁVEL',        value: fmtBRL(fixoVar),   sub: total>0 ? `${(fixoVar/total*100).toFixed(1)}% do total filtrado`   : '—', color:'#4D908E', icon:'🔀' },
-    { label:'FIXO + FIXO/VARIÁVEL', value: fmtBRL(fixoTotal), sub: total>0 ? `${(fixoTotal/total*100).toFixed(1)}% do total filtrado` : '—', color:'#43AA8B', icon:'📌' },
-    { label:'VARIÁVEL',             value: fmtBRL(variavel),  sub: total>0 ? `${(variavel/total*100).toFixed(1)}% do total filtrado`  : '—', color:'#F9C74F', icon:'📈' },
+    { label:'FIXO',                 value: fmtBRL(fixo),      sub: total>0 ? `${(fixo/total*100).toFixed(1)}% do total`      : '—', color:'#277DA1', icon:'🔒' },
+    { label:'FIXO + FIXO/VARIÁVEL', value: fmtBRL(fixoTotal), sub: total>0 ? `${(fixoTotal/total*100).toFixed(1)}% do total` : '—', color:'#43AA8B', icon:'📌' },
+    { label:'FIXO/VARIÁVEL',        value: fmtBRL(fixoVar),   sub: total>0 ? `${(fixoVar/total*100).toFixed(1)}% do total`   : '—', color:'#4D908E', icon:'🔀' },
+    { label:'VARIÁVEL',             value: fmtBRL(variavel),  sub: total>0 ? `${(variavel/total*100).toFixed(1)}% do total`  : '—', color:'#F9C74F', icon:'📈' },
   ];
 
   document.getElementById('kpi-row-custo').innerHTML = custokpis.map(k => `
@@ -3490,9 +3361,13 @@ function pagPopularFiltros() {
     });
 
   if (combos.length > 0) {
-    const last = combos[combos.length - 1];
-    pagAnoAtivo = last.ano;
-    pagMesAtivo = last.mes;
+    const now = new Date();
+    const anoAtual = String(now.getFullYear());
+    const mesAtual = PAG_MONTH_ORDER[now.getMonth()] || '';
+    const existeAtual = combos.find(c => c.ano === anoAtual && c.mes === mesAtual);
+    const chosen = existeAtual || combos[combos.length - 1];
+    pagAnoAtivo = chosen.ano;
+    pagMesAtivo = chosen.mes;
     anoSel.value = pagAnoAtivo;
   }
 
@@ -3959,9 +3834,13 @@ function pagPopularFiltros(){
     return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
   });
   if(combos.length){
-    const last = combos[combos.length-1];
-    pagAnoAtivo = last.ano;
-    pagMesAtivo = last.mes;
+    const now = new Date();
+    const anoAtual = String(now.getFullYear());
+    const mesAtual = PAG_MONTH_ORDER[now.getMonth()] || '';
+    const atual = combos.find(c => String(c.ano) === anoAtual && c.mes === mesAtual);
+    const chosen = atual || combos[combos.length-1];
+    pagAnoAtivo = chosen.ano;
+    pagMesAtivo = chosen.mes;
     anoSel.value = pagAnoAtivo;
   }
   pagPopularMesesDoAno();
