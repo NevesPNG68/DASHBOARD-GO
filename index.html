@@ -2100,7 +2100,7 @@ generate();
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
     const elapsed = Date.now() - __bootStartedAt;
-    const wait = Math.max(420, 1100 - elapsed);
+    const wait = Math.max(1400, 2200 - elapsed);
     setTimeout(()=>{
       boot.classList.add('hidden');
       boot.style.display='none';
@@ -2110,6 +2110,14 @@ generate();
 
   // estado inicial
   app.style.display='none';
+  // força a rosca a aparecer imediatamente, antes da tentativa de leitura automática
+  showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
+  setProg(2, 'Iniciando leitura automática…');
+  if (boot) {
+    boot.classList.remove('hidden');
+    boot.style.display = 'flex';
+    void boot.offsetHeight;
+  }
 
   // quando seleciona o arquivo → mostra donut
   if(realInput){
@@ -2178,7 +2186,13 @@ generate();
     }
   }
 
-  requestAnimationFrame(()=>{ setTimeout(autoLoadWorkbook, 120); });
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
+      setProg(5, 'Preparando leitura automática…');
+      autoLoadWorkbook();
+    }, 260);
+  });
 })();
 
 
