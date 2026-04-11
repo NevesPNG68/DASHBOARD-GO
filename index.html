@@ -446,6 +446,47 @@ a:hover{text-decoration:underline}
 @media (max-width: 520px){
   .ms-pop{ max-height: 85vh; }
 }
+@media (max-width: 760px){
+  .ms-pop{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    top:auto !important;
+    bottom:10px !important;
+    width:auto !important;
+    max-height:72vh !important;
+    border-radius:18px !important;
+    box-shadow:0 22px 60px rgba(0,0,0,.72) !important;
+    z-index:10050 !important;
+    padding-top:10px;
+  }
+  .ms-pop::before{
+    content:'';
+    width:54px;
+    height:5px;
+    border-radius:999px;
+    background:rgba(255,255,255,.22);
+    display:block;
+    margin:0 auto 10px;
+    flex:0 0 auto;
+  }
+  .ms-list{ padding-bottom:8px; }
+  .ms-item{
+    padding:16px 16px !important;
+    min-height:58px;
+    font-size:16px !important;
+  }
+  .ms-item input{
+    width:24px !important;
+    height:24px !important;
+  }
+  .ms-btn{
+    min-height:52px;
+    font-size:16px;
+    padding:13px 14px;
+  }
+}
+
 
 /* ====== Ajustes de UI dos filtros ====== */
 .ms-pop.open{ display:flex; flex-direction:column; }
@@ -715,7 +756,7 @@ img, svg, canvas{max-width:100%; height:auto}
   #rec-page{padding-top:108px}
   #desp-frame{
     top:108px;
-    height:calc(100vh - 108px);
+    height:calc(100dvh - 108px);
   }
 
   .wrap{padding:16px 10px 28px}
@@ -770,7 +811,7 @@ img, svg, canvas{max-width:100%; height:auto}
   #rec-page{padding-top:104px}
   #desp-frame{
     top:104px;
-    height:calc(100vh - 104px);
+    height:calc(100dvh - 104px);
   }
 
   .wrap{padding:14px 8px 22px}
@@ -2010,13 +2051,16 @@ generate();
 
   window.__bootShowDonut = showDonut;
 
+  const __bootStartedAt = Date.now();
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
+    const elapsed = Date.now() - __bootStartedAt;
+    const wait = Math.max(420, 1100 - elapsed);
     setTimeout(()=>{
       boot.classList.add('hidden');
       boot.style.display='none';
       app.style.display='';
-    }, 420);
+    }, wait);
   };
 
   // estado inicial
@@ -2029,6 +2073,12 @@ generate();
       showDonut(f ? f.name : '');
     }, true);
   }
+
+  // Clique para selecionar arquivo
+  dz.addEventListener('click', (e)=>{
+    if(e.target && e.target.closest && e.target.closest('button')) return;
+    if(realInput) realInput.click();
+  });
 
   // Drag & drop funcional
   dz.addEventListener('dragover', (e)=>{ e.preventDefault(); dz.classList.add('drag'); });
@@ -2059,7 +2109,7 @@ generate();
   async function autoLoadWorkbook(){
     try{
       showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
-      setProg(12, 'Localizando planilha…');
+      setProg(8, 'Localizando planilha…');
       const url = 'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now();
       const resp = await fetch(url, {cache:'no-store'});
       if(!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -2311,6 +2361,13 @@ generate();
   .chart-grid-3 { display:grid; grid-template-columns:2fr 1fr; gap:1rem; margin-bottom:1rem; }
   @media(max-width:900px) { .chart-grid, .chart-grid-3 { grid-template-columns:1fr; } }
   @media(max-width:760px) {
+    #insumos-grid { grid-template-columns:1fr !important; gap:.9rem !important; }
+    .chart-card { overflow:hidden; }
+    .chart-wrap { min-height:220px; }
+    #chart-insumos-bar, #chart-linha { height:220px !important; max-height:220px !important; }
+    #chart-rosca { height:220px !important; max-height:220px !important; }
+    #rosca-legend { max-height:140px !important; }
+
     .topbar { position:relative; padding:1rem .9rem; gap:.9rem; }
     .topbar-divider { display:none; }
     .filters { width:100%; gap:.9rem; }
@@ -2860,8 +2917,8 @@ function renderKPIs() {
 
   const custokpis = [
     { label:'FIXO',                 value: fmtBRL(fixo),      sub: total>0 ? `${(fixo/total*100).toFixed(1)}% do total filtrado`      : '—', color:'#277DA1', icon:'🔒' },
-    { label:'FIXO + FIXO/VARIÁVEL', value: fmtBRL(fixoTotal), sub: total>0 ? `${(fixoTotal/total*100).toFixed(1)}% do total filtrado` : '—', color:'#43AA8B', icon:'📌' },
     { label:'FIXO/VARIÁVEL',        value: fmtBRL(fixoVar),   sub: total>0 ? `${(fixoVar/total*100).toFixed(1)}% do total filtrado`   : '—', color:'#4D908E', icon:'🔀' },
+    { label:'FIXO + FIXO/VARIÁVEL', value: fmtBRL(fixoTotal), sub: total>0 ? `${(fixoTotal/total*100).toFixed(1)}% do total filtrado` : '—', color:'#43AA8B', icon:'📌' },
     { label:'VARIÁVEL',             value: fmtBRL(variavel),  sub: total>0 ? `${(variavel/total*100).toFixed(1)}% do total filtrado`  : '—', color:'#F9C74F', icon:'📈' },
   ];
 
