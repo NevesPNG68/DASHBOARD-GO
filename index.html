@@ -635,32 +635,6 @@ a:hover{text-decoration:underline}
 #chartTip b { font-weight:950; }
 #chartTip .tip-val { font-size:14px; }
 
-/* ===== Mobile: filtros do faturamento mais fáceis de usar ===== */
-@media (max-width: 760px){
-  .ms-pop.open{
-    position:fixed !important;
-    left:10px !important;
-    right:10px !important;
-    top:auto !important;
-    max-height:72vh !important;
-    z-index:10050 !important;
-  }
-  .ms-list{
-    max-height:58vh !important;
-  }
-  .ms-item{
-    padding:12px 14px !important;
-    font-size:14px !important;
-  }
-  .ms-item input{
-    width:18px !important;
-    height:18px !important;
-  }
-  .ms-btn{
-    min-height:44px;
-  }
-}
-
 </style>
 
 <style>
@@ -738,8 +712,6 @@ img, svg, canvas{max-width:100%; height:auto}
   #desp-frame{
     top:108px;
     height:calc(100vh - 108px);
-    overflow:auto;
-    -webkit-overflow-scrolling:touch;
   }
 
   .wrap{padding:16px 10px 28px}
@@ -795,8 +767,6 @@ img, svg, canvas{max-width:100%; height:auto}
   #desp-frame{
     top:104px;
     height:calc(100vh - 104px);
-    overflow:auto;
-    -webkit-overflow-scrolling:touch;
   }
 
   .wrap{padding:14px 8px 22px}
@@ -834,24 +804,6 @@ img, svg, canvas{max-width:100%; height:auto}
   .filters-head .right .btn:first-child{
     grid-column:auto;
   }
-}
-</style>
-
-
-<style id="mobile-fixes-v3">
-@media (max-width: 760px){
-  .ms-pop{
-    position:fixed !important;
-    left:10px !important;
-    right:10px !important;
-    top:118px !important;
-    width:auto !important;
-    max-height:72vh !important;
-    z-index:10050 !important;
-  }
-  .ms-list{padding-bottom:8px}
-  .ms-item{padding:12px 14px}
-  .ms-btn{min-height:44px}
 }
 </style>
 
@@ -946,15 +898,15 @@ img, svg, canvas{max-width:100%; height:auto}
 
     <div id="dropZone" class="drop">
       <!-- Conteúdo inicial: escolha de arquivo -->
-      <div id="dropContent" class="drop-content">
+      <div id="dropContent" class="drop-content hidden-soft">
         <div class="cup">☕</div>
         <div class="h1">Carregue sua planilha</div>
         <div class="p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br/>ou clique para selecionar</div>
-        <div class="p2">Sempre que atualizar a planilha, basta carregar novamente.</div><button type="button" class="boot-btn" onclick="document.getElementById('fileInput').click()">SELECIONAR ARQUIVO</button>
+        <div class="p2">Sempre que atualizar a planilha, basta carregar novamente.</div>
       </div>
 
       <!-- Donut de progresso: aparece após selecionar o arquivo -->
-      <div id="bootProg" class="donut-screen" style="display:none">
+      <div id="bootProg" class="donut-screen visible">
         <div class="donutWrap">
           <svg viewBox="0 0 120 120" width="140" height="140">
             <defs>
@@ -1087,109 +1039,6 @@ const els = {
   btnAplicar: document.getElementById('btnAplicar'),
   fileInput: document.getElementById('fileInput')
 };
-
-const __boot = {
-  wrap: document.getElementById('boot'),
-  drop: document.getElementById('dropZone'),
-  content: document.getElementById('dropContent'),
-  prog: document.getElementById('bootProg'),
-  bar: document.getElementById('donutBar'),
-  pct: document.getElementById('donutPct'),
-  msg: document.getElementById('bootMsg')
-};
-let __lastFileBuffer = null;
-let __lastFileName = '';
-window.__lastFileBuffer = null;
-window.__lastFileName = '';
-const __donutLen = 289;
-function __bootShowChooser(){
-  if(__boot.content) __boot.content.style.display='block';
-  if(__boot.prog) __boot.prog.style.display='none';
-  if(__boot.drop) __boot.drop.classList.remove('processing');
-}
-function __bootShowProgress(){
-  if(__boot.content) __boot.content.style.display='none';
-  if(__boot.prog) __boot.prog.style.display='flex';
-  if(__boot.drop) __boot.drop.classList.add('processing');
-}
-window.__bootSetProg = function(p, msg){
-  __bootShowProgress();
-  const pct = Math.max(0, Math.min(100, Math.round(Number(p)||0)));
-  if(__boot.pct) __boot.pct.textContent = pct + '%';
-  if(__boot.msg) __boot.msg.textContent = msg || 'Lendo arquivo…';
-  if(__boot.bar){
-    const off = __donutLen * (1 - pct/100);
-    __boot.bar.setAttribute('stroke-dasharray', String(__donutLen));
-    __boot.bar.setAttribute('stroke-dashoffset', String(off));
-  }
-};
-window.__bootDone = function(){
-  window.__bootSetProg(100, 'Arquivo carregado');
-  setTimeout(()=>{
-    if(__boot.wrap) __boot.wrap.classList.add('hidden');
-  }, 180);
-};
-if(__boot.drop){
-  __boot.drop.addEventListener('click', function(e){
-    if(e.target.closest('button,a,input')) return;
-    if(els.fileInput) els.fileInput.click();
-  });
-  __boot.drop.addEventListener('dragover', e => { e.preventDefault(); __boot.drop.classList.add('drag'); });
-  __boot.drop.addEventListener('dragleave', () => __boot.drop.classList.remove('drag'));
-  __boot.drop.addEventListener('drop', e => {
-    e.preventDefault();
-    __boot.drop.classList.remove('drag');
-    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if(!f) return;
-    if(els.fileInput){
-      const dt = new DataTransfer();
-      dt.items.add(f);
-      els.fileInput.files = dt.files;
-      els.fileInput.dispatchEvent(new Event('change', {bubbles:true}));
-    }
-  });
-}
-
-__bootShowChooser();
-
-async function autoLoadWorkbookFromGithub(){
-  try{
-    if(window.__autoLoadStarted) return;
-    window.__autoLoadStarted = true;
-    if(window.__bootSetProg) window.__bootSetProg(8, 'Localizando planilha…');
-    const candidates = [
-      'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now(),
-      './DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now()
-    ];
-    let resp = null, lastErr = null;
-    for(const url of candidates){
-      try{
-        resp = await fetch(url, { cache:'no-store' });
-        if(resp && resp.ok) break;
-      }catch(err){ lastErr = err; }
-      resp = null;
-    }
-    if(!resp || !resp.ok) throw (lastErr || new Error('Arquivo não encontrado'));
-    if(window.__bootSetProg) window.__bootSetProg(30, 'Baixando planilha…');
-    const buf = await resp.arrayBuffer();
-    const file = new File([buf], 'DRE GO COFFEE_COMPETENCIA.xlsx', {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    });
-    if(!els.fileInput) throw new Error('Input do arquivo não encontrado');
-    const dt = new DataTransfer();
-    dt.items.add(file);
-    els.fileInput.files = dt.files;
-    els.fileInput.dispatchEvent(new Event('change', { bubbles:true }));
-  }catch(err){
-    console.error('autoLoadWorkbookFromGithub:', err);
-    window.__autoLoadStarted = false;
-    __bootShowChooser();
-    if(__boot.msg) __boot.msg.textContent = 'Não foi possível carregar automaticamente. Toque em SELECIONAR ARQUIVO.';
-  }
-}
-
-setTimeout(autoLoadWorkbookFromGithub, 120);
-
 /* ===== Multi-select (checkbox dropdown) ===== */
 const MS = {};
 
@@ -1279,11 +1128,10 @@ function msRender(id, q=''){
       const v = st.all[i];
       if(v===undefined) return;
       st.selected.has(v) ? st.selected.delete(v) : st.selected.add(v);
-      const currentScroll = st.list.scrollTop;
       msRender(id, st.search.value || '');
-      st.list.scrollTop = currentScroll;
       generate();
-    });
+    if(window.__bootDone) window.__bootDone();
+});
   });
 
   const n = st.selected.size;
@@ -2008,10 +1856,6 @@ els.fileInput.addEventListener('change', (ev)=> {
       if(window.__bootSetProg) window.__bootSetProg(70, 'Processando planilha…');
 
       const buf = reader.result;
-      __lastFileBuffer = buf;
-      __lastFileName = file.name || 'planilha.xlsx';
-      window.__lastFileBuffer = __lastFileBuffer;
-      window.__lastFileName = __lastFileName;
       const wb = XLSX.read(buf, {type:'array'});
       const sh = wb.Sheets['DADOS'] || wb.Sheets[wb.SheetNames[0]];
 
@@ -2078,9 +1922,9 @@ els.fileInput.addEventListener('change', (ev)=> {
           arrayBuffer: buf,
           fileName: file.name
         }, '*');
+        // Enviar também para pagamentos
+        pagLoadFile(buf, file.name);
       }
-      // Enviar também para pagamentos
-      try { pagLoadFile(buf, file.name); } catch(e) {}
 
       setTimeout(()=>{
         setP(100);
@@ -2108,6 +1952,136 @@ generate();
 
 </script>
 
+<script>
+/* === Guard anti about:blank (v17 base) ===
+   Evita ação padrão do visualizador/navegador ao clicar nos filtros.
+   Importante: NÃO bloqueia propagação, só preventDefault.
+*/
+(function(){
+  function isFilterArea(t){
+    return !!(t && t.closest && (t.closest('.ms-btn') || t.closest('.ms-pop') || t.closest('.ms-item') || t.closest('.ms-actions')));
+  }
+  document.addEventListener('mousedown', function(e){
+    if(isFilterArea(e.target)) e.preventDefault();
+  }, true);
+  document.addEventListener('click', function(e){
+    if(isFilterArea(e.target)) e.preventDefault();
+  }, true);
+})();
+
+// ===== Boot screen wiring (v12 - drop → donut real) =====
+(function(){
+  const boot = document.getElementById('boot');
+  const app = document.getElementById('app') || document.getElementById('rec-page') || document.body;
+  const dz = document.getElementById('dropZone');
+  const dropContent = document.getElementById('dropContent');
+  const useEmb = document.getElementById('bootUseEmbedded');
+  const prog = document.getElementById('bootProg');
+  const bar = document.getElementById('donutBar');
+  const pct = document.getElementById('donutPct');
+  const msg = document.getElementById('bootMsg');
+  const realInput = document.getElementById('fileInput');
+
+  const C = 289;
+
+  function setProg(p, m){
+    const clamped = Math.max(0, Math.min(100, p));
+    const off = C * (1 - clamped/100);
+    if(bar) bar.setAttribute('stroke-dashoffset', String(off));
+    if(pct) pct.textContent = `${Math.round(clamped)}%`;
+    if(msg && m) msg.textContent = m;
+  }
+
+  // expõe para o listener do fileInput usar
+  window.__bootSetProg = setProg;
+
+  function showDonut(filename){
+    if(dropContent) dropContent.classList.add('hidden-soft');
+    if(dz) dz.classList.add('processing');
+    if(prog) prog.classList.add('visible');
+    setProg(0, filename ? 'Lendo: ' + filename : 'Lendo arquivo…');
+  }
+
+  window.__bootDone = ()=>{
+    setProg(100, 'Concluído! ✓');
+    setTimeout(()=>{
+      boot.classList.add('hidden');
+      boot.style.display='none';
+      app.style.display='';
+    }, 420);
+  };
+
+  // estado inicial
+  app.style.display='none';
+
+  // quando seleciona o arquivo → mostra donut
+  if(realInput){
+    realInput.addEventListener('change', ()=>{
+      const f = realInput.files?.[0];
+      showDonut(f ? f.name : '');
+    }, true);
+  }
+
+  // Drag & drop funcional
+  dz.addEventListener('dragover', (e)=>{ e.preventDefault(); dz.classList.add('drag'); });
+  dz.addEventListener('dragleave', ()=>{ dz.classList.remove('drag'); });
+  dz.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    dz.classList.remove('drag');
+    const files = e.dataTransfer?.files;
+    if(files && files[0]){
+      try{
+        const dt = new DataTransfer();
+        dt.items.add(files[0]);
+        realInput.files = dt.files;
+        realInput.dispatchEvent(new Event('change', {bubbles:true}));
+      }catch(_){}
+    }
+  });
+
+  if (useEmb) {
+    useEmb.addEventListener('click', ()=>{
+      boot.classList.add('hidden');
+      boot.style.display='none';
+      app.style.display='';
+      generate();
+    });
+  }
+
+  async function autoLoadWorkbook(){
+    try{
+      showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
+      setProg(12, 'Localizando planilha…');
+      const url = 'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now();
+      const resp = await fetch(url, {cache:'no-store'});
+      if(!resp.ok) throw new Error('HTTP ' + resp.status);
+      setProg(38, 'Baixando planilha…');
+      const buf = await resp.arrayBuffer();
+      setProg(62, 'Abrindo planilha…');
+      const file = new File([buf], 'DRE GO COFFEE_COMPETENCIA.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      realInput.files = dt.files;
+      realInput.dispatchEvent(new Event('change', {bubbles:true}));
+    }catch(err){
+      setProg(100, 'Não foi possível localizar a planilha automática.');
+      if(msg) msg.textContent = 'Não foi possível localizar a planilha automática. Verifique se o XLSX está na mesma pasta do index.html no GitHub.';
+      setTimeout(()=>{
+        boot.classList.add('hidden');
+        boot.style.display='none';
+      }, 1400);
+    }
+  }
+
+  autoLoadWorkbook();
+})();
+
+
+
+
+</script>
 
 
 </div>
@@ -2335,38 +2309,8 @@ generate();
     padding:1.25rem;
   }
   .chart-card h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:1rem; }
-  .chart-wrap { position:relative; width:100%; min-height:220px; }
-  .chart-wrap canvas { width:100% !important; }
+  .chart-wrap { position:relative; width:100%; }
   #chart-mensal { max-height:200px !important; }
-
-  @media(max-width:900px){
-    .main { padding:1rem .85rem 2rem; }
-    .topbar { padding:.75rem .85rem; }
-    .filters { width:100%; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:.35rem; }
-    .filter-group { min-width:160px; }
-    #insumos-grid { display:grid !important; grid-template-columns:1fr !important; }
-    #insumos-grid > * { min-width:0 !important; width:100% !important; }
-    .chart-card { padding:1rem; overflow:hidden; }
-    html, body { overflow-x:hidden !important; }
-    canvas { max-width:100% !important; }
-    .main { overflow-x:hidden !important; }
-    .chart-wrap { min-height:240px; }
-    #chart-mensal, #chart-insumos-bar, #chart-linha, #chart-rosca { height:240px !important; max-height:none !important; }
-    #chart-rosca { height:220px !important; }
-    .ms-dropdown {
-      position:fixed;
-      left:10px !important;
-      right:10px !important;
-      top:72px !important;
-      min-width:0 !important;
-      max-width:none !important;
-      width:auto !important;
-      max-height:72vh;
-      z-index:9999;
-    }
-    .ms-list { max-height:54vh; }
-    .table-wrap { overflow:auto; -webkit-overflow-scrolling:touch; }
-  }
 
   /* TABLE */
   .table-card {
@@ -3235,14 +3179,6 @@ function badgeStatus(s) {
 setupUpload();
 // Receber arquivo do dashboard pai via postMessage
 window.addEventListener('message', function(e) {
-  if (e.data &amp;&amp; e.data.type === 'FORCE_RESIZE') {
-    try {
-      setTimeout(() => {
-        Object.values(charts || {}).forEach(ch => { try { ch.resize(); } catch(err) {} });
-      }, 60);
-    } catch(err) {}
-    return;
-  }
   if (e.data &amp;&amp; e.data.type === 'LOAD_FILE' &amp;&amp; e.data.arrayBuffer) {
     try {
       const wb = XLSX.read(e.data.arrayBuffer, { type:'array', cellDates:true });
@@ -3383,7 +3319,8 @@ function pagLoadFile(arrayBuffer, fileName) {
 
     pagPopularFiltros();
     pagRender();
-    pagShowDashboard();
+    document.getElementById('pag-upload-screen').style.display = 'none';
+    document.getElementById('pag-dashboard').style.display = 'block';
   } catch(e) { console.error('Erro pagamentos:', e); }
 }
 
@@ -3591,32 +3528,6 @@ function pagSetupUpload() {
 
 window._pagReady = false;
 </script>
-
-<script>
-window.addEventListener('DOMContentLoaded', function(){
-  try{
-    var boot = document.getElementById('boot');
-    var prog = document.getElementById('bootProg');
-    var content = document.getElementById('dropContent');
-    if (prog) prog.style.display = 'none';
-    if (content) content.style.display = 'block';
-    if (boot) boot.classList.remove('hidden');
-    var df = document.getElementById('desp-frame');
-    if(df){
-      df.addEventListener('load', function(){
-        try{
-          if(window.__lastFileBuffer){
-            df.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: window.__lastFileBuffer, fileName: window.__lastFileName || 'planilha.xlsx' }, '*');
-          }
-          df.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
-        }catch(e){}
-      });
-    }
-    if(!window._pagReady){ try{ pagSetupUpload(); window._pagReady = true; }catch(e){} }
-  }catch(e){}
-});
-</script>
-
 </body>
 </html>
 
@@ -3750,25 +3661,11 @@ function switchTab(tab) {
   }else if(tab==='desp'){
     if(despFrame) despFrame.style.display='block';
     if(tabDesp) tabDesp.className='nav-tab active-desp';
-    if(despFrame && despFrame.contentWindow){
-      try{
-        if(__lastFileBuffer){
-          despFrame.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: __lastFileBuffer, fileName: __lastFileName || 'planilha.xlsx' }, '*');
-        }
-        despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
-        setTimeout(()=>{ try{ despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*'); }catch(e){} }, 250);
-        setTimeout(()=>{ try{ despFrame.contentWindow.dispatchEvent(new Event('resize')); }catch(e){} }, 450);
-      }catch(e){}
-    }
   }else if(tab==='pag'){
     if(pagPage) pagPage.style.display='block';
-    if(tabPag) tabPag.className='nav-tab active-rec';
+    if(tabPag) tabPag.className='nav-tab active-desp';
     if(!window._pagReady){ pagSetupUpload(); window._pagReady = true; }
-    if(__lastFileBuffer && (!window.pagData || !window.pagData.length)){
-      try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx'); }catch(e){}
-    }
-    if(window.pagData && window.pagData.length){ try{ document.getElementById('pag-upload-screen').classList.add('hidden'); document.getElementById('pag-dashboard').classList.remove('hidden'); }catch(e){} pagShowDashboard(); pagRender(); }
-    else { pagShowUpload(); }
+    if(window.pagData && window.pagData.length){ pagShowDashboard(); pagRender(); }
   }
 }
 </script>
@@ -3920,21 +3817,14 @@ function pagPopularFiltros(){
   if(!anoSel || !mesSel) return;
   const anos = [...new Set(window.pagData.map(d => d.anoPgto).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
   anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
-  const combos = window.pagData
-    .filter(d => d && d.mesPgto && d.anoPgto)
-    .map(d => ({ano:String(d.anoPgto).trim(), mes:String(d.mesPgto).trim()}))
-    .sort((a,b)=>{
-      if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
-      return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
-    });
+  const combos = window.pagData.map(d => ({ano:d.anoPgto, mes:d.mesPgto})).sort((a,b)=>{
+    if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
+    return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
+  });
   if(combos.length){
-    const now = new Date();
-    const currentAno = String(now.getFullYear());
-    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    const current = combos.find(c => c.ano === currentAno && c.mes === currentMes);
-    const chosen = current || combos[combos.length-1];
-    pagAnoAtivo = chosen.ano;
-    pagMesAtivo = chosen.mes;
+    const last = combos[combos.length-1];
+    pagAnoAtivo = last.ano;
+    pagMesAtivo = last.mes;
     anoSel.value = pagAnoAtivo;
   }
   pagPopularMesesDoAno();
@@ -3945,11 +3835,7 @@ function pagPopularMesesDoAno(){
   const meses = [...new Set(window.pagData.filter(d => String(d.anoPgto) === String(pagAnoAtivo)).map(d => d.mesPgto).filter(Boolean))]
     .sort((a,b)=>PAG_MONTH_ORDER.indexOf(a)-PAG_MONTH_ORDER.indexOf(b));
   mesSel.innerHTML = meses.map(m => `<option value="${m}">${pagMonthLabel(m)}</option>`).join('');
-  if(!meses.includes(pagMesAtivo)){
-    const now = new Date();
-    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    pagMesAtivo = meses.includes(currentMes) ? currentMes : (meses[meses.length-1] || '');
-  }
+  if(!meses.includes(pagMesAtivo)) pagMesAtivo = meses[meses.length-1] || '';
   mesSel.value = pagMesAtivo;
 }
 function pagFiltrar(){
