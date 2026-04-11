@@ -881,34 +881,6 @@ img, svg, canvas{max-width:100%; height:auto}
 }
 </style>
 
-
-<style id="despesa-scroll-fix-mobile">
-@media (max-width: 760px){
-  html, body{
-    height:auto !important;
-    overflow-y:auto !important;
-  }
-  #desp-frame{
-    position:absolute !important;
-    left:0 !important;
-    right:0 !important;
-    top:108px !important;
-    height:calc(100dvh - 108px) !important;
-    min-height:calc(100dvh - 108px) !important;
-    overflow-y:auto !important;
-    overflow-x:hidden !important;
-    -webkit-overflow-scrolling:touch !important;
-    touch-action:auto !important;
-  }
-}
-@media (max-width: 520px){
-  #desp-frame{
-    top:104px !important;
-    height:calc(100dvh - 104px) !important;
-    min-height:calc(100dvh - 104px) !important;
-  }
-}
-</style>
 </head>
 <body>
 
@@ -3867,6 +3839,42 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 </style>
 
 <script>
+function ensureDespMobileScroll(){
+  var despFrame = document.getElementById('desp-frame');
+  if(!despFrame) return;
+  try{
+    var doc = despFrame.contentDocument || (despFrame.contentWindow && despFrame.contentWindow.document);
+    if(!doc) return;
+    if(!doc.getElementById('mobile-scroll-fix-desp')){
+      var st = doc.createElement('style');
+      st.id = 'mobile-scroll-fix-desp';
+      st.textContent = `
+        html, body { height:auto !important; min-height:100% !important; overflow-x:hidden !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; overscroll-behavior-y:auto !important; touch-action:pan-y !important; }
+        #dashboard, .main { height:auto !important; min-height:0 !important; overflow:visible !important; }
+        .chart-grid, .chart-grid-3, .chart-card, .chart-wrap, .table-wrap { touch-action:pan-y !important; }
+        canvas { touch-action:pan-y !important; }
+      `;
+      doc.head.appendChild(st);
+    }
+    if(doc.body){
+      doc.body.style.overflowY = 'auto';
+      doc.body.style.webkitOverflowScrolling = 'touch';
+      doc.body.style.touchAction = 'pan-y';
+    }
+    var dash = doc.getElementById('dashboard');
+    if(dash){
+      dash.style.height = 'auto';
+      dash.style.minHeight = '0';
+      dash.style.overflow = 'visible';
+    }
+    var main = doc.querySelector('.main');
+    if(main){
+      main.style.height = 'auto';
+      main.style.minHeight = '0';
+      main.style.overflow = 'visible';
+    }
+  }catch(e){}
+}
 function switchTab(tab) {
   var tabRec = document.getElementById('tab-rec');
   var tabDesp = document.getElementById('tab-desp');
@@ -3884,14 +3892,25 @@ function switchTab(tab) {
     if(recPage) recPage.style.display='block';
     if(tabRec) tabRec.className='nav-tab active-rec';
   }else if(tab==='desp'){
-    if(despFrame) despFrame.style.display='block';
+    if(despFrame){
+      despFrame.style.display='block';
+      despFrame.style.overflow='auto';
+      despFrame.style.webkitOverflowScrolling='touch';
+      despFrame.style.touchAction='pan-y';
+    }
     if(tabDesp) tabDesp.className='nav-tab active-desp';
+    ensureDespMobileScroll();
     if(despFrame && despFrame.contentWindow){
       try{
         if(__lastFileBuffer){
           despFrame.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: __lastFileBuffer, fileName: __lastFileName || 'planilha.xlsx' }, '*');
         }
-        [80, 260, 520, 900].forEach(t => setTimeout(()=>{ try{ despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*'); }catch(e){} }, t));
+        [80, 260, 520, 900].forEach(t => setTimeout(()=>{
+          try{
+            ensureDespMobileScroll();
+            despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
+          }catch(e){}
+        }, t));
       }catch(e){}
     }
   }else if(tab==='pag'){
@@ -4238,5 +4257,16 @@ function pagSetupUpload(){
 }
 window._pagReady = false;
 </script>
+
+<script>
+(function(){
+  var df = document.getElementById('desp-frame');
+  if(!df) return;
+  df.addEventListener('load', function(){
+    try{ ensureDespMobileScroll(); }catch(e){}
+  });
+})();
+</script>
+
 </body>
 </html>
