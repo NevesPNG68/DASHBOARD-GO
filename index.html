@@ -1996,9 +1996,23 @@ generate();
   window.__bootSetProg = setProg;
 
   function showDonut(filename){
-    if(dropContent) dropContent.classList.add('hidden-soft');
+    if(boot){
+      boot.classList.remove('hidden');
+      boot.style.display = 'flex';
+      boot.style.visibility = 'visible';
+      boot.style.opacity = '1';
+    }
+    if(dropContent){
+      dropContent.classList.add('hidden-soft');
+      dropContent.style.display = 'none';
+    }
     if(dz) dz.classList.add('processing');
-    if(prog) prog.classList.add('visible');
+    if(prog){
+      prog.classList.add('visible');
+      prog.style.display = 'flex';
+      prog.style.visibility = 'visible';
+      prog.style.opacity = '1';
+    }
     setProg(0, filename ? 'Lendo: ' + filename : 'Lendo arquivo…');
   }
 
@@ -2013,6 +2027,23 @@ generate();
 
   // estado inicial
   app.style.display='none';
+  if(boot){
+    boot.classList.remove('hidden');
+    boot.style.display = 'flex';
+    boot.style.visibility = 'visible';
+    boot.style.opacity = '1';
+  }
+  if(dropContent){
+    dropContent.classList.add('hidden-soft');
+    dropContent.style.display = 'none';
+  }
+  if(prog){
+    prog.classList.add('visible');
+    prog.style.display = 'flex';
+    prog.style.visibility = 'visible';
+    prog.style.opacity = '1';
+  }
+  setProg(3, 'Iniciando leitura…');
 
   // quando seleciona o arquivo → mostra donut
   if(realInput){
@@ -2068,10 +2099,10 @@ generate();
     }catch(err){
       setProg(100, 'Não foi possível localizar a planilha automática.');
       if(msg) msg.textContent = 'Não foi possível localizar a planilha automática. Verifique se o XLSX está na mesma pasta do index.html no GitHub.';
-      setTimeout(()=>{
-        boot.classList.add('hidden');
-        boot.style.display='none';
-      }, 1400);
+      if(boot){
+        boot.classList.remove('hidden');
+        boot.style.display='flex';
+      }
     }
   }
 
@@ -3817,14 +3848,21 @@ function pagPopularFiltros(){
   if(!anoSel || !mesSel) return;
   const anos = [...new Set(window.pagData.map(d => d.anoPgto).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
   anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
-  const combos = window.pagData.map(d => ({ano:d.anoPgto, mes:d.mesPgto})).sort((a,b)=>{
-    if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
-    return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
-  });
+  const combos = window.pagData
+    .filter(d => d && d.mesPgto && d.anoPgto)
+    .map(d => ({ano:String(d.anoPgto).trim(), mes:String(d.mesPgto).trim()}))
+    .sort((a,b)=>{
+      if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
+      return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
+    });
   if(combos.length){
-    const last = combos[combos.length-1];
-    pagAnoAtivo = last.ano;
-    pagMesAtivo = last.mes;
+    const now = new Date();
+    const currentAno = String(now.getFullYear());
+    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
+    const current = combos.find(c => c.ano === currentAno && c.mes === currentMes);
+    const chosen = current || combos[combos.length-1];
+    pagAnoAtivo = chosen.ano;
+    pagMesAtivo = chosen.mes;
     anoSel.value = pagAnoAtivo;
   }
   pagPopularMesesDoAno();
@@ -3835,7 +3873,11 @@ function pagPopularMesesDoAno(){
   const meses = [...new Set(window.pagData.filter(d => String(d.anoPgto) === String(pagAnoAtivo)).map(d => d.mesPgto).filter(Boolean))]
     .sort((a,b)=>PAG_MONTH_ORDER.indexOf(a)-PAG_MONTH_ORDER.indexOf(b));
   mesSel.innerHTML = meses.map(m => `<option value="${m}">${pagMonthLabel(m)}</option>`).join('');
-  if(!meses.includes(pagMesAtivo)) pagMesAtivo = meses[meses.length-1] || '';
+  if(!meses.includes(pagMesAtivo)){
+    const now = new Date();
+    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
+    pagMesAtivo = meses.includes(currentMes) ? currentMes : (meses[meses.length-1] || '');
+  }
   mesSel.value = pagMesAtivo;
 }
 function pagFiltrar(){
