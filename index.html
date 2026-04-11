@@ -1130,7 +1130,6 @@ function msRender(id, q=''){
       st.selected.has(v) ? st.selected.delete(v) : st.selected.add(v);
       msRender(id, st.search.value || '');
       generate();
-    if(window.__bootDone) window.__bootDone();
 });
   });
 
@@ -2018,11 +2017,19 @@ generate();
 
   window.__bootDone = ()=>{
     setProg(100, 'Concluído! ✓');
+    app.style.display='';
+    if(boot){
+      boot.classList.remove('hidden');
+      boot.style.display='flex';
+      boot.style.visibility='visible';
+      boot.style.opacity='1';
+    }
     setTimeout(()=>{
-      boot.classList.add('hidden');
-      boot.style.display='none';
-      app.style.display='';
-    }, 420);
+      if(boot){
+        boot.classList.add('hidden');
+        boot.style.display='none';
+      }
+    }, 1400);
   };
 
   // estado inicial
