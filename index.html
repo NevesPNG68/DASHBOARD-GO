@@ -661,6 +661,32 @@ a:hover{text-decoration:underline}
   }
 }
 
+
+<style id="surgical-mobile-fixes-v6">
+/* ===== ajustes cirúrgicos mobile ===== */
+@media (max-width: 760px){
+  /* faturamento: popup de múltipla escolha mais estável no celular */
+  .ms-pop.open{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    top:118px !important;
+    bottom:88px !important;
+    width:auto !important;
+    max-height:none !important;
+    z-index:10050 !important;
+  }
+  .ms-list{
+    max-height:none !important;
+    min-height:220px;
+    padding-bottom:12px;
+  }
+  .ms-item{
+    min-height:48px;
+    padding:12px 14px !important;
+  }
+  .ms-btn{ min-height:46px; }
+}
 </style>
 
 <style>
@@ -1283,7 +1309,7 @@ function msRender(id, q=''){
   }).join('') : `<div class="ms-item"><div class="txt" style="color:rgba(255,255,255,.55)">Sem opções</div></div>`);
 
   st.list.querySelectorAll('.ms-item[data-i]').forEach(it=>{
-    it.addEventListener('click', (e)=>{
+    const toggle = (e)=>{
       e.stopPropagation();
       const i = Number(it.getAttribute('data-i'));
       const v = st.all[i];
@@ -1292,8 +1318,13 @@ function msRender(id, q=''){
       const currentScroll = st.list.scrollTop;
       msRender(id, st.search.value || '');
       st.list.scrollTop = currentScroll;
-      generate();
-    });
+    };
+    it.addEventListener('click', toggle);
+    const cb = it.querySelector('input[type="checkbox"]');
+    if(cb){
+      cb.addEventListener('click', toggle);
+      cb.addEventListener('change', (e)=>e.preventDefault());
+    }
   });
 
   const n = st.selected.size;
@@ -1979,7 +2010,7 @@ function limpar(){
 }
 
 els.btnLimpar.addEventListener('click', ()=>{ limpar(); });
-els.btnAplicar.addEventListener('click', ()=>{ generate(); });
+els.btnAplicar.addEventListener('click', ()=>{ document.querySelectorAll('.ms-pop.open').forEach(el=>el.classList.remove('open')); generate(); });
 [els.ano,els.mes,els.ds,els.semana,els.faixa].forEach(x=>x.addEventListener('change', generate));
 
 // Upload Excel -> lê aba DADOS
@@ -2363,13 +2394,16 @@ generate();
     .filter-group { min-width:160px; }
     #insumos-grid { display:grid !important; grid-template-columns:1fr !important; }
     #insumos-grid > * { min-width:0 !important; width:100% !important; }
-    .chart-card { padding:1rem; overflow:hidden; }
+    .chart-card { padding:1rem; overflow:hidden; display:flex; flex-direction:column; }
     html, body { overflow-x:hidden !important; }
-    canvas { max-width:100% !important; }
+    body { overflow-y:auto !important; -webkit-overflow-scrolling:touch; }
+    canvas { max-width:100% !important; display:block !important; }
     .main { overflow-x:hidden !important; }
-    .chart-wrap { min-height:240px; }
-    #chart-mensal, #chart-insumos-bar, #chart-linha, #chart-rosca { height:240px !important; max-height:none !important; }
-    #chart-rosca { height:220px !important; }
+    .chart-wrap { min-height:260px !important; height:260px !important; overflow:hidden !important; }
+    #chart-mensal { height:220px !important; max-height:none !important; }
+    #chart-insumos-bar, #chart-linha { height:260px !important; max-height:none !important; }
+    #chart-rosca { height:220px !important; max-height:none !important; }
+    .chart-grid, .chart-grid-3 { grid-template-columns:1fr !important; align-items:start !important; }
     .ms-dropdown {
       position:fixed;
       left:10px !important;
@@ -3254,9 +3288,13 @@ setupUpload();
 window.addEventListener('message', function(e) {
   if (e.data &amp;&amp; e.data.type === 'FORCE_RESIZE') {
     try {
-      setTimeout(() => {
-        Object.values(charts || {}).forEach(ch => { try { ch.resize(); } catch(err) {} });
-      }, 60);
+      const rerender = () => {
+        try { Object.values(charts || {}).forEach(ch => { try { ch.resize(); ch.update('none'); } catch(err) {} }); } catch(err) {}
+        try { if(typeof applyFilters === 'function' && allData &amp;&amp; allData.length){ applyFilters(); } } catch(err) {}
+      };
+      setTimeout(rerender, 60);
+      setTimeout(rerender, 240);
+      setTimeout(rerender, 500);
     } catch(err) {}
     return;
   }
@@ -3772,9 +3810,7 @@ function switchTab(tab) {
         if(__lastFileBuffer){
           despFrame.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: __lastFileBuffer, fileName: __lastFileName || 'planilha.xlsx' }, '*');
         }
-        despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
-        setTimeout(()=>{ try{ despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*'); }catch(e){} }, 250);
-        setTimeout(()=>{ try{ despFrame.contentWindow.dispatchEvent(new Event('resize')); }catch(e){} }, 450);
+        [80, 260, 520, 900].forEach(t => setTimeout(()=>{ try{ despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*'); }catch(e){} }, t));
       }catch(e){}
     }
   }else if(tab==='pag'){
@@ -3784,7 +3820,15 @@ function switchTab(tab) {
     if(__lastFileBuffer && (!window.pagData || !window.pagData.length)){
       try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx'); }catch(e){}
     }
-    if(window.pagData && window.pagData.length){ try{ document.getElementById('pag-upload-screen').classList.add('hidden'); document.getElementById('pag-dashboard').classList.remove('hidden'); }catch(e){} pagShowDashboard(); pagRender(); }
+    if(window.pagData && window.pagData.length){
+      try{
+        document.getElementById('pag-upload-screen').classList.add('hidden');
+        document.getElementById('pag-dashboard').classList.remove('hidden');
+      }catch(e){}
+      if(typeof pagSetCurrentPeriod === 'function'){ try{ pagSetCurrentPeriod(); }catch(e){} }
+      pagShowDashboard();
+      pagRender();
+    }
     else { pagShowUpload(); }
   }
 }
@@ -3892,7 +3936,7 @@ function pagShowUpload(){
   if(up) up.classList.remove('hidden');
   if(dash) dash.classList.add('hidden');
 }
-function pagLoadFile(arrayBuffer){
+function pagLoadFile(arrayBuffer, fileName){
   try{
     const wb = XLSX.read(arrayBuffer, {type:'array', cellDates:true});
     const sheetName = wb.SheetNames.find(n => pagNormalize(n) === 'despesas') || wb.SheetNames.find(n => pagNormalize(n).includes('despesa'));
@@ -3924,6 +3968,7 @@ function pagLoadFile(arrayBuffer){
       });
     }
     pagPopularFiltros();
+    pagSetCurrentPeriod();
     pagShowDashboard();
     pagRender();
   }catch(err){
@@ -3931,12 +3976,9 @@ function pagLoadFile(arrayBuffer){
     alert('Não foi possível ler a aba Despesas da planilha.');
   }
 }
-function pagPopularFiltros(){
+function pagSetCurrentPeriod(){
   const anoSel = document.getElementById('pag-filtro-ano');
   const mesSel = document.getElementById('pag-filtro-mes');
-  if(!anoSel || !mesSel) return;
-  const anos = [...new Set(window.pagData.map(d => d.anoPgto).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
-  anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
   const combos = window.pagData
     .filter(d => d && d.mesPgto && d.anoPgto)
     .map(d => ({ano:String(d.anoPgto).trim(), mes:String(d.mesPgto).trim()}))
@@ -3944,17 +3986,25 @@ function pagPopularFiltros(){
       if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
       return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
     });
-  if(combos.length){
-    const now = new Date();
-    const currentAno = String(now.getFullYear());
-    const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    const current = combos.find(c => c.ano === currentAno && c.mes === currentMes);
-    const chosen = current || combos[combos.length-1];
-    pagAnoAtivo = chosen.ano;
-    pagMesAtivo = chosen.mes;
-    anoSel.value = pagAnoAtivo;
-  }
+  if(!combos.length) return;
+  const now = new Date();
+  const currentAno = String(now.getFullYear());
+  const currentMes = PAG_MONTH_ORDER[now.getMonth()];
+  const current = combos.find(c => c.ano === currentAno && c.mes === currentMes);
+  const chosen = current || combos[combos.length-1];
+  pagAnoAtivo = chosen.ano;
+  pagMesAtivo = chosen.mes;
+  if(anoSel) anoSel.value = pagAnoAtivo;
   pagPopularMesesDoAno();
+  if(mesSel) mesSel.value = pagMesAtivo;
+}
+function pagPopularFiltros(){
+  const anoSel = document.getElementById('pag-filtro-ano');
+  const mesSel = document.getElementById('pag-filtro-mes');
+  if(!anoSel || !mesSel) return;
+  const anos = [...new Set(window.pagData.map(d => d.anoPgto).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+  anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
+  pagSetCurrentPeriod();
 }
 function pagPopularMesesDoAno(){
   const mesSel = document.getElementById('pag-filtro-mes');
