@@ -1149,7 +1149,47 @@ if(__boot.drop){
     }
   });
 }
+
 __bootShowChooser();
+
+async function autoLoadWorkbookFromGithub(){
+  try{
+    if(window.__autoLoadStarted) return;
+    window.__autoLoadStarted = true;
+    if(window.__bootSetProg) window.__bootSetProg(8, 'Localizando planilha…');
+    const candidates = [
+      'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now(),
+      './DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now()
+    ];
+    let resp = null, lastErr = null;
+    for(const url of candidates){
+      try{
+        resp = await fetch(url, { cache:'no-store' });
+        if(resp && resp.ok) break;
+      }catch(err){ lastErr = err; }
+      resp = null;
+    }
+    if(!resp || !resp.ok) throw (lastErr || new Error('Arquivo não encontrado'));
+    if(window.__bootSetProg) window.__bootSetProg(30, 'Baixando planilha…');
+    const buf = await resp.arrayBuffer();
+    const file = new File([buf], 'DRE GO COFFEE_COMPETENCIA.xlsx', {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    if(!els.fileInput) throw new Error('Input do arquivo não encontrado');
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    els.fileInput.files = dt.files;
+    els.fileInput.dispatchEvent(new Event('change', { bubbles:true }));
+  }catch(err){
+    console.error('autoLoadWorkbookFromGithub:', err);
+    window.__autoLoadStarted = false;
+    __bootShowChooser();
+    if(__boot.msg) __boot.msg.textContent = 'Não foi possível carregar automaticamente. Toque em SELECIONAR ARQUIVO.';
+  }
+}
+
+setTimeout(autoLoadWorkbookFromGithub, 120);
+
 /* ===== Multi-select (checkbox dropdown) ===== */
 const MS = {};
 
