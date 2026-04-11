@@ -635,6 +635,32 @@ a:hover{text-decoration:underline}
 #chartTip b { font-weight:950; }
 #chartTip .tip-val { font-size:14px; }
 
+/* ===== Mobile: filtros do faturamento mais fáceis de usar ===== */
+@media (max-width: 760px){
+  .ms-pop.open{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    top:auto !important;
+    max-height:72vh !important;
+    z-index:10050 !important;
+  }
+  .ms-list{
+    max-height:58vh !important;
+  }
+  .ms-item{
+    padding:12px 14px !important;
+    font-size:14px !important;
+  }
+  .ms-item input{
+    width:18px !important;
+    height:18px !important;
+  }
+  .ms-btn{
+    min-height:44px;
+  }
+}
+
 </style>
 
 <style>
@@ -712,6 +738,8 @@ img, svg, canvas{max-width:100%; height:auto}
   #desp-frame{
     top:108px;
     height:calc(100vh - 108px);
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
   }
 
   .wrap{padding:16px 10px 28px}
@@ -767,6 +795,8 @@ img, svg, canvas{max-width:100%; height:auto}
   #desp-frame{
     top:104px;
     height:calc(100vh - 104px);
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
   }
 
   .wrap{padding:14px 8px 22px}
@@ -1128,10 +1158,11 @@ function msRender(id, q=''){
       const v = st.all[i];
       if(v===undefined) return;
       st.selected.has(v) ? st.selected.delete(v) : st.selected.add(v);
+      const currentScroll = st.list.scrollTop;
       msRender(id, st.search.value || '');
+      st.list.scrollTop = currentScroll;
       generate();
-    if(window.__bootDone) window.__bootDone();
-});
+    });
   });
 
   const n = st.selected.size;
@@ -1952,167 +1983,6 @@ generate();
 
 </script>
 
-<script>
-/* === Guard anti about:blank (v17 base) ===
-   Evita ação padrão do visualizador/navegador ao clicar nos filtros.
-   Importante: NÃO bloqueia propagação, só preventDefault.
-*/
-(function(){
-  function isFilterArea(t){
-    return !!(t && t.closest && (t.closest('.ms-btn') || t.closest('.ms-pop') || t.closest('.ms-item') || t.closest('.ms-actions')));
-  }
-  document.addEventListener('mousedown', function(e){
-    if(isFilterArea(e.target)) e.preventDefault();
-  }, true);
-  document.addEventListener('click', function(e){
-    if(isFilterArea(e.target)) e.preventDefault();
-  }, true);
-})();
-
-// ===== Boot screen wiring (v12 - drop → donut real) =====
-(function(){
-  const boot = document.getElementById('boot');
-  const app = document.getElementById('app') || document.getElementById('rec-page') || document.body;
-  const dz = document.getElementById('dropZone');
-  const dropContent = document.getElementById('dropContent');
-  const useEmb = document.getElementById('bootUseEmbedded');
-  const prog = document.getElementById('bootProg');
-  const bar = document.getElementById('donutBar');
-  const pct = document.getElementById('donutPct');
-  const msg = document.getElementById('bootMsg');
-  const realInput = document.getElementById('fileInput');
-
-  const C = 289;
-
-  function setProg(p, m){
-    const clamped = Math.max(0, Math.min(100, p));
-    const off = C * (1 - clamped/100);
-    if(bar) bar.setAttribute('stroke-dashoffset', String(off));
-    if(pct) pct.textContent = `${Math.round(clamped)}%`;
-    if(msg && m) msg.textContent = m;
-  }
-
-  // expõe para o listener do fileInput usar
-  window.__bootSetProg = setProg;
-
-  function showDonut(filename){
-    if(boot){
-      boot.classList.remove('hidden');
-      boot.style.display = 'flex';
-      boot.style.visibility = 'visible';
-      boot.style.opacity = '1';
-    }
-    if(dropContent){
-      dropContent.classList.add('hidden-soft');
-      dropContent.style.display = 'none';
-    }
-    if(dz) dz.classList.add('processing');
-    if(prog){
-      prog.classList.add('visible');
-      prog.style.display = 'flex';
-      prog.style.visibility = 'visible';
-      prog.style.opacity = '1';
-    }
-    setProg(0, filename ? 'Lendo: ' + filename : 'Lendo arquivo…');
-  }
-
-  window.__bootDone = ()=>{
-    setProg(100, 'Concluído! ✓');
-    setTimeout(()=>{
-      boot.classList.add('hidden');
-      boot.style.display='none';
-      app.style.display='';
-    }, 420);
-  };
-
-  // estado inicial
-  app.style.display='none';
-  if(boot){
-    boot.classList.remove('hidden');
-    boot.style.display = 'flex';
-    boot.style.visibility = 'visible';
-    boot.style.opacity = '1';
-  }
-  if(dropContent){
-    dropContent.classList.add('hidden-soft');
-    dropContent.style.display = 'none';
-  }
-  if(prog){
-    prog.classList.add('visible');
-    prog.style.display = 'flex';
-    prog.style.visibility = 'visible';
-    prog.style.opacity = '1';
-  }
-  setProg(3, 'Iniciando leitura…');
-
-  // quando seleciona o arquivo → mostra donut
-  if(realInput){
-    realInput.addEventListener('change', ()=>{
-      const f = realInput.files?.[0];
-      showDonut(f ? f.name : '');
-    }, true);
-  }
-
-  // Drag & drop funcional
-  dz.addEventListener('dragover', (e)=>{ e.preventDefault(); dz.classList.add('drag'); });
-  dz.addEventListener('dragleave', ()=>{ dz.classList.remove('drag'); });
-  dz.addEventListener('drop', (e)=>{
-    e.preventDefault();
-    dz.classList.remove('drag');
-    const files = e.dataTransfer?.files;
-    if(files && files[0]){
-      try{
-        const dt = new DataTransfer();
-        dt.items.add(files[0]);
-        realInput.files = dt.files;
-        realInput.dispatchEvent(new Event('change', {bubbles:true}));
-      }catch(_){}
-    }
-  });
-
-  if (useEmb) {
-    useEmb.addEventListener('click', ()=>{
-      boot.classList.add('hidden');
-      boot.style.display='none';
-      app.style.display='';
-      generate();
-    });
-  }
-
-  async function autoLoadWorkbook(){
-    try{
-      showDonut('DRE GO COFFEE_COMPETENCIA.xlsx');
-      setProg(12, 'Localizando planilha…');
-      const url = 'DRE%20GO%20COFFEE_COMPETENCIA.xlsx?v=' + Date.now();
-      const resp = await fetch(url, {cache:'no-store'});
-      if(!resp.ok) throw new Error('HTTP ' + resp.status);
-      setProg(38, 'Baixando planilha…');
-      const buf = await resp.arrayBuffer();
-      setProg(62, 'Abrindo planilha…');
-      const file = new File([buf], 'DRE GO COFFEE_COMPETENCIA.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      });
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      realInput.files = dt.files;
-      realInput.dispatchEvent(new Event('change', {bubbles:true}));
-    }catch(err){
-      setProg(100, 'Não foi possível localizar a planilha automática.');
-      if(msg) msg.textContent = 'Não foi possível localizar a planilha automática. Verifique se o XLSX está na mesma pasta do index.html no GitHub.';
-      if(boot){
-        boot.classList.remove('hidden');
-        boot.style.display='flex';
-      }
-    }
-  }
-
-  autoLoadWorkbook();
-})();
-
-
-
-
-</script>
 
 
 </div>
@@ -2340,8 +2210,34 @@ generate();
     padding:1.25rem;
   }
   .chart-card h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:1rem; }
-  .chart-wrap { position:relative; width:100%; }
+  .chart-wrap { position:relative; width:100%; min-height:220px; }
+  .chart-wrap canvas { width:100% !important; }
   #chart-mensal { max-height:200px !important; }
+
+  @media(max-width:900px){
+    .main { padding:1rem .85rem 2rem; }
+    .topbar { padding:.75rem .85rem; }
+    .filters { width:100%; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:.35rem; }
+    .filter-group { min-width:160px; }
+    #insumos-grid { grid-template-columns:1fr !important; }
+    .chart-card { padding:1rem; overflow:hidden; }
+    .chart-wrap { min-height:240px; }
+    #chart-mensal, #chart-insumos-bar, #chart-linha, #chart-rosca { height:240px !important; max-height:none !important; }
+    #chart-rosca { height:220px !important; }
+    .ms-dropdown {
+      position:fixed;
+      left:10px !important;
+      right:10px !important;
+      top:72px !important;
+      min-width:0 !important;
+      max-width:none !important;
+      width:auto !important;
+      max-height:72vh;
+      z-index:9999;
+    }
+    .ms-list { max-height:54vh; }
+    .table-wrap { overflow:auto; -webkit-overflow-scrolling:touch; }
+  }
 
   /* TABLE */
   .table-card {
@@ -3210,6 +3106,14 @@ function badgeStatus(s) {
 setupUpload();
 // Receber arquivo do dashboard pai via postMessage
 window.addEventListener('message', function(e) {
+  if (e.data &amp;&amp; e.data.type === 'FORCE_RESIZE') {
+    try {
+      setTimeout(() => {
+        Object.values(charts || {}).forEach(ch => { try { ch.resize(); } catch(err) {} });
+      }, 60);
+    } catch(err) {}
+    return;
+  }
   if (e.data &amp;&amp; e.data.type === 'LOAD_FILE' &amp;&amp; e.data.arrayBuffer) {
     try {
       const wb = XLSX.read(e.data.arrayBuffer, { type:'array', cellDates:true });
@@ -3692,6 +3596,13 @@ function switchTab(tab) {
   }else if(tab==='desp'){
     if(despFrame) despFrame.style.display='block';
     if(tabDesp) tabDesp.className='nav-tab active-desp';
+    if(despFrame && despFrame.contentWindow){
+      try{
+        despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
+        setTimeout(()=>{ try{ despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*'); }catch(e){} }, 250);
+        setTimeout(()=>{ try{ despFrame.contentWindow.dispatchEvent(new Event('resize')); }catch(e){} }, 450);
+      }catch(e){}
+    }
   }else if(tab==='pag'){
     if(pagPage) pagPage.style.display='block';
     if(tabPag) tabPag.className='nav-tab active-desp';
