@@ -2918,7 +2918,7 @@ generate();
 // ══════════════════════════════════════════════════
 let allData = [];
 let filteredData = [];
-let receitaData = [];
+let revenueData = [];
 let charts = {};
 
 const INSUMOS_GROUPS = [&#x27;CAFÉ&#x27;,&#x27;BEBIDAS&#x27;,&#x27;SALGADOS&#x27;,&#x27;DOCES&#x27;,&#x27;INSUMOS&#x27;,&#x27;LEITE&#x27;];
@@ -2990,7 +2990,6 @@ function loadFile(file) {
   reader.onload = e =&gt; {
     try {
       const wb = XLSX.read(e.target.result, { type:&#x27;array&#x27;, cellDates:true });
-      parseReceitaSheet(wb);
 
       // Busca flexível pela aba Despesas (ignora emoji, espaços, acentos, maiúsculas)
       const normalize = s =&gt; s.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]/gu,&#x27;&#x27;).trim().toLowerCase().normalize(&#x27;NFD&#x27;).replace(/[\u0300-\u036f]/g,&#x27;&#x27;);
@@ -3050,6 +3049,7 @@ function loadFile(file) {
       }
 
       if(allData.length === 0) { alert(&#x27;Nenhum dado encontrado na aba Despesas!&#x27;); return; }
+      revenueData = parseRevenueSheet(wb);
 
       populateFilters();
       applyFilters();
@@ -3065,172 +3065,68 @@ function loadFile(file) {
 }
 
 
-
-function parseReceitaSheet(wb){
-  receitaData = [];
-  try{
-    const sh = wb.Sheets['DADOS'] || wb.Sheets[wb.SheetNames[0]];
-    if(!sh) return;
-
-    const rows = XLSX.utils.sheet_to_json(sh, {defval:''});
-    const rawRows = XLSX.utils.sheet_to_json(sh, {header:1, defval:''});
-
-    const pick = (obj, keys)=> {
-      for(const k of keys){
-        if(obj[k]!==undefined && obj[k]!==null && String(obj[k]).trim()!=='') return obj[k];
-      }
-      return '';
-    };
-
-    const pushReceita = (mes, ano, total)=>{
-      const y = Number(String(ano||'').replace(/\D/g,''));
-      let num = 0;
-      if(typeof total === 'number') num = total;
-      else {
-        const s = String(total).replace(/\s/g,'').replace(/R\$/g,'');
-        num = Number(s.replace(/\./g,'').replace(/,/g,'.')) || 0;
-      }
-      if(!mes || !y || !num) return;
-      receitaData.push({ mes: String(mes).trim(), ano: String(y), total: num });
-    };
-
-    const parseMesAno = (val)=>{
-      const s0 = String(val || '').trim();
-      if(!s0) return null;
-      const s = s0.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-
-      let mm = 0, yy = 0;
-      const map = {
-        jan:1, janeiro:1,
-        fev:2, fevereiro:2,
-        mar:3, marco:3, março:3,
-        abr:4, abril:4,
-        mai:5, maio:5,
-        jun:6, junho:6,
-        jul:7, julho:7,
-        ago:8, agosto:8,
-        set:9, setembro:9,
-        out:10, outubro:10,
-        nov:11, novembro:11,
-        dez:12, dezembro:12
-      };
-
-      const lower = s.toLowerCase();
-      const parts = lower.split(/[\/\-\s]+/).filter(Boolean);
-      for(const p of parts){ if(map[p]){ mm = map[p]; break; } }
-      const yearMatch = lower.match(/(20\d{2}|\d{2})/g);
-      if(yearMatch && yearMatch.length){
-        const y = Number(yearMatch[yearMatch.length-1]);
-        yy = y < 100 ? 2000 + y : y;
-      }
-
-      if(!mm){
-        const m = lower.match(/^(\d{1,2})[\/\-](20\d{2}|\d{2})$/);
-        if(m){
-          mm = Number(m[1]);
-          const y = Number(m[2]);
-          yy = y < 100 ? 2000 + y : y;
-        }
-      }
-
-      if(mm && yy) return { mes: Object.keys(map).find(k => map[k]===mm && k.length===3).replace('mar','Mar').replace('jan','Jan').replace('fev','Fev').replace('abr','Abr').replace('mai','Mai').replace('jun','Jun').replace('jul','Jul').replace('ago','Ago').replace('set','Set').replace('out','Out').replace('nov','Nov').replace('dez','Dez') + '/' + String(yy).slice(-2), ano: yy };
-      return null;
-    };
-
-    for(const r of rows){
-      const data = pick(r, ['date','DATA','Data','DATA ','DATA DA ORDEM','Data da Ordem','DATA DA ORDEM ']);
-      const faixa = pick(r, ['faixa','FAIXA','Faixa','FAIXA DE HORA','FAIXA HORA','T']);
-      const total = pick(r, ['total','Total','TOTAL','Valor','V','LIQUIDO','Líquido','VLR LIQ','VALOR LÍQUIDO','Valor Líquido','VALOR LIQUIDO']);
-      const mesCompet = pick(r, ['mes','MÊS','MES','Mês','Competência','COMPETENCIA','Competencia','U']);
-
-      let iso = '';
-      if(typeof data === 'number'){
-        const dtc = XLSX.SSF.parse_date_code(data);
-        if(dtc) iso = `${dtc.y}-${String(dtc.m).padStart(2,'0')}-${String(dtc.d).padStart(2,'0')}`;
-      } else {
-        const s = String(data).trim();
-        const m = s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-        if(m) iso = `${m[3]}-${m[2]}-${m[1]}`;
-        else if(/^\d{4}-\d{2}-\d{2}$/.test(s)) iso = s;
-      }
-
-      if(iso && faixa){
-        const dt = new Date(iso+'T00:00:00');
-        if(!isNaN(dt)) pushReceita(monthLabelPt(dt), dt.getFullYear(), total);
-        continue;
-      }
-
-      const ma = parseMesAno(mesCompet);
-      if(ma) pushReceita(ma.mes, ma.ano, total);
-    }
-
-    if(!receitaData.length && rawRows && rawRows.length){
-      for(const row of rawRows){
-        if(!row || !row.length) continue;
-        const mesCompet = row[20] || row[21] || row[19] || '';
-        const total = row[21] || row[22] || row[20] || '';
-        const ma = parseMesAno(mesCompet);
-        if(ma) pushReceita(ma.mes, ma.ano, total);
-      }
-    }
-  }catch(err){ console.error('Erro ao ler aba DADOS para CMV:', err); }
+function parseBRLAny(v){
+  if (typeof v === &#x27;number&#x27;) return v || 0;
+  const s = String(v ?? &#x27;&#x27;).replace(/\s/g,&#x27;&#x27;).replace(/R\$/gi,&#x27;&#x27;);
+  return Number(s.replace(/\./g,&#x27;&#x27;).replace(/,/g,&#x27;.&#x27;)) || 0;
 }
-
-function cmvMonthNum(v){
-  const s = String(v || '').trim().toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  if(!s) return 0;
-  if(s.startsWith('jan')) return 1;
-  if(s.startsWith('fev')) return 2;
-  if(s.startsWith('mar')) return 3;
-  if(s.startsWith('abr')) return 4;
-  if(s.startsWith('mai')) return 5;
-  if(s.startsWith('jun')) return 6;
-  if(s.startsWith('jul')) return 7;
-  if(s.startsWith('ago')) return 8;
-  if(s.startsWith('set')) return 9;
-  if(s.startsWith('out')) return 10;
-  if(s.startsWith('nov')) return 11;
-  if(s.startsWith('dez')) return 12;
-  return 0;
-}
-
-function cmvYearNum(rec){
-  const anoRaw = String(rec?.ano || '').trim();
-  if(/^\d{4}$/.test(anoRaw)) return Number(anoRaw);
-  if(/^\d{2}$/.test(anoRaw)) return 2000 + Number(anoRaw);
-
-  const mesRaw = String(rec?.mes || '').trim();
-  const m = mesRaw.match(/\/(\d{2,4})$/);
-  if(m){
-    const y = Number(m[1]);
-    return y < 100 ? 2000 + y : y;
+function toIsoFromAnyDate(v){
+  if (v instanceof Date &amp;&amp; !isNaN(v)) {
+    return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,&#x27;0&#x27;)}-${String(v.getDate()).padStart(2,&#x27;0&#x27;)}`;
   }
-  return 0;
+  if (typeof v === &#x27;number&#x27;) {
+    const d = XLSX.SSF.parse_date_code(v);
+    if (d) return `${d.y}-${String(d.m).padStart(2,&#x27;0&#x27;)}-${String(d.d).padStart(2,&#x27;0&#x27;)}`;
+  }
+  const s = String(v ?? &#x27;&#x27;).trim();
+  let m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return s;
+  return &#x27;&#x27;;
 }
-
-function getReceitaPeriodoTotal(){
-  try{
-    const periodKeys = new Set(
-      filteredData
-        .map(d =&gt; {
-          const y = cmvYearNum(d);
-          const m = cmvMonthNum(d?.mes);
-          return (y &amp;&amp; m) ? `${y}-${String(m).padStart(2,'0')}` : '';
-        })
-        .filter(Boolean)
-    );
-    if(!periodKeys.size) return 0;
-
-    return receitaData
-      .filter(r =&gt; {
-        const y = cmvYearNum(r);
-        const m = cmvMonthNum(r?.mes);
-        if(!y || !m) return false;
-        return periodKeys.has(`${y}-${String(m).padStart(2,'0')}`);
-      })
-      .reduce((s,r) =&gt; s + (Number(r.total) || 0), 0);
-  }catch(err){ return 0; }
+function parseRevenueSheet(wb){
+  const norm = s =&gt; String(s||&#x27;&#x27;).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]/gu,&#x27;&#x27;).trim().toLowerCase().normalize(&#x27;NFD&#x27;).replace(/[\u0300-\u036f]/g,&#x27;&#x27;);
+  const sheetName = wb.SheetNames.find(n =&gt; norm(n)===&#x27;dados&#x27;) || wb.SheetNames.find(n =&gt; norm(n).includes(&#x27;dados&#x27;)) || wb.SheetNames[0];
+  if(!sheetName) return [];
+  const ws = wb.Sheets[sheetName];
+  const rows = XLSX.utils.sheet_to_json(ws, {defval:&#x27;&#x27;});
+  const pick = (obj, keys) =&gt; {
+    for(const k of keys){
+      if(obj[k] !== undefined &amp;&amp; obj[k] !== null &amp;&amp; String(obj[k]).trim() !== &#x27;&#x27;) return obj[k];
+    }
+    return &#x27;&#x27;;
+  };
+  const out = [];
+  for(const r of rows){
+    const data = pick(r, [&#x27;date&#x27;,&#x27;DATA&#x27;,&#x27;Data&#x27;,&#x27;DATA &#x27;,&#x27;DATA DA ORDEM&#x27;,&#x27;Data da Ordem&#x27;,&#x27;DATA DA ORDEM &#x27;]);
+    const total = pick(r, [&#x27;total&#x27;,&#x27;Total&#x27;,&#x27;TOTAL&#x27;,&#x27;Valor&#x27;,&#x27;V&#x27;,&#x27;LIQUIDO&#x27;,&#x27;Líquido&#x27;,&#x27;VLR LIQ&#x27;]);
+    const iso = toIsoFromAnyDate(data);
+    if(!iso) continue;
+    const dt = new Date(iso + &#x27;T00:00:00&#x27;);
+    if(isNaN(dt)) continue;
+    out.push({
+      date: iso,
+      ano: String(dt.getFullYear()),
+      mesNumero: dt.getMonth() + 1,
+      total: parseBRLAny(total)
+    });
+  }
+  return out;
+}
+function revenueInSelectedPeriod(){
+  const anosSel = (msState.ano || []).map(v =&gt; String(v).trim());
+  const mesesSel = (msState.mes || []).map(v =&gt; String(v).trim());
+  const monthMap = {
+    &#x27;Janeiro&#x27;:1,&#x27;Fevereiro&#x27;:2,&#x27;Março&#x27;:3,&#x27;Abril&#x27;:4,&#x27;Maio&#x27;:5,&#x27;Junho&#x27;:6,
+    &#x27;Julho&#x27;:7,&#x27;Agosto&#x27;:8,&#x27;Setembro&#x27;:9,&#x27;Outubro&#x27;:10,&#x27;Novembro&#x27;:11,&#x27;Dezembro&#x27;:12
+  };
+  const mesesNumeros = mesesSel.map(m =&gt; monthMap[m]).filter(Boolean);
+  return revenueData.filter(r =&gt; {
+    const anoOk = !anosSel.length || anosSel.includes(String(r.ano).trim());
+    const mesOk = !mesesNumeros.length || mesesNumeros.includes(Number(r.mesNumero));
+    return anoOk &amp;&amp; mesOk;
+  }).reduce((s,r)=&gt;s + (Number(r.total)||0), 0);
 }
 
 // ══════════════════════════════════════════════════
@@ -3333,20 +3229,21 @@ function renderKPIs() {
   const total    = filteredData.reduce((s,d)=&gt;s+d.total,0);
   const insData  = filteredData.filter(d =&gt; INSUMOS_GROUPS.includes(d.grupo));
   const insTotal = insData.reduce((s,d)=&gt;s+d.total,0);
-  const faturPeriodo = getReceitaPeriodoTotal();
-  const pctCmv = faturPeriodo &gt; 0 ? (insTotal / faturPeriodo) * 100 : 0;
+  const receitaPeriodo = revenueInSelectedPeriod();
+  const cmv = insTotal;
+  const pctCmv = receitaPeriodo &gt; 0 ? (cmv / receitaPeriodo * 100) : 0;
+  const meses_n  = new Set(filteredData.map(d=&gt;d.mes+d.ano)).size;
   const itens_n  = filteredData.length;
 
-  // KPIs principais
   const kpis = [
-    { label:&#x27;Total Despesas&#x27;, value: fmtBRL(total),         sub: `${itens_n} lançamentos`,                          color:&#x27;var(--accent)&#x27;,  icon:&#x27;💰&#x27; },
-    { label:&#x27;Total Insumos&#x27;,  value: fmtBRL(insTotal),       sub: `${(insTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
-    { label:&#x27;CMV&#x27;,            value: fmtBRL(insTotal),       sub: faturPeriodo &gt; 0 ? `Receita do período: ${fmtBRL(faturPeriodo)}` : &#x27;Receita do período: R$ 0,00&#x27;, color:&#x27;#7ec83a&#x27;, icon:&#x27;📦&#x27;, bg:&#x27;linear-gradient(180deg, rgba(126,200,58,.18), rgba(126,200,58,.06))&#x27;, border:&#x27;rgba(126,200,58,.35)&#x27; },
-    { label:&#x27;% CMV&#x27;,          value: `${pctCmv.toFixed(1)}%`,sub: faturPeriodo &gt; 0 ? &#x27;CMV ÷ faturamento do período&#x27; : &#x27;0% sem receita no período&#x27;, color:&#x27;#9eea4d&#x27;, icon:&#x27;📊&#x27;, bg:&#x27;linear-gradient(180deg, rgba(158,234,77,.18), rgba(158,234,77,.06))&#x27;, border:&#x27;rgba(158,234,77,.35)&#x27; },
+    { label:&#x27;Total Despesas&#x27;, value: fmtBRL(total),   sub: `${itens_n} lançamentos`, color:&#x27;var(--accent)&#x27;,  icon:&#x27;💰&#x27; },
+    { label:&#x27;Total Insumos&#x27;,  value: fmtBRL(insTotal), sub: `${(insTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
+    { label:&#x27;CMV&#x27;,            value: fmtBRL(cmv), sub: `Receita do período: ${fmtBRL(receitaPeriodo)}`, color:&#x27;#7ec83a&#x27;, icon:&#x27;📦&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
+    { label:&#x27;% CMV&#x27;,          value: `${pctCmv.toFixed(1)}%`, sub: receitaPeriodo&gt;0 ? `${fmtBRL(cmv)} ÷ ${fmtBRL(receitaPeriodo)}` : &#x27;0% sem receita no período&#x27;, color:&#x27;#7ec83a&#x27;, icon:&#x27;📊&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
   ];
 
   document.getElementById(&#x27;kpi-row&#x27;).innerHTML = kpis.map(k =&gt; `
-    &lt;div class=&quot;kpi-card&quot; style=&quot;--kpi-color:${k.color};${k.bg ? `background:${k.bg};border-color:${k.border||&#x27;var(--border)&#x27;};` : &#x27;&#x27;}&quot;&gt;
+    &lt;div class=&quot;kpi-card ${k.extraClass||&#x27;&#x27;}&quot; style=&quot;--kpi-color:${k.color};${k.extraClass ? &#x27;background:linear-gradient(135deg, rgba(126,200,58,.18), rgba(163,255,18,.10));border-color:rgba(163,255,18,.45);&#x27; : &#x27;&#x27;}&quot;&gt;
       &lt;div class=&quot;kpi-label&quot;&gt;${k.label}&lt;/div&gt;
       &lt;div class=&quot;kpi-value&quot;&gt;${k.value}&lt;/div&gt;
       &lt;div class=&quot;kpi-sub&quot;&gt;${k.sub}&lt;/div&gt;
@@ -3354,7 +3251,6 @@ function renderKPIs() {
     &lt;/div&gt;
   `).join(&#x27;&#x27;);
 
-  // KPIs de tipo de custo
   const fixo     = filteredData.filter(d=&gt;d.ccusto===&#x27;FIXO&#x27;).reduce((s,d)=&gt;s+d.total,0);
   const fixoVar  = filteredData.filter(d=&gt;d.ccusto===&#x27;FIXO/VARIÁVEL&#x27;).reduce((s,d)=&gt;s+d.total,0);
   const variavel = filteredData.filter(d=&gt;d.ccusto===&#x27;VARIÁVEL&#x27;).reduce((s,d)=&gt;s+d.total,0);
@@ -3731,7 +3627,6 @@ window.addEventListener(&#x27;message&#x27;, function(e) {
   if (e.data &amp;&amp; e.data.type === &#x27;LOAD_FILE&#x27; &amp;&amp; e.data.arrayBuffer) {
     try {
       const wb = XLSX.read(e.data.arrayBuffer, { type:&#x27;array&#x27;, cellDates:true });
-      parseReceitaSheet(wb);
       const normalize = s =&gt; s.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]/gu,&#x27;&#x27;).trim().toLowerCase().normalize(&#x27;NFD&#x27;).replace(/[\u0300-\u036f]/g,&#x27;&#x27;);
       const sheetName = wb.SheetNames.find(n =&gt; normalize(n) === &#x27;despesas&#x27;) || wb.SheetNames.find(n =&gt; normalize(n).includes(&#x27;despesa&#x27;));
       if (!sheetName) return;
@@ -3762,6 +3657,7 @@ window.addEventListener(&#x27;message&#x27;, function(e) {
         allData.push({ dateStr, mes, ano, qtd, item, grupo, fornec, ccusto, vlrUnit, total, status });
       }
       if(allData.length === 0) return;
+      revenueData = parseRevenueSheet(wb);
       populateFilters();
       applyFilters();
       document.getElementById(&#x27;upload-screen&#x27;).style.display = &#x27;none&#x27;;
