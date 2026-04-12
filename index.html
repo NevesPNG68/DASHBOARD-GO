@@ -3252,6 +3252,8 @@ function renderKPIs() {
   const cmv = insTotal;
   const pctCmv = receitaPeriodo &gt; 0 ? (cmv / receitaPeriodo * 100) : 0;
   const mkp = (receitaPeriodo &gt; 0 &amp;&amp; cmv &gt; 0) ? (receitaPeriodo / cmv) : 0;
+  const mkpColor = mkp &gt; 2.4 ? &#x27;#a3ff12&#x27; : &#x27;#ff4d4f&#x27;;
+  const pctCmvColor = pctCmv &lt;= 35 ? &#x27;#a3ff12&#x27; : &#x27;#ff4d4f&#x27;;
   const meses_n  = new Set(filteredData.map(d=&gt;d.mes+d.ano)).size;
   const itens_n  = filteredData.length;
 
@@ -3259,8 +3261,8 @@ function renderKPIs() {
     { label:&#x27;Total Despesas&#x27;, value: fmtBRL(total),   sub: `${itens_n} lançamentos`, color:&#x27;var(--accent)&#x27;,  icon:&#x27;💰&#x27; },
     { label:&#x27;Total Insumos&#x27;,  value: fmtBRL(insTotal), sub: `${(insTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
     { label:&#x27;CMV&#x27;,            value: fmtBRL(cmv), sub: `Receita do período: ${fmtBRL(receitaPeriodo)}`, color:&#x27;#a3ff12&#x27;, icon:&#x27;📦&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
-    { label:&#x27;% CMV&#x27;,          value: `${pctCmv.toFixed(1)}%`, sub: receitaPeriodo&gt;0 ? `${fmtBRL(cmv)} ÷ ${fmtBRL(receitaPeriodo)}` : &#x27;0% sem receita no período&#x27;, color:&#x27;#ff3db8&#x27;, icon:&#x27;📊&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
-    { label:&#x27;MKP&#x27;,            value: mkp.toFixed(2), sub: receitaPeriodo&gt;0 ? `${fmtBRL(receitaPeriodo)} ÷ ${fmtBRL(cmv)}` : &#x27;0 sem receita no período&#x27;, color:&#x27;#ff3db8&#x27;, icon:&#x27;📈&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
+    { label:&#x27;% CMV&#x27;,          value: `&lt;span style=&quot;color:${pctCmvColor};font-weight:900&quot;&gt;${pctCmv.toFixed(1)}%&lt;/span&gt;`, sub: receitaPeriodo&gt;0 ? `${fmtBRL(cmv)} ÷ ${fmtBRL(receitaPeriodo)}` : &#x27;0% sem receita no período&#x27;, color:&#x27;#ff3db8&#x27;, icon:&#x27;📊&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
+    { label:&#x27;MKP&#x27;,            value: `&lt;span style=&quot;color:${mkpColor};font-weight:900&quot;&gt;${mkp.toFixed(2)}&lt;/span&gt;`, sub: receitaPeriodo&gt;0 ? `${fmtBRL(receitaPeriodo)} ÷ ${fmtBRL(cmv)}` : &#x27;0 sem receita no período&#x27;, color:&#x27;#ff3db8&#x27;, icon:&#x27;📈&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
   ];
 
   document.getElementById(&#x27;kpi-row&#x27;).innerHTML = kpis.map(k =&gt; `
