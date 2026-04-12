@@ -879,6 +879,8 @@ img, svg, canvas{max-width:100%; height:auto}
   .ms-item{padding:12px 14px}
   .ms-btn{min-height:44px}
 }
+
+#btnAplicar{display:none !important;}
 </style>
 
 
@@ -894,6 +896,7 @@ img, svg, canvas{max-width:100%; height:auto}
   transition:opacity .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
 }
 .legend-toggle .l-item:hover{ filter:brightness(1.08); }
+.legend-toggle .l-item *{ pointer-events:none; }
 .legend-toggle .l-item.is-off{
   opacity:.45;
   background:rgba(255,255,255,.015);
@@ -1305,7 +1308,7 @@ function msInit(id, label){
         </div>
       </div>
       <div class="ms-list"></div>
-      <div class="ms-foot">Marque várias opções e depois clique em <b>Aplicar</b>.</div>
+      <div class="ms-foot">Marque as opções desejadas.</div>
     </div>
   `;
 
@@ -1321,8 +1324,8 @@ function msInit(id, label){
 
   MS[id] = { selected:new Set(), all:[], root, pop, list, search, hint };
 
-  root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); });
-  root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); });
+  root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); generate(); });
+  root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); generate(); });
 
   search.addEventListener('click', (e)=>e.stopPropagation());
   search.addEventListener('input', ()=> msRender(id, search.value));
@@ -1378,6 +1381,7 @@ function msRender(id, q=''){
       if(window.innerWidth <= 760){
         st.pop.classList.remove('open');
       }
+      generate();
     };
     it.addEventListener('click', toggle);
     const cb = it.querySelector('input[type="checkbox"]');
@@ -1768,7 +1772,7 @@ data-td="${d.weekday}" data-tv="${tipVal}" data-to="${tipFat}" data-tc="${tipCol
   const pieSvg = `
   <div class="chart-card">
     <div class="chart-title"><span>Faturamento • Dias da semana</span><span class="pink">${moneyBR(wkTotal)}</span></div>
-    <div class="chart-sub">Distribuição no recorte filtrado • clique na legenda para ocultar/exibir</div>
+    <div class="chart-sub">Distribuição no recorte filtrado • toque na legenda para ocultar/exibir</div>
     <div class="svg-wrap pie-mobile-stack" style="display:flex;gap:12px;align-items:center;padding:10px;">
       <svg viewBox="0 0 240 240" width="200" height="200" style="flex-shrink:0">
         ${slices}
@@ -1820,7 +1824,7 @@ data-td="${d.weekday}" data-tv="${tipVal}" data-to="${tipFat}" data-tc="${tipCol
   const barSvg = `
   <div class="chart-card">
     <div class="chart-title"><span>Faturamento • Nº semana (do mês)</span><span style="color:#FFB000">${moneyBR(weeks.reduce((s,w)=>s+(wMap.get(w)||0),0))}</span></div>
-    <div class="chart-sub">Soma por semana • clique na legenda para ocultar/exibir</div>
+    <div class="chart-sub">Soma por semana • toque na legenda para ocultar/exibir</div>
     <div class="svg-wrap">
       <svg viewBox="0 0 ${BW} ${BH}" width="100%" height="260" preserveAspectRatio="none">
         <line x1="${bPad}" x2="${BW-bPad}" y1="${BH-bPad}" y2="${BH-bPad}" stroke="rgba(255,255,255,.12)"/>
@@ -1846,26 +1850,44 @@ data-td="${d.weekday}" data-tv="${tipVal}" data-to="${tipFat}" data-tc="${tipCol
 
 
 function initInteractiveChartLegends(){
-  document.querySelectorAll('.chart-card .legend-toggle .l-item[data-series-key]').forEach(btn=>{
-    btn.style.cursor = 'pointer';
+  document.querySelectorAll('.chart-card').forEach(card=>{
+    card.querySelectorAll('.legend-toggle .l-item[data-series-key]').forEach(btn=>{
+      const key = btn.getAttribute('data-series-key');
+      const off = btn.classList.contains('is-off');
+      btn.setAttribute('role','button');
+      btn.setAttribute('tabindex','0');
+      btn.setAttribute('aria-pressed', off ? 'false' : 'true');
+      card.querySelectorAll('[data-series="'+key+'"]').forEach(el=>{
+        el.style.display = off ? 'none' : '';
+      });
+    });
   });
-  if(document.body.dataset.legendDelegationBound==='1') return;
-  document.body.dataset.legendDelegationBound='1';
-  document.addEventListener('click', function(ev){
-    const btn = ev.target.closest('.chart-card .legend-toggle .l-item[data-series-key]');
-    if(!btn) return;
+  if(window.__legendDelegationBound) return;
+  window.__legendDelegationBound = true;
+  const toggleLegend = (btn)=>{
     const card = btn.closest('.chart-card');
     if(!card) return;
     const key = btn.getAttribute('data-series-key');
     const off = !btn.classList.contains('is-off');
     btn.classList.toggle('is-off', off);
+    btn.setAttribute('aria-pressed', off ? 'false' : 'true');
     card.querySelectorAll('[data-series="'+key+'"]').forEach(el=>{
       el.style.display = off ? 'none' : '';
-      el.style.pointerEvents = off ? 'none' : '';
-      if(el.tagName && el.tagName.toLowerCase()==='g'){
-        el.setAttribute('opacity', off ? '0' : '1');
-      }
     });
+  };
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.chart-card .legend-toggle .l-item[data-series-key]');
+    if(!btn) return;
+    e.preventDefault();
+    toggleLegend(btn);
+  }, true);
+  document.addEventListener('keydown', (e)=>{
+    const btn = e.target.closest && e.target.closest('.chart-card .legend-toggle .l-item[data-series-key]');
+    if(!btn) return;
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      toggleLegend(btn);
+    }
   }, true);
 }
 
@@ -3072,6 +3094,7 @@ function renderKPIs() {
   const kpis = [
     { label:&#x27;Total Despesas&#x27;, value: fmtBRL(total),         sub: `${itens_n} lançamentos`,                          color:&#x27;var(--accent)&#x27;,  icon:&#x27;💰&#x27; },
     { label:&#x27;Total Insumos&#x27;,  value: fmtBRL(insTotal),       sub: `${(insTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
+    { label:&#x27;Outros Gastos&#x27;,  value: fmtBRL(total-insTotal), sub: &#x27;Fixos + Admin + RH&#x27;,                              color:&#x27;var(--accent3)&#x27;, icon:&#x27;📋&#x27; },
     { label:&#x27;Grupos Ativos&#x27;,  value: grupos_n,                sub: `${meses_n} mês(es) no filtro`,                   color:&#x27;#7ec83a&#x27;,        icon:&#x27;📦&#x27; },
   ];
 
