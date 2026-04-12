@@ -507,7 +507,24 @@ a:hover{text-decoration:underline}
 .ms-item{ background: transparent; }
 
 /* ===== UI prático: popup só com lista (sem Fil/Todos/Nenhum) ===== */
-.ms-top, .ms-actions, .ms-search, .ms-foot{ display:none !important; }
+.ms-top, .ms-actions, .ms-search{ display:none !important; }
+.ms-foot{
+  display:flex !important;
+  justify-content:flex-end;
+  padding:10px 12px 12px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.ms-ok{
+  appearance:none;
+  border:1px solid rgba(163,255,18,.35);
+  background:rgba(163,255,18,.10);
+  color:rgba(255,255,255,.95);
+  border-radius:999px;
+  padding:9px 16px;
+  font-weight:900;
+  cursor:pointer;
+}
+.ms-ok:hover{ filter:brightness(1.08); }
 .ms-pop{ padding-top: 6px; }
 
 /* ====== Charts (SVG) ====== */
@@ -1086,7 +1103,7 @@ img, svg, canvas{max-width:100%; height:auto}
         <label class="btn small lime" for="fileInput">Carregar Excel (.xlsx)</label>
         <input id="fileInput" type="file" accept=".xlsx" class="hidden"/>
         <button class="btn small" id="btnLimpar">Limpar</button>
-        <button class="btn small" id="btnAplicar">Aplicar</button>
+        <button class="btn small hidden" id="btnAplicar" aria-hidden="true" tabindex="-1">Aplicar</button>
       </div>
     </div>
     <div class="filters-body">
@@ -1305,7 +1322,7 @@ function msInit(id, label){
         </div>
       </div>
       <div class="ms-list"></div>
-      <div class="ms-foot">Marque várias opções e depois clique em <b>Aplicar</b>.</div>
+      <div class="ms-foot"><button type="button" class="ms-ok">OK</button></div>
     </div>
   `;
 
@@ -1323,6 +1340,15 @@ function msInit(id, label){
 
   root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); });
   root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); });
+
+  const okBtn = root.querySelector('.ms-ok');
+  if(okBtn){
+    okBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      pop.classList.remove('open');
+      generate();
+    });
+  }
 
   search.addEventListener('click', (e)=>e.stopPropagation());
   search.addEventListener('input', ()=> msRender(id, search.value));
@@ -1375,9 +1401,6 @@ function msRender(id, q=''){
       const currentScroll = st.list.scrollTop;
       msRender(id, st.search.value || '');
       st.list.scrollTop = currentScroll;
-      if(window.innerWidth <= 760){
-        st.pop.classList.remove('open');
-      }
     };
     it.addEventListener('click', toggle);
     const cb = it.querySelector('input[type="checkbox"]');
@@ -3169,7 +3192,6 @@ function renderKPIs() {
   const kpis = [
     { label:&#x27;Total Despesas&#x27;, value: fmtBRL(total),         sub: `${itens_n} lançamentos`,                          color:&#x27;var(--accent)&#x27;,  icon:&#x27;💰&#x27; },
     { label:&#x27;Total Insumos&#x27;,  value: fmtBRL(insTotal),       sub: `${(insTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
-    { label:&#x27;Outros Gastos&#x27;,  value: fmtBRL(total-insTotal), sub: &#x27;Fixos + Admin + RH&#x27;,                              color:&#x27;var(--accent3)&#x27;, icon:&#x27;📋&#x27; },
     { label:&#x27;Grupos Ativos&#x27;,  value: grupos_n,                sub: `${meses_n} mês(es) no filtro`,                   color:&#x27;#7ec83a&#x27;,        icon:&#x27;📦&#x27; },
   ];
 
