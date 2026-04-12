@@ -2477,12 +2477,12 @@ generate();
     padding:1.25rem;
   }
   .chart-card h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:1rem; }
-  .chart-wrap { position:relative; width:100%; min-width:0; min-height:220px; height:clamp(220px, 32vw, 300px); overflow:hidden; }
-  .chart-wrap canvas { display:block; width:100% !important; height:100% !important; max-width:100% !important; }
+  .chart-wrap { position:relative; width:100%; min-height:220px; height:clamp(220px, 32vw, 300px); overflow:hidden; }
+  .chart-wrap canvas { width:100% !important; max-width:100% !important; }
+
+  .chart-wrap { min-width:0; width:100%; }
+  .chart-wrap canvas { display:block; }
   .chart-grid, .chart-grid-3 { align-items:stretch; }
-  .chart-card { min-width:0; }
-  @media(max-width:900px){ .chart-wrap { height:min(62vw, 320px); } }
-  @media(max-width:600px){ .chart-wrap { height:min(68vw, 300px); min-height:210px; } }
   #chart-mensal { max-height:200px !important; }
 
   @media(max-width:900px){
@@ -3318,6 +3318,8 @@ function renderCharts() {
   renderChartInsumosBar();
   renderChartLinha();
   renderChartRosca();
+  bindChartResponsiveness();
+  scheduleChartResize([0,80,220,420]);
 }
 
 function getMesesOrdenados() {
@@ -3562,11 +3564,9 @@ function renderChartLinha() {
 function chartDefaults({ scales=false, stacked=false }={}) {
   return {
     responsive:true, maintainAspectRatio:false,
-    resizeDelay:120,
-    interaction:{ mode:&#x27;nearest&#x27;, intersect:false },
     plugins:{
       legend:{ labels:{ color:&#x27;#888&#x27;, font:{family:&#x27;DM Sans&#x27;,size:10}, boxWidth:10, padding:8 } },
-      tooltip:{ enabled:true, backgroundColor:&#x27;#1a1a1a&#x27;, borderColor:&#x27;#2a2a2a&#x27;, borderWidth:1, titleColor:&#x27;#f0ece4&#x27;, bodyColor:&#x27;#888&#x27;,
+      tooltip:{ backgroundColor:&#x27;#1a1a1a&#x27;, borderColor:&#x27;#2a2a2a&#x27;, borderWidth:1, titleColor:&#x27;#f0ece4&#x27;, bodyColor:&#x27;#888&#x27;,
         callbacks:{ label: ctx =&gt; ` ${ctx.dataset.label}: ${fmtBRL(ctx.raw)}` }
       }
     },
@@ -3576,35 +3576,6 @@ function chartDefaults({ scales=false, stacked=false }={}) {
     } : undefined
   };
 }
-
-let __resizeTimer = null;
-function forceResponsiveCharts() {
-  try {
-    Object.values(charts || {}).forEach(ch =&gt; {
-      try { ch.resize(); ch.update(&#x27;none&#x27;); } catch(err) {}
-    });
-  } catch(err) {}
-}
-function scheduleResponsiveCharts() {
-  try { if(__resizeTimer) clearTimeout(__resizeTimer); } catch(err) {}
-  __resizeTimer = setTimeout(forceResponsiveCharts, 80);
-}
-window.addEventListener(&#x27;resize&#x27;, scheduleResponsiveCharts, { passive:true });
-window.addEventListener(&#x27;orientationchange&#x27;, function(){
-  [60,180,360,720].forEach(t =&gt; setTimeout(forceResponsiveCharts, t));
-}, { passive:true });
-document.addEventListener(&#x27;visibilitychange&#x27;, function(){
-  if(!document.hidden) [40,180,420].forEach(t =&gt; setTimeout(forceResponsiveCharts, t));
-});
-window.addEventListener(&#x27;load&#x27;, function(){
-  [80,220,480,900].forEach(t =&gt; setTimeout(forceResponsiveCharts, t));
-  try {
-    const ro = new ResizeObserver(() =&gt; scheduleResponsiveCharts());
-    const main = document.querySelector(&#x27;.main&#x27;) || document.body;
-    if(main) ro.observe(main);
-    document.querySelectorAll(&#x27;.chart-wrap&#x27;).forEach(el =&gt; ro.observe(el));
-  } catch(err) {}
-});
 
 // ══════════════════════════════════════════════════
 //  TABLE
@@ -3670,6 +3641,38 @@ function badgeStatus(s) {
   return `&lt;span class=&quot;badge badge-default&quot;&gt;${s}&lt;/span&gt;`;
 }
 
+
+
+let __chartResizeObserver = null;
+let __chartResizeTick = null;
+function forceResizeCharts(){
+  try{
+    Object.values(charts || {}).forEach(ch =&gt; {
+      try{ ch.resize(); }catch(err){}
+      try{ ch.update(&#x27;none&#x27;); }catch(err){}
+    });
+  }catch(err){}
+}
+function scheduleChartResize(delays=[0,80,220,420]){
+  try{ if(__chartResizeTick){ clearTimeout(__chartResizeTick); __chartResizeTick = null; } }catch(err){}
+  delays.forEach(ms =&gt; setTimeout(forceResizeCharts, ms));
+}
+function bindChartResponsiveness(){
+  try{
+    if(__chartResizeObserver){ try{ __chartResizeObserver.disconnect(); }catch(err){} }
+    if(&#x27;ResizeObserver&#x27; in window){
+      __chartResizeObserver = new ResizeObserver(() =&gt; scheduleChartResize([0,60,180]));
+      document.querySelectorAll(&#x27;.chart-wrap, .chart-card, .chart-grid, .chart-grid-3, .main&#x27;).forEach(el =&gt; {
+        try{ __chartResizeObserver.observe(el); }catch(err){}
+      });
+    }
+  }catch(err){}
+}
+window.addEventListener(&#x27;resize&#x27;, () =&gt; scheduleChartResize([0,80,220]));
+window.addEventListener(&#x27;orientationchange&#x27;, () =&gt; scheduleChartResize([120,320,700]));
+window.addEventListener(&#x27;pageshow&#x27;, () =&gt; scheduleChartResize([0,120,320]));
+document.addEventListener(&#x27;visibilitychange&#x27;, () =&gt; { if(!document.hidden) scheduleChartResize([0,120,320]); });
+
 // ══════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════
@@ -3679,9 +3682,8 @@ window.addEventListener(&#x27;message&#x27;, function(e) {
   if (e.data &amp;&amp; e.data.type === &#x27;FORCE_RESIZE&#x27;) {
     try {
       const rerender = () =&gt; {
-        try { forceResponsiveCharts(); } catch(err) {}
+        try { Object.values(charts || {}).forEach(ch =&gt; { try { ch.resize(); ch.update(&#x27;none&#x27;); } catch(err) {} }); } catch(err) {}
         try { if(typeof applyFilters === &#x27;function&#x27; &amp;&amp; allData &amp;&amp; allData.length){ applyFilters(); } } catch(err) {}
-        try { scheduleResponsiveCharts(); } catch(err) {}
       };
       setTimeout(rerender, 60);
       setTimeout(rerender, 240);
