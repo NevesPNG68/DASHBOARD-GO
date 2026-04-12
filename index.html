@@ -879,8 +879,6 @@ img, svg, canvas{max-width:100%; height:auto}
   .ms-item{padding:12px 14px}
   .ms-btn{min-height:44px}
 }
-
-#btnAplicar{display:none !important;}
 </style>
 
 
@@ -896,7 +894,6 @@ img, svg, canvas{max-width:100%; height:auto}
   transition:opacity .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
 }
 .legend-toggle .l-item:hover{ filter:brightness(1.08); }
-.legend-toggle .l-item *{ pointer-events:none; }
 .legend-toggle .l-item.is-off{
   opacity:.45;
   background:rgba(255,255,255,.015);
@@ -1308,7 +1305,7 @@ function msInit(id, label){
         </div>
       </div>
       <div class="ms-list"></div>
-      <div class="ms-foot">Marque as opções desejadas.</div>
+      <div class="ms-foot">Marque várias opções e depois clique em <b>Aplicar</b>.</div>
     </div>
   `;
 
@@ -1324,8 +1321,8 @@ function msInit(id, label){
 
   MS[id] = { selected:new Set(), all:[], root, pop, list, search, hint };
 
-  root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); generate(); });
-  root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); generate(); });
+  root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); });
+  root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); });
 
   search.addEventListener('click', (e)=>e.stopPropagation());
   search.addEventListener('input', ()=> msRender(id, search.value));
@@ -1381,7 +1378,6 @@ function msRender(id, q=''){
       if(window.innerWidth <= 760){
         st.pop.classList.remove('open');
       }
-      generate();
     };
     it.addEventListener('click', toggle);
     const cb = it.querySelector('input[type="checkbox"]');
@@ -1852,43 +1848,18 @@ data-td="${d.weekday}" data-tv="${tipVal}" data-to="${tipFat}" data-tc="${tipCol
 function initInteractiveChartLegends(){
   document.querySelectorAll('.chart-card').forEach(card=>{
     card.querySelectorAll('.legend-toggle .l-item[data-series-key]').forEach(btn=>{
-      const key = btn.getAttribute('data-series-key');
-      const off = btn.classList.contains('is-off');
-      btn.setAttribute('role','button');
-      btn.setAttribute('tabindex','0');
-      btn.setAttribute('aria-pressed', off ? 'false' : 'true');
-      card.querySelectorAll('[data-series="'+key+'"]').forEach(el=>{
-        el.style.display = off ? 'none' : '';
+      if(btn.dataset.bound==='1') return;
+      btn.dataset.bound='1';
+      btn.addEventListener('click', ()=>{
+        const key = btn.getAttribute('data-series-key');
+        const off = !btn.classList.contains('is-off');
+        btn.classList.toggle('is-off', off);
+        card.querySelectorAll('[data-series="'+key+'"]').forEach(el=>{
+          el.style.display = off ? 'none' : '';
+        });
       });
     });
   });
-  if(window.__legendDelegationBound) return;
-  window.__legendDelegationBound = true;
-  const toggleLegend = (btn)=>{
-    const card = btn.closest('.chart-card');
-    if(!card) return;
-    const key = btn.getAttribute('data-series-key');
-    const off = !btn.classList.contains('is-off');
-    btn.classList.toggle('is-off', off);
-    btn.setAttribute('aria-pressed', off ? 'false' : 'true');
-    card.querySelectorAll('[data-series="'+key+'"]').forEach(el=>{
-      el.style.display = off ? 'none' : '';
-    });
-  };
-  document.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.chart-card .legend-toggle .l-item[data-series-key]');
-    if(!btn) return;
-    e.preventDefault();
-    toggleLegend(btn);
-  }, true);
-  document.addEventListener('keydown', (e)=>{
-    const btn = e.target.closest && e.target.closest('.chart-card .legend-toggle .l-item[data-series-key]');
-    if(!btn) return;
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      toggleLegend(btn);
-    }
-  }, true);
 }
 
 function buildJump(daily){
