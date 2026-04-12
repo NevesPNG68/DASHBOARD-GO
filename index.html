@@ -3558,6 +3558,8 @@ function renderChartLinha() {
 function chartDefaults({ scales=false, stacked=false }={}) {
   return {
     responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:&#x27;nearest&#x27;, intersect:false },
+    events:[&#x27;mousemove&#x27;,&#x27;mouseout&#x27;,&#x27;click&#x27;,&#x27;touchstart&#x27;,&#x27;touchmove&#x27;],
     plugins:{
       legend:{ labels:{ color:&#x27;#888&#x27;, font:{family:&#x27;DM Sans&#x27;,size:10}, boxWidth:10, padding:8 } },
       tooltip:{ backgroundColor:&#x27;#1a1a1a&#x27;, borderColor:&#x27;#2a2a2a&#x27;, borderWidth:1, titleColor:&#x27;#f0ece4&#x27;, bodyColor:&#x27;#888&#x27;,
@@ -4160,7 +4162,7 @@ function ensureDespMobileScroll(){
         html, body { height:auto !important; min-height:100% !important; overflow-x:hidden !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; overscroll-behavior-y:auto !important; touch-action:pan-y !important; }
         #dashboard, .main { height:auto !important; min-height:0 !important; overflow:visible !important; }
         .chart-grid, .chart-grid-3, .chart-card, .chart-wrap, .table-wrap { touch-action:pan-y !important; }
-        canvas { touch-action:auto !important; pointer-events:none !important; }
+        canvas { touch-action:manipulation !important; pointer-events:auto !important; }
       `;
       doc.head.appendChild(st);
     }
