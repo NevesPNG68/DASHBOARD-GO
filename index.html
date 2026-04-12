@@ -2478,11 +2478,9 @@ generate();
   }
   .chart-card h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:1rem; }
   .chart-wrap { position:relative; width:100%; min-height:220px; height:clamp(220px, 32vw, 300px); overflow:hidden; }
-  .chart-wrap canvas { width:100% !important; max-width:100% !important; }
-
-  .chart-wrap { min-width:0; width:100%; }
-  .chart-wrap canvas { display:block; }
-  .chart-grid, .chart-grid-3 { align-items:stretch; }
+  .chart-wrap canvas { width:100% !important; max-width:100% !important; display:block !important; }
+  .chart-card, .chart-wrap { min-width:0 !important; }
+  .chart-wrap { overflow:hidden; }
   #chart-mensal { max-height:200px !important; }
 
   @media(max-width:900px){
@@ -3318,8 +3316,7 @@ function renderCharts() {
   renderChartInsumosBar();
   renderChartLinha();
   renderChartRosca();
-  bindChartResponsiveness();
-  scheduleChartResize([0,80,220,420]);
+  setTimeout(scheduleChartsResize, 30);
 }
 
 function getMesesOrdenados() {
@@ -3577,6 +3574,35 @@ function chartDefaults({ scales=false, stacked=false }={}) {
   };
 }
 
+function scheduleChartsResize() {
+  if (window.__chartsResizeRAF) cancelAnimationFrame(window.__chartsResizeRAF);
+  window.__chartsResizeRAF = requestAnimationFrame(() =&gt; {
+    Object.keys(charts).forEach(k =&gt; {
+      try { if (charts[k]) charts[k].resize(); } catch(e) {}
+    });
+  });
+}
+
+function initResponsiveCharts() {
+  if (window.__responsiveChartsInit) return;
+  window.__responsiveChartsInit = true;
+
+  window.addEventListener('resize', scheduleChartsResize, { passive:true });
+  window.addEventListener('orientationchange', () =&gt; setTimeout(scheduleChartsResize, 180), { passive:true });
+  document.addEventListener('visibilitychange', () =&gt; { if (!document.hidden) setTimeout(scheduleChartsResize, 60); });
+
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(() =&gt; scheduleChartsResize());
+    document.querySelectorAll('.chart-wrap, .chart-card').forEach(el =&gt; ro.observe(el));
+    window.__chartsRO = ro;
+  }
+
+  setTimeout(scheduleChartsResize, 60);
+  setTimeout(scheduleChartsResize, 220);
+}
+
+setTimeout(initResponsiveCharts, 0);
+
 // ══════════════════════════════════════════════════
 //  TABLE
 // ══════════════════════════════════════════════════
@@ -3640,38 +3666,6 @@ function badgeStatus(s) {
   if(s.toUpperCase().includes(&#x27;PEND&#x27;) || s.toUpperCase().includes(&#x27;ABER&#x27;)) return `&lt;span class=&quot;badge badge-pendente&quot;&gt;${s}&lt;/span&gt;`;
   return `&lt;span class=&quot;badge badge-default&quot;&gt;${s}&lt;/span&gt;`;
 }
-
-
-
-let __chartResizeObserver = null;
-let __chartResizeTick = null;
-function forceResizeCharts(){
-  try{
-    Object.values(charts || {}).forEach(ch =&gt; {
-      try{ ch.resize(); }catch(err){}
-      try{ ch.update(&#x27;none&#x27;); }catch(err){}
-    });
-  }catch(err){}
-}
-function scheduleChartResize(delays=[0,80,220,420]){
-  try{ if(__chartResizeTick){ clearTimeout(__chartResizeTick); __chartResizeTick = null; } }catch(err){}
-  delays.forEach(ms =&gt; setTimeout(forceResizeCharts, ms));
-}
-function bindChartResponsiveness(){
-  try{
-    if(__chartResizeObserver){ try{ __chartResizeObserver.disconnect(); }catch(err){} }
-    if(&#x27;ResizeObserver&#x27; in window){
-      __chartResizeObserver = new ResizeObserver(() =&gt; scheduleChartResize([0,60,180]));
-      document.querySelectorAll(&#x27;.chart-wrap, .chart-card, .chart-grid, .chart-grid-3, .main&#x27;).forEach(el =&gt; {
-        try{ __chartResizeObserver.observe(el); }catch(err){}
-      });
-    }
-  }catch(err){}
-}
-window.addEventListener(&#x27;resize&#x27;, () =&gt; scheduleChartResize([0,80,220]));
-window.addEventListener(&#x27;orientationchange&#x27;, () =&gt; scheduleChartResize([120,320,700]));
-window.addEventListener(&#x27;pageshow&#x27;, () =&gt; scheduleChartResize([0,120,320]));
-document.addEventListener(&#x27;visibilitychange&#x27;, () =&gt; { if(!document.hidden) scheduleChartResize([0,120,320]); });
 
 // ══════════════════════════════════════════════════
 //  INIT
