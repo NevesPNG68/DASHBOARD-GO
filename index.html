@@ -2646,6 +2646,25 @@ generate();
     .filters { grid-template-columns:1fr; }
     .topbar-actions { flex-direction:column; align-items:flex-start; }
     .file-name { text-align:left; }
+
+    /* apenas no mobile: simplifica o detalhamento de despesas */
+    .table-wrap table{
+      min-width:640px !important;
+      width:640px !important;
+    }
+    .table-wrap thead th:nth-child(1), .table-wrap tbody td:nth-child(1),
+    .table-wrap thead th:nth-child(6), .table-wrap tbody td:nth-child(6),
+    .table-wrap thead th:nth-child(7), .table-wrap tbody td:nth-child(7),
+    .table-wrap thead th:nth-child(8), .table-wrap tbody td:nth-child(8),
+    .table-wrap thead th:nth-child(10), .table-wrap tbody td:nth-child(10){
+      display:none !important;
+    }
+    .table-wrap thead th:nth-child(2), .table-wrap tbody td:nth-child(2){ min-width:54px !important; }
+    .table-wrap thead th:nth-child(3), .table-wrap tbody td:nth-child(3){ min-width:52px !important; }
+    .table-wrap thead th:nth-child(4), .table-wrap tbody td:nth-child(4){ min-width:210px !important; }
+    .table-wrap thead th:nth-child(5), .table-wrap tbody td:nth-child(5){ min-width:82px !important; }
+    .table-wrap thead th:nth-child(9), .table-wrap tbody td:nth-child(9){ min-width:92px !important; text-align:right !important; }
+    #table-foot td:first-child{ width:auto !important; }
   }
 
   /* TABLE */
@@ -3480,7 +3499,15 @@ function renderTable() {
   // Rodapé com total geral
   const grandTotal = data.reduce((s,d)=&gt;s+d.total,0);
   const tfoot = document.getElementById(&#x27;table-foot&#x27;);
-  tfoot.innerHTML = `
+  const isMobileTable = window.innerWidth &lt;= 560;
+  tfoot.innerHTML = isMobileTable ? `
+    &lt;tr style=&quot;background:#1f1f1f;border-top:2px solid var(--accent)&quot;&gt;
+      &lt;td colspan=&quot;4&quot; style=&quot;padding:.6rem .75rem;font-weight:700;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em&quot;&gt;
+        TOTAL GERAL — ${data.length} lançamentos
+      &lt;/td&gt;
+      &lt;td class=&quot;num&quot; style=&quot;padding:.6rem .75rem;font-weight:700;font-size:.95rem;color:var(--accent)&quot;&gt;${fmtBRL(grandTotal)}&lt;/td&gt;
+    &lt;/tr&gt;
+  ` : `
     &lt;tr style=&quot;background:#1f1f1f;border-top:2px solid var(--accent)&quot;&gt;
       &lt;td colspan=&quot;8&quot; style=&quot;padding:.6rem 1rem;font-weight:700;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em&quot;&gt;
         TOTAL GERAL — ${data.length} lançamentos
