@@ -3107,13 +3107,60 @@ function parseReceitaSheet(wb){
   }catch(err){ console.error(&#x27;Erro ao ler aba DADOS para CMV:&#x27;, err); }
 }
 
+function cmvMonthNum(v){
+  const s = String(v || '').trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(!s) return 0;
+  if(s.startsWith('jan')) return 1;
+  if(s.startsWith('fev')) return 2;
+  if(s.startsWith('mar')) return 3;
+  if(s.startsWith('abr')) return 4;
+  if(s.startsWith('mai')) return 5;
+  if(s.startsWith('jun')) return 6;
+  if(s.startsWith('jul')) return 7;
+  if(s.startsWith('ago')) return 8;
+  if(s.startsWith('set')) return 9;
+  if(s.startsWith('out')) return 10;
+  if(s.startsWith('nov')) return 11;
+  if(s.startsWith('dez')) return 12;
+  return 0;
+}
+
+function cmvYearNum(rec){
+  const anoRaw = String(rec?.ano || '').trim();
+  if(/^\d{4}$/.test(anoRaw)) return Number(anoRaw);
+  if(/^\d{2}$/.test(anoRaw)) return 2000 + Number(anoRaw);
+
+  const mesRaw = String(rec?.mes || '').trim();
+  const m = mesRaw.match(/\/(\d{2,4})$/);
+  if(m){
+    const y = Number(m[1]);
+    return y < 100 ? 2000 + y : y;
+  }
+  return 0;
+}
+
 function getReceitaPeriodoTotal(){
   try{
-    const periodKeys = new Set(filteredData.map(d =&gt; `${d.mes}|${d.ano}`));
+    const periodKeys = new Set(
+      filteredData
+        .map(d =&gt; {
+          const y = cmvYearNum(d);
+          const m = cmvMonthNum(d?.mes);
+          return (y &amp;&amp; m) ? `${y}-${String(m).padStart(2,'0')}` : '';
+        })
+        .filter(Boolean)
+    );
     if(!periodKeys.size) return 0;
+
     return receitaData
-      .filter(r =&gt; periodKeys.has(`${r.mes}|${r.ano}`))
-      .reduce((s,r)=&gt;s + (Number(r.total)||0), 0);
+      .filter(r =&gt; {
+        const y = cmvYearNum(r);
+        const m = cmvMonthNum(r?.mes);
+        if(!y || !m) return false;
+        return periodKeys.has(`${y}-${String(m).padStart(2,'0')}`);
+      })
+      .reduce((s,r) =&gt; s + (Number(r.total) || 0), 0);
   }catch(err){ return 0; }
 }
 
