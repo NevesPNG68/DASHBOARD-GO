@@ -3246,10 +3246,10 @@ function applyFilters() {
 // ══════════════════════════════════════════════════
 function renderKPIs() {
   const total    = filteredData.reduce((s,d)=&gt;s+d.total,0);
-  const insData  = filteredData.filter(d =&gt; INSUMOS_GROUPS.includes(d.grupo));
+  const insData  = filteredData.filter(d =&gt; d.grupo === &#x27;INSUMOS&#x27;);
   const insTotal = insData.reduce((s,d)=&gt;s+d.total,0);
   const receitaPeriodo = revenueInSelectedPeriod();
-  const cmv = insTotal;
+  const cmv = filteredData.filter(d =&gt; INSUMOS_GROUPS.includes(d.grupo)).reduce((s,d)=&gt;s+d.total,0);
   const pctCmv = receitaPeriodo &gt; 0 ? (cmv / receitaPeriodo * 100) : 0;
   const mkp = (receitaPeriodo &gt; 0 &amp;&amp; cmv &gt; 0) ? (receitaPeriodo / cmv) : 0;
   const mkpColor = mkp &gt; 2.4 ? &#x27;#a3ff12&#x27; : &#x27;#ff4d4f&#x27;;
