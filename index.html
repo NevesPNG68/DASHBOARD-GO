@@ -3118,13 +3118,32 @@ function revenueInSelectedPeriod(){
   const anosSel = (msState.ano || []).map(v =&gt; String(v).trim());
   const mesesSel = (msState.mes || []).map(v =&gt; String(v).trim());
   const monthMap = {
-    &#x27;Janeiro&#x27;:1,&#x27;Fevereiro&#x27;:2,&#x27;Março&#x27;:3,&#x27;Abril&#x27;:4,&#x27;Maio&#x27;:5,&#x27;Junho&#x27;:6,
-    &#x27;Julho&#x27;:7,&#x27;Agosto&#x27;:8,&#x27;Setembro&#x27;:9,&#x27;Outubro&#x27;:10,&#x27;Novembro&#x27;:11,&#x27;Dezembro&#x27;:12
+    &#x27;Janeiro&#x27;:1, &#x27;Jan&#x27;:1,
+    &#x27;Fevereiro&#x27;:2, &#x27;Fev&#x27;:2,
+    &#x27;Março&#x27;:3, &#x27;Marco&#x27;:3, &#x27;Mar&#x27;:3,
+    &#x27;Abril&#x27;:4, &#x27;Abr&#x27;:4,
+    &#x27;Maio&#x27;:5, &#x27;Mai&#x27;:5,
+    &#x27;Junho&#x27;:6, &#x27;Jun&#x27;:6,
+    &#x27;Julho&#x27;:7, &#x27;Jul&#x27;:7,
+    &#x27;Agosto&#x27;:8, &#x27;Ago&#x27;:8,
+    &#x27;Setembro&#x27;:9, &#x27;Set&#x27;:9,
+    &#x27;Outubro&#x27;:10, &#x27;Out&#x27;:10,
+    &#x27;Novembro&#x27;:11, &#x27;Nov&#x27;:11,
+    &#x27;Dezembro&#x27;:12, &#x27;Dez&#x27;:12
   };
-  const mesesNumeros = mesesSel.map(m =&gt; monthMap[m]).filter(Boolean);
+  const normalizeMonth = (val) =&gt; {
+    if (val == null) return null;
+    const s = String(val).trim();
+    if (!s) return null;
+    if (/^\d{1,2}$/.test(s)) return Number(s);
+    const part = s.split(&#x27;/&#x27;)[0].trim();
+    return monthMap[s] || monthMap[part] || null;
+  };
+  const mesesNumeros = mesesSel.map(normalizeMonth).filter(Boolean);
   return revenueData.filter(r =&gt; {
     const anoOk = !anosSel.length || anosSel.includes(String(r.ano).trim());
-    const mesOk = !mesesNumeros.length || mesesNumeros.includes(Number(r.mesNumero));
+    const mesR = Number(r.mesNumero) || normalizeMonth(r.mes) || (r.date ? Number(String(r.date).slice(5,7)) : null);
+    const mesOk = !mesesNumeros.length || mesesNumeros.includes(mesR);
     return anoOk &amp;&amp; mesOk;
   }).reduce((s,r)=&gt;s + (Number(r.total)||0), 0);
 }
