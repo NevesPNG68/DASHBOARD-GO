@@ -3263,7 +3263,7 @@ function renderKPIs() {
 
   const kpis = [
     { label:&#x27;Total Despesas&#x27;, value: fmtBRL(total),   sub: `${itens_n} lançamentos`, color:&#x27;var(--accent)&#x27;,  icon:&#x27;💰&#x27; },
-    { label:&#x27;INSUMOS&#x27;,        value: fmtBRL(insumosOnlyTotal), sub: `${(insumosOnlyTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
+    { label:&#x27;Total Insumos&#x27;,  value: fmtBRL(insTotal), sub: `${(insTotal/total*100||0).toFixed(1)}% do total`, color:&#x27;var(--accent2)&#x27;, icon:&#x27;🧪&#x27; },
     { label:&#x27;CMV&#x27;,            value: fmtBRL(cmv), sub: `Receita do período: ${fmtBRL(receitaPeriodo)}`, color:&#x27;#a3ff12&#x27;, icon:&#x27;📦&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
     { label:&#x27;% CMV&#x27;,          value: `&lt;span style=&quot;color:${pctCmvColor};font-weight:900&quot;&gt;${pctCmv.toFixed(1)}%&lt;/span&gt;`, sub: receitaPeriodo&gt;0 ? `${fmtBRL(cmv)} ÷ ${fmtBRL(receitaPeriodo)}` : &#x27;0% sem receita no período&#x27;, color:&#x27;#ff3db8&#x27;, icon:&#x27;📊&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
     { label:&#x27;MKP&#x27;,            value: `&lt;span style=&quot;color:${mkpColor};font-weight:900&quot;&gt;${mkp.toFixed(2)}&lt;/span&gt;`, sub: receitaPeriodo&gt;0 ? `${fmtBRL(receitaPeriodo)} ÷ ${fmtBRL(cmv)}` : &#x27;0 sem receita no período&#x27;, color:&#x27;#ff3db8&#x27;, icon:&#x27;📈&#x27;, extraClass:&#x27;kpi-cmv&#x27; },
