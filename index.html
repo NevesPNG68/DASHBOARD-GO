@@ -3248,8 +3248,6 @@ function renderKPIs() {
   const total    = filteredData.reduce((s,d)=&gt;s+d.total,0);
   const insData  = filteredData.filter(d =&gt; INSUMOS_GROUPS.includes(d.grupo));
   const insTotal = insData.reduce((s,d)=&gt;s+d.total,0);
-  const insumosOnlyData = filteredData.filter(d =&gt; String(d.grupo || '').trim().toUpperCase() === 'INSUMOS');
-  const insumosOnlyTotal = insumosOnlyData.reduce((s,d)=&gt;s + (Number(d.total) || 0), 0);
   const receitaPeriodo = revenueInSelectedPeriod();
   const cmv = insTotal;
   const pctCmv = receitaPeriodo &gt; 0 ? (cmv / receitaPeriodo * 100) : 0;
