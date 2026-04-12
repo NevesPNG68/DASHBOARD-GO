@@ -2477,8 +2477,12 @@ generate();
     padding:1.25rem;
   }
   .chart-card h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:1rem; }
-  .chart-wrap { position:relative; width:100%; min-height:220px; height:clamp(220px, 32vw, 300px); overflow:hidden; }
-  .chart-wrap canvas { width:100% !important; max-width:100% !important; }
+  .chart-wrap { position:relative; width:100%; min-width:0; min-height:220px; height:clamp(220px, 32vw, 300px); overflow:hidden; }
+  .chart-wrap canvas { display:block; width:100% !important; height:100% !important; max-width:100% !important; }
+  .chart-grid, .chart-grid-3 { align-items:stretch; }
+  .chart-card { min-width:0; }
+  @media(max-width:900px){ .chart-wrap { height:min(62vw, 320px); } }
+  @media(max-width:600px){ .chart-wrap { height:min(68vw, 300px); min-height:210px; } }
   #chart-mensal { max-height:200px !important; }
 
   @media(max-width:900px){
@@ -2738,25 +2742,6 @@ generate();
   /* PULSE ANIMATION */
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .pulsing { animation:pulse 1.5s infinite; }
-
-/* responsive fix charts desp */
-html,body{max-width:100%; overflow-x:hidden}
-.main,.chart-grid,.chart-grid-3,.chart-card,.chart-wrap{min-width:0 !important}
-.chart-wrap{width:100% !important; overflow:hidden !important}
-.chart-wrap canvas{display:block !important; width:100% !important; max-width:100% !important; touch-action:manipulation}
-@media (max-width:900px){
-  .chart-grid,.chart-grid-3{grid-template-columns:1fr !important}
-}
-@media (max-width:760px){
-  .main{padding:1rem .7rem 2rem !important}
-  .chart-card{width:100% !important; min-width:0 !important}
-  .chart-wrap{height:clamp(220px, 54vw, 300px) !important; min-height:220px !important}
-  #chart-mensal{height:clamp(200px, 50vw, 260px) !important}
-  #chart-insumos-bar,#chart-linha{height:clamp(220px, 54vw, 300px) !important}
-  #chart-rosca-wrap{height:clamp(220px, 60vw, 300px) !important; min-height:220px !important}
-  #chart-rosca{max-width:min(78vw,280px) !important; max-height:min(78vw,280px) !important}
-}
-
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -3333,7 +3318,6 @@ function renderCharts() {
   renderChartInsumosBar();
   renderChartLinha();
   renderChartRosca();
-  scheduleResizeBursts();
 }
 
 function getMesesOrdenados() {
@@ -3490,7 +3474,7 @@ function renderChartRosca() {
       }]
     },
     options:{
-      responsive:true, maintainAspectRatio:false, aspectRatio:1, resizeDelay:120, interaction:{ mode:&#x27;nearest&#x27;, intersect:false },
+      responsive:true, maintainAspectRatio:true, aspectRatio:1,
       plugins:{
         legend:{ display:false },
         tooltip:{
@@ -3577,10 +3561,12 @@ function renderChartLinha() {
 
 function chartDefaults({ scales=false, stacked=false }={}) {
   return {
-    responsive:true, maintainAspectRatio:false, resizeDelay:120, interaction:{ mode:&#x27;nearest&#x27;, intersect:false },
+    responsive:true, maintainAspectRatio:false,
+    resizeDelay:120,
+    interaction:{ mode:&#x27;nearest&#x27;, intersect:false },
     plugins:{
       legend:{ labels:{ color:&#x27;#888&#x27;, font:{family:&#x27;DM Sans&#x27;,size:10}, boxWidth:10, padding:8 } },
-      tooltip:{ backgroundColor:&#x27;#1a1a1a&#x27;, borderColor:&#x27;#2a2a2a&#x27;, borderWidth:1, titleColor:&#x27;#f0ece4&#x27;, bodyColor:&#x27;#888&#x27;,
+      tooltip:{ enabled:true, backgroundColor:&#x27;#1a1a1a&#x27;, borderColor:&#x27;#2a2a2a&#x27;, borderWidth:1, titleColor:&#x27;#f0ece4&#x27;, bodyColor:&#x27;#888&#x27;,
         callbacks:{ label: ctx =&gt; ` ${ctx.dataset.label}: ${fmtBRL(ctx.raw)}` }
       }
     },
@@ -3590,6 +3576,35 @@ function chartDefaults({ scales=false, stacked=false }={}) {
     } : undefined
   };
 }
+
+let __resizeTimer = null;
+function forceResponsiveCharts() {
+  try {
+    Object.values(charts || {}).forEach(ch =&gt; {
+      try { ch.resize(); ch.update(&#x27;none&#x27;); } catch(err) {}
+    });
+  } catch(err) {}
+}
+function scheduleResponsiveCharts() {
+  try { if(__resizeTimer) clearTimeout(__resizeTimer); } catch(err) {}
+  __resizeTimer = setTimeout(forceResponsiveCharts, 80);
+}
+window.addEventListener(&#x27;resize&#x27;, scheduleResponsiveCharts, { passive:true });
+window.addEventListener(&#x27;orientationchange&#x27;, function(){
+  [60,180,360,720].forEach(t =&gt; setTimeout(forceResponsiveCharts, t));
+}, { passive:true });
+document.addEventListener(&#x27;visibilitychange&#x27;, function(){
+  if(!document.hidden) [40,180,420].forEach(t =&gt; setTimeout(forceResponsiveCharts, t));
+});
+window.addEventListener(&#x27;load&#x27;, function(){
+  [80,220,480,900].forEach(t =&gt; setTimeout(forceResponsiveCharts, t));
+  try {
+    const ro = new ResizeObserver(() =&gt; scheduleResponsiveCharts());
+    const main = document.querySelector(&#x27;.main&#x27;) || document.body;
+    if(main) ro.observe(main);
+    document.querySelectorAll(&#x27;.chart-wrap&#x27;).forEach(el =&gt; ro.observe(el));
+  } catch(err) {}
+});
 
 // ══════════════════════════════════════════════════
 //  TABLE
@@ -3660,41 +3675,19 @@ function badgeStatus(s) {
 // ══════════════════════════════════════════════════
 setupUpload();
 // Receber arquivo do dashboard pai via postMessage
-window.
-function forceResizeAllCharts(){
-  try{
-    const list = Object.values(charts || {});
-    list.forEach(ch =&gt; { try{ ch.resize(); ch.update(&#x27;none&#x27;); }catch(err){} });
-  }catch(err){}
-}
-function scheduleResizeBursts(){ [40,160,320,650,1100].forEach(t=&gt;setTimeout(forceResizeAllCharts,t)); }
-window.addEventListener(&#x27;resize&#x27;, scheduleResizeBursts, {passive:true});
-window.addEventListener(&#x27;orientationchange&#x27;, scheduleResizeBursts, {passive:true});
-window.addEventListener(&#x27;pageshow&#x27;, scheduleResizeBursts);
-document.addEventListener(&#x27;visibilitychange&#x27;, ()=&gt;{ if(!document.hidden) scheduleResizeBursts(); });
-setTimeout(()=&gt;{
-  try{
-    const ro = new ResizeObserver(()=&gt;scheduleResizeBursts());
-    ro.observe(document.body);
-    const main = document.querySelector(&#x27;.main&#x27;); if(main) ro.observe(main);
-    document.querySelectorAll(&#x27;.chart-wrap,.chart-card,.chart-grid,.chart-grid-3&#x27;).forEach(el=&gt;ro.observe(el));
-  }catch(err){}
-}, 50);
-
-addEventListener(&#x27;message&#x27;, function(e) {
+window.addEventListener(&#x27;message&#x27;, function(e) {
   if (e.data &amp;&amp; e.data.type === &#x27;FORCE_RESIZE&#x27;) {
     try {
       const rerender = () =&gt; {
-        try { forceResizeAllCharts(); } catch(err) {}
+        try { forceResponsiveCharts(); } catch(err) {}
         try { if(typeof applyFilters === &#x27;function&#x27; &amp;&amp; allData &amp;&amp; allData.length){ applyFilters(); } } catch(err) {}
-        try { forceResizeAllCharts(); } catch(err) {}
+        try { scheduleResponsiveCharts(); } catch(err) {}
       };
-      setTimeout(rerender, 40);
-      setTimeout(rerender, 180);
-      setTimeout(rerender, 360);
-      setTimeout(rerender, 700);
-      setTimeout(rerender, 1100);
-      setTimeout(rerender, 1600);
+      setTimeout(rerender, 60);
+      setTimeout(rerender, 240);
+      setTimeout(rerender, 500);
+      setTimeout(rerender, 900);
+      setTimeout(rerender, 1400);
     } catch(err) {}
     return;
   }
@@ -4076,9 +4069,9 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 &lt;/body&gt;
 &lt;/html&gt;
 
-&quot;&gt;&lt;/iframe&gt;
+"></iframe>
 
-&lt;style&gt;
+<style>
 #pag-page{display:none;padding-top:48px;min-height:100vh;background:
   radial-gradient(1100px 560px at 12% -10%, rgba(163,255,18,.14), transparent 60%),
   radial-gradient(980px 640px at 90% 0%, rgba(77,163,255,.10), transparent 60%),
@@ -4184,21 +4177,21 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   #pag-page .pag-filtros-topo{width:100%}
   #pag-page .pag-filtro-wrap{flex:1 1 140px}
 }
-&lt;/style&gt;
+</style>
 
-&lt;script&gt;
+<script>
 function ensureDespMobileScroll(){
-  var despFrame = document.getElementById(&#x27;desp-frame&#x27;);
+  var despFrame = document.getElementById('desp-frame');
   if(!despFrame) return;
   try{
-    despFrame.style.overflow=&#x27;auto&#x27;;
-    despFrame.style.webkitOverflowScrolling=&#x27;touch&#x27;;
-    despFrame.style.touchAction=&#x27;pan-y&#x27;;
-    var doc = despFrame.contentDocument || (despFrame.contentWindow &amp;&amp; despFrame.contentWindow.document);
+    despFrame.style.overflow='auto';
+    despFrame.style.webkitOverflowScrolling='touch';
+    despFrame.style.touchAction='pan-y';
+    var doc = despFrame.contentDocument || (despFrame.contentWindow && despFrame.contentWindow.document);
     if(!doc) return;
-    if(!doc.getElementById(&#x27;mobile-scroll-fix-desp&#x27;)){
-      var st = doc.createElement(&#x27;style&#x27;);
-      st.id = &#x27;mobile-scroll-fix-desp&#x27;;
+    if(!doc.getElementById('mobile-scroll-fix-desp')){
+      var st = doc.createElement('style');
+      st.id = 'mobile-scroll-fix-desp';
       st.textContent = `
         html, body { height:auto !important; min-height:100% !important; overflow-x:hidden !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; overscroll-behavior-y:auto !important; touch-action:pan-y !important; }
         #dashboard, .main { height:auto !important; min-height:0 !important; overflow:visible !important; }
@@ -4208,76 +4201,75 @@ function ensureDespMobileScroll(){
       doc.head.appendChild(st);
     }
     if(doc.body){
-      doc.body.style.overflowY = &#x27;auto&#x27;;
-      doc.body.style.webkitOverflowScrolling = &#x27;touch&#x27;;
-      doc.body.style.touchAction = &#x27;pan-y&#x27;;
+      doc.body.style.overflowY = 'auto';
+      doc.body.style.webkitOverflowScrolling = 'touch';
+      doc.body.style.touchAction = 'pan-y';
     }
-    var dash = doc.getElementById(&#x27;dashboard&#x27;);
+    var dash = doc.getElementById('dashboard');
     if(dash){
-      dash.style.height = &#x27;auto&#x27;;
-      dash.style.minHeight = &#x27;0&#x27;;
-      dash.style.overflow = &#x27;visible&#x27;;
+      dash.style.height = 'auto';
+      dash.style.minHeight = '0';
+      dash.style.overflow = 'visible';
     }
-    var main = doc.querySelector(&#x27;.main&#x27;);
+    var main = doc.querySelector('.main');
     if(main){
-      main.style.height = &#x27;auto&#x27;;
-      main.style.minHeight = &#x27;0&#x27;;
-      main.style.overflow = &#x27;visible&#x27;;
+      main.style.height = 'auto';
+      main.style.minHeight = '0';
+      main.style.overflow = 'visible';
     }
   }catch(e){}
 }
 function switchTab(tab) {
-  var tabRec = document.getElementById(&#x27;tab-rec&#x27;);
-  var tabDesp = document.getElementById(&#x27;tab-desp&#x27;);
-  var tabPag = document.getElementById(&#x27;tab-pag&#x27;);
-  var recPage = document.getElementById(&#x27;rec-page&#x27;);
-  var despFrame = document.getElementById(&#x27;desp-frame&#x27;);
-  var pagPage = document.getElementById(&#x27;pag-page&#x27;);
-  if(recPage) recPage.style.display=&#x27;none&#x27;;
-  if(despFrame) despFrame.style.display=&#x27;none&#x27;;
-  if(pagPage) pagPage.style.display=&#x27;none&#x27;;
-  if(tabRec) tabRec.className=&#x27;nav-tab&#x27;;
-  if(tabDesp) tabDesp.className=&#x27;nav-tab&#x27;;
-  if(tabPag) tabPag.className=&#x27;nav-tab&#x27;;
-  if(tab===&#x27;rec&#x27;){
-    if(recPage) recPage.style.display=&#x27;block&#x27;;
-    if(tabRec) tabRec.className=&#x27;nav-tab active-rec&#x27;;
-  }else if(tab===&#x27;desp&#x27;){
+  var tabRec = document.getElementById('tab-rec');
+  var tabDesp = document.getElementById('tab-desp');
+  var tabPag = document.getElementById('tab-pag');
+  var recPage = document.getElementById('rec-page');
+  var despFrame = document.getElementById('desp-frame');
+  var pagPage = document.getElementById('pag-page');
+  if(recPage) recPage.style.display='none';
+  if(despFrame) despFrame.style.display='none';
+  if(pagPage) pagPage.style.display='none';
+  if(tabRec) tabRec.className='nav-tab';
+  if(tabDesp) tabDesp.className='nav-tab';
+  if(tabPag) tabPag.className='nav-tab';
+  if(tab==='rec'){
+    if(recPage) recPage.style.display='block';
+    if(tabRec) tabRec.className='nav-tab active-rec';
+  }else if(tab==='desp'){
     if(despFrame){
-      despFrame.style.display=&#x27;block&#x27;;
-      despFrame.style.overflow=&#x27;auto&#x27;;
-      despFrame.style.webkitOverflowScrolling=&#x27;touch&#x27;;
-      despFrame.style.touchAction=&#x27;pan-y&#x27;;
+      despFrame.style.display='block';
+      despFrame.style.overflow='auto';
+      despFrame.style.webkitOverflowScrolling='touch';
+      despFrame.style.touchAction='pan-y';
     }
-    if(tabDesp) tabDesp.className=&#x27;nav-tab active-desp&#x27;;
+    if(tabDesp) tabDesp.className='nav-tab active-desp';
     ensureDespMobileScroll();
-    if(despFrame &amp;&amp; despFrame.contentWindow){
+    if(despFrame && despFrame.contentWindow){
       try{
         if(__lastFileBuffer){
-          despFrame.contentWindow.postMessage({ type:&#x27;LOAD_FILE&#x27;, arrayBuffer: __lastFileBuffer, fileName: __lastFileName || &#x27;planilha.xlsx&#x27; }, &#x27;*&#x27;);
+          despFrame.contentWindow.postMessage({ type:'LOAD_FILE', arrayBuffer: __lastFileBuffer, fileName: __lastFileName || 'planilha.xlsx' }, '*');
         }
-        [80, 220, 420, 700, 1100, 1600].forEach(t =&gt; setTimeout(()=&gt;{
+        [80, 260, 520, 900].forEach(t => setTimeout(()=>{
           try{
             ensureDespMobileScroll();
-            despFrame.contentWindow.postMessage({ type:&#x27;FORCE_RESIZE&#x27; }, &#x27;*&#x27;);
-            if(despFrame.contentWindow){ despFrame.contentWindow.dispatchEvent(new Event(&#x27;resize&#x27;)); }
+            despFrame.contentWindow.postMessage({ type:'FORCE_RESIZE' }, '*');
           }catch(e){}
         }, t));
-        [120, 320, 700].forEach(t =&gt; setTimeout(()=&gt;{
+        [120, 320, 700].forEach(t => setTimeout(()=>{
           try{
-            const d = despFrame.contentDocument || (despFrame.contentWindow &amp;&amp; despFrame.contentWindow.document);
+            const d = despFrame.contentDocument || (despFrame.contentWindow && despFrame.contentWindow.document);
             if(d){
-              const pag = d.getElementById(&#x27;pag-page&#x27;);
-              if(pag) pag.style.display = &#x27;none&#x27;;
-              const pagUpload = d.getElementById(&#x27;pag-upload-screen&#x27;);
-              if(pagUpload) pagUpload.style.display = &#x27;none&#x27;;
-              const pagDash = d.getElementById(&#x27;pag-dashboard&#x27;);
-              if(pagDash) pagDash.style.display = &#x27;none&#x27;;
-              const styleId = &#x27;hide-pag-inside-desp&#x27;;
+              const pag = d.getElementById('pag-page');
+              if(pag) pag.style.display = 'none';
+              const pagUpload = d.getElementById('pag-upload-screen');
+              if(pagUpload) pagUpload.style.display = 'none';
+              const pagDash = d.getElementById('pag-dashboard');
+              if(pagDash) pagDash.style.display = 'none';
+              const styleId = 'hide-pag-inside-desp';
               if(!d.getElementById(styleId)){
-                const st = d.createElement(&#x27;style&#x27;);
+                const st = d.createElement('style');
                 st.id = styleId;
-                st.textContent = &#x27;#pag-page,#pag-upload-screen,#pag-dashboard{display:none !important;}&#x27;;
+                st.textContent = '#pag-page,#pag-upload-screen,#pag-dashboard{display:none !important;}';
                 (d.head || d.documentElement).appendChild(st);
               }
             }
@@ -4285,38 +4277,38 @@ function switchTab(tab) {
         }, t));
       }catch(e){}
     }
-  }else if(tab===&#x27;pag&#x27;){
-    if(pagPage) pagPage.style.display=&#x27;block&#x27;;
-    if(tabPag) tabPag.className=&#x27;nav-tab active-rec&#x27;;
+  }else if(tab==='pag'){
+    if(pagPage) pagPage.style.display='block';
+    if(tabPag) tabPag.className='nav-tab active-rec';
     if(!window._pagReady){ pagSetupUpload(); window._pagReady = true; }
-    if(__lastFileBuffer &amp;&amp; (!window.pagData || !window.pagData.length)){
-      try{ pagLoadFile(__lastFileBuffer, __lastFileName || &#x27;planilha.xlsx&#x27;); }catch(e){}
+    if(__lastFileBuffer && (!window.pagData || !window.pagData.length)){
+      try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx'); }catch(e){}
     }
-    if(window.pagData &amp;&amp; window.pagData.length){
+    if(window.pagData && window.pagData.length){
       try{
-        document.getElementById(&#x27;pag-upload-screen&#x27;).classList.add(&#x27;hidden&#x27;);
-        document.getElementById(&#x27;pag-dashboard&#x27;).classList.remove(&#x27;hidden&#x27;);
+        document.getElementById('pag-upload-screen').classList.add('hidden');
+        document.getElementById('pag-dashboard').classList.remove('hidden');
       }catch(e){}
-      if(typeof pagSetCurrentPeriod === &#x27;function&#x27;){ try{ pagSetCurrentPeriod(); }catch(e){} }
+      if(typeof pagSetCurrentPeriod === 'function'){ try{ pagSetCurrentPeriod(); }catch(e){} }
       pagShowDashboard();
       pagRender();
     }
     else { pagShowUpload(); }
   }
 }
-&lt;/script&gt;
+</script>
 
-&lt;div id=&quot;pag-page&quot;&gt;
-  &lt;div id=&quot;pag-upload-screen&quot; class=&quot;hidden&quot;&gt;
-    &lt;div class=&quot;pag-logo&quot;&gt;GO COFFEE&lt;/div&gt;
-    &lt;div class=&quot;pag-sub&quot;&gt;DASHBOARD DE PAGAMENTOS&lt;/div&gt;
-    &lt;div id=&quot;pag-drop-zone&quot;&gt;
-      &lt;div class=&quot;pag-cup&quot;&gt;💳&lt;/div&gt;
-      &lt;div class=&quot;pag-h1&quot;&gt;Carregue sua planilha&lt;/div&gt;
-      &lt;div class=&quot;pag-p&quot;&gt;Arraste o arquivo &lt;b&gt;DRE GO COFFEE_COMPETENCIA.xlsx&lt;/b&gt; aqui&lt;br&gt;ou clique para selecionar&lt;/div&gt;
-      &lt;button class=&quot;pag-btn&quot; onclick=&quot;document.getElementById(&#x27;pag-file-input&#x27;).click()&quot;&gt;SELECIONAR ARQUIVO&lt;/button&gt;
-    &lt;/div&gt;
-    &lt;input type=&quot;file&quot; id=&quot;pag-file-input&quot; accept=&quot;.xlsx,.xls" style="display:none">
+<div id="pag-page">
+  <div id="pag-upload-screen" class="hidden">
+    <div class="pag-logo">GO COFFEE</div>
+    <div class="pag-sub">DASHBOARD DE PAGAMENTOS</div>
+    <div id="pag-drop-zone">
+      <div class="pag-cup">💳</div>
+      <div class="pag-h1">Carregue sua planilha</div>
+      <div class="pag-p">Arraste o arquivo <b>DRE GO COFFEE_COMPETENCIA.xlsx</b> aqui<br>ou clique para selecionar</div>
+      <button class="pag-btn" onclick="document.getElementById('pag-file-input').click()">SELECIONAR ARQUIVO</button>
+    </div>
+    <input type="file" id="pag-file-input" accept=".xlsx,.xls" style="display:none">
   </div>
 
   <div id="pag-dashboard" class="hidden">
