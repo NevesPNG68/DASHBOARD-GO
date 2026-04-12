@@ -2478,9 +2478,7 @@ generate();
   }
   .chart-card h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:1rem; }
   .chart-wrap { position:relative; width:100%; min-height:220px; height:clamp(220px, 32vw, 300px); overflow:hidden; }
-  .chart-wrap canvas { width:100% !important; max-width:100% !important; display:block !important; }
-  .chart-card, .chart-wrap { min-width:0 !important; }
-  .chart-wrap { overflow:hidden; }
+  .chart-wrap canvas { width:100% !important; max-width:100% !important; }
   #chart-mensal { max-height:200px !important; }
 
   @media(max-width:900px){
@@ -3316,7 +3314,6 @@ function renderCharts() {
   renderChartInsumosBar();
   renderChartLinha();
   renderChartRosca();
-  setTimeout(scheduleChartsResize, 30);
 }
 
 function getMesesOrdenados() {
@@ -3573,35 +3570,6 @@ function chartDefaults({ scales=false, stacked=false }={}) {
     } : undefined
   };
 }
-
-function scheduleChartsResize() {
-  if (window.__chartsResizeRAF) cancelAnimationFrame(window.__chartsResizeRAF);
-  window.__chartsResizeRAF = requestAnimationFrame(() =&gt; {
-    Object.keys(charts).forEach(k =&gt; {
-      try { if (charts[k]) charts[k].resize(); } catch(e) {}
-    });
-  });
-}
-
-function initResponsiveCharts() {
-  if (window.__responsiveChartsInit) return;
-  window.__responsiveChartsInit = true;
-
-  window.addEventListener('resize', scheduleChartsResize, { passive:true });
-  window.addEventListener('orientationchange', () =&gt; setTimeout(scheduleChartsResize, 180), { passive:true });
-  document.addEventListener('visibilitychange', () =&gt; { if (!document.hidden) setTimeout(scheduleChartsResize, 60); });
-
-  if ('ResizeObserver' in window) {
-    const ro = new ResizeObserver(() =&gt; scheduleChartsResize());
-    document.querySelectorAll('.chart-wrap, .chart-card').forEach(el =&gt; ro.observe(el));
-    window.__chartsRO = ro;
-  }
-
-  setTimeout(scheduleChartsResize, 60);
-  setTimeout(scheduleChartsResize, 220);
-}
-
-setTimeout(initResponsiveCharts, 0);
 
 // ══════════════════════════════════════════════════
 //  TABLE
