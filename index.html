@@ -2586,30 +2586,60 @@ generate();
       overflow-x:auto !important;
       overflow-y:auto !important;
       -webkit-overflow-scrolling:touch;
-      max-height:none !important;
+      max-height:72vh !important;
+      padding-bottom:2px !important;
     }
-    table { width:100% !important; min-width:0 !important; table-layout:fixed !important; }
-    thead th, tbody td { padding:.48rem .42rem !important; font-size:.68rem !important; }
-    thead th { font-size:.56rem !important; }
-    tbody td, thead th { white-space:normal !important; word-break:break-word !important; overflow-wrap:anywhere !important; }
-    thead th:nth-child(1), tbody td:nth-child(1),
-    thead th:nth-child(2), tbody td:nth-child(2),
-    thead th:nth-child(3), tbody td:nth-child(3),
-    thead th:nth-child(7), tbody td:nth-child(7),
-    thead th:nth-child(8), tbody td:nth-child(8),
-    thead th:nth-child(9), tbody td:nth-child(9),
-    thead th:nth-child(10), tbody td:nth-child(10) { white-space:nowrap !important; word-break:normal !important; }
-    thead th:nth-child(1), tbody td:nth-child(1) { width:12% !important; }
-    thead th:nth-child(2), tbody td:nth-child(2) { width:11% !important; }
-    thead th:nth-child(3), tbody td:nth-child(3) { width:8% !important; }
-    thead th:nth-child(4), tbody td:nth-child(4) { width:20% !important; }
-    thead th:nth-child(5), tbody td:nth-child(5) { width:12% !important; }
-    thead th:nth-child(6), tbody td:nth-child(6) { width:13% !important; }
-    thead th:nth-child(7), tbody td:nth-child(7) { width:6% !important; text-align:right !important; }
-    thead th:nth-child(8), tbody td:nth-child(8) { width:10% !important; text-align:right !important; }
-    thead th:nth-child(9), tbody td:nth-child(9) { width:12% !important; text-align:right !important; }
-    thead th:nth-child(10), tbody td:nth-child(10) { width:10% !important; }
-    #table-foot td { font-size:.66rem !important; padding:.55rem .42rem !important; }
+    .table-wrap table {
+      width:max-content !important;
+      min-width:980px !important;
+      table-layout:auto !important;
+    }
+    .table-wrap thead th,
+    .table-wrap tbody td {
+      padding:.58rem .55rem !important;
+      font-size:.72rem !important;
+      white-space:nowrap !important;
+      word-break:normal !important;
+      overflow-wrap:normal !important;
+      vertical-align:middle !important;
+    }
+    .table-wrap thead th {
+      font-size:.60rem !important;
+      letter-spacing:.06em !important;
+    }
+    .table-wrap thead th:nth-child(4), .table-wrap tbody td:nth-child(4) {
+      min-width:170px !important;
+      white-space:normal !important;
+      line-height:1.25 !important;
+    }
+    .table-wrap thead th:nth-child(6), .table-wrap tbody td:nth-child(6) {
+      min-width:140px !important;
+      white-space:normal !important;
+      line-height:1.25 !important;
+    }
+    .table-wrap thead th:nth-child(1), .table-wrap tbody td:nth-child(1) { min-width:84px !important; }
+    .table-wrap thead th:nth-child(2), .table-wrap tbody td:nth-child(2) { min-width:82px !important; }
+    .table-wrap thead th:nth-child(3), .table-wrap tbody td:nth-child(3) { min-width:58px !important; }
+    .table-wrap thead th:nth-child(5), .table-wrap tbody td:nth-child(5) { min-width:86px !important; }
+    .table-wrap thead th:nth-child(7), .table-wrap tbody td:nth-child(7) { min-width:54px !important; text-align:right !important; }
+    .table-wrap thead th:nth-child(8), .table-wrap tbody td:nth-child(8) { min-width:92px !important; text-align:right !important; }
+    .table-wrap thead th:nth-child(9), .table-wrap tbody td:nth-child(9) { min-width:98px !important; text-align:right !important; }
+    .table-wrap thead th:nth-child(10), .table-wrap tbody td:nth-child(10) { min-width:84px !important; }
+    #table-foot td {
+      font-size:.70rem !important;
+      padding:.62rem .55rem !important;
+      white-space:nowrap !important;
+      position:sticky !important;
+      bottom:0;
+      background:#1f1f1f !important;
+      z-index:2;
+    }
+    #table-foot td:first-child {
+      text-align:left !important;
+    }
+    #table-foot td:nth-child(2) {
+      text-align:right !important;
+    }
   }
 
   @media(max-width:560px){
