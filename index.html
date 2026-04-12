@@ -507,24 +507,7 @@ a:hover{text-decoration:underline}
 .ms-item{ background: transparent; }
 
 /* ===== UI prático: popup só com lista (sem Fil/Todos/Nenhum) ===== */
-.ms-top, .ms-actions, .ms-search{ display:none !important; }
-.ms-foot{
-  display:flex !important;
-  justify-content:flex-end;
-  padding:10px 12px 12px;
-  border-top:1px solid rgba(255,255,255,.08);
-}
-.ms-ok{
-  appearance:none;
-  border:1px solid rgba(163,255,18,.35);
-  background:rgba(163,255,18,.10);
-  color:rgba(255,255,255,.95);
-  border-radius:999px;
-  padding:9px 16px;
-  font-weight:900;
-  cursor:pointer;
-}
-.ms-ok:hover{ filter:brightness(1.08); }
+.ms-top, .ms-actions, .ms-search, .ms-foot{ display:none !important; }
 .ms-pop{ padding-top: 6px; }
 
 /* ====== Charts (SVG) ====== */
@@ -1103,7 +1086,7 @@ img, svg, canvas{max-width:100%; height:auto}
         <label class="btn small lime" for="fileInput">Carregar Excel (.xlsx)</label>
         <input id="fileInput" type="file" accept=".xlsx" class="hidden"/>
         <button class="btn small" id="btnLimpar">Limpar</button>
-        <button class="btn small hidden" id="btnAplicar" aria-hidden="true" tabindex="-1">Aplicar</button>
+        <button class="btn small" id="btnAplicar">Aplicar</button>
       </div>
     </div>
     <div class="filters-body">
@@ -1322,7 +1305,7 @@ function msInit(id, label){
         </div>
       </div>
       <div class="ms-list"></div>
-      <div class="ms-foot"><button type="button" class="ms-ok">OK</button></div>
+      <div class="ms-foot">Seleção aplicada automaticamente.</div>
     </div>
   `;
 
@@ -1338,17 +1321,8 @@ function msInit(id, label){
 
   MS[id] = { selected:new Set(), all:[], root, pop, list, search, hint };
 
-  root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); });
-  root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); });
-
-  const okBtn = root.querySelector('.ms-ok');
-  if(okBtn){
-    okBtn.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      pop.classList.remove('open');
-      generate();
-    });
-  }
+  root.querySelector('[data-act="all"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected = new Set(MS[id].all); msRender(id); generate(); });
+  root.querySelector('[data-act="none"]').addEventListener('click', (e)=>{ e.stopPropagation(); MS[id].selected.clear(); msRender(id); generate(); });
 
   search.addEventListener('click', (e)=>e.stopPropagation());
   search.addEventListener('input', ()=> msRender(id, search.value));
@@ -1401,6 +1375,10 @@ function msRender(id, q=''){
       const currentScroll = st.list.scrollTop;
       msRender(id, st.search.value || '');
       st.list.scrollTop = currentScroll;
+      if(window.innerWidth <= 760){
+        st.pop.classList.remove('open');
+      }
+      generate();
     };
     it.addEventListener('click', toggle);
     const cb = it.querySelector('input[type="checkbox"]');
@@ -2124,7 +2102,7 @@ function limpar(){
 }
 
 els.btnLimpar.addEventListener('click', ()=>{ limpar(); });
-els.btnAplicar.addEventListener('click', ()=>{ document.querySelectorAll('.ms-pop.open').forEach(el=>el.classList.remove('open')); generate(); });
+if(els.btnAplicar){ els.btnAplicar.addEventListener('click', ()=>{ document.querySelectorAll('.ms-pop.open').forEach(el=>el.classList.remove('open')); generate(); }); }
 [els.ano,els.mes,els.ds,els.semana,els.faixa].forEach(x=>x.addEventListener('change', generate));
 
 // Upload Excel -> lê aba DADOS
