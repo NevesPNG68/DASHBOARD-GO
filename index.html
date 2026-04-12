@@ -3855,7 +3855,7 @@ function ensureDespMobileScroll(){
         html, body { height:auto !important; min-height:100% !important; overflow-x:hidden !important; overflow-y:auto !important; -webkit-overflow-scrolling:touch !important; overscroll-behavior-y:auto !important; touch-action:pan-y !important; }
         #dashboard, .main { height:auto !important; min-height:0 !important; overflow:visible !important; }
         .chart-grid, .chart-grid-3, .chart-card, .chart-wrap, .table-wrap { touch-action:pan-y !important; }
-        canvas { touch-action:pan-y !important; }
+        canvas { touch-action:auto !important; pointer-events:none !important; }
       `;
       doc.head.appendChild(st);
     }
