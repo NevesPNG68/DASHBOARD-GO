@@ -2554,7 +2554,40 @@ generate();
       z-index:9999;
     }
     .ms-list { max-height:54vh; }
-    .table-wrap { overflow:auto; -webkit-overflow-scrolling:touch; }
+    .table-wrap { overflow:auto; -webkit-overflow-scrolling:touch; max-height:none !important; }
+    .chart-wrap { width:100% !important; }
+    .chart-wrap canvas { width:100% !important; height:100% !important; }
+  }
+
+  @media(max-width:560px){
+    #insumos-grid { grid-template-columns:1fr !important; gap:.85rem !important; }
+    .chart-card { width:100% !important; min-width:0 !important; }
+    .chart-wrap { min-height:220px !important; height:220px !important; }
+    .chart-wrap canvas { width:100% !important; height:100% !important; }
+    #chart-mensal { height:220px !important; }
+    #chart-insumos-bar, #chart-linha { height:220px !important; }
+    #chart-rosca-wrap {
+      min-height:220px !important;
+      height:220px !important;
+      width:100% !important;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #chart-rosca {
+      width:min(220px, 100%) !important;
+      max-width:220px !important;
+      height:min(220px, 70vw) !important;
+      max-height:220px !important;
+    }
+    .table-wrap {
+      overflow-x:auto !important;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch;
+      max-height:none !important;
+    }
+    table { min-width:1120px; }
+    tbody td, thead th { white-space:nowrap !important; }
   }
 
   @media(max-width:560px){
@@ -3377,14 +3410,14 @@ function renderTable() {
   document.getElementById(&#x27;table-count-tag&#x27;).textContent = `${data.length} itens`;
 
   const tbody = document.getElementById(&#x27;table-body&#x27;);
-  tbody.innerHTML = data.slice(0,500).map(d =&gt; `
+  tbody.innerHTML = data.map(d =&gt; `
     &lt;tr&gt;
       &lt;td&gt;${d.dateStr}&lt;/td&gt;
       &lt;td&gt;${d.mes}&lt;/td&gt;
       &lt;td&gt;${d.ano}&lt;/td&gt;
-      &lt;td title=&quot;${d.item}&quot;&gt;${d.item.length&gt;42 ? d.item.slice(0,42)+&#x27;…&#x27; : d.item}&lt;/td&gt;
+      &lt;td title=&quot;${d.item}&quot;&gt;${d.item}&lt;/td&gt;
       &lt;td&gt;&lt;span style=&quot;color:${INSUMOS_COLOR[d.grupo]||&#x27;#888&#x27;};font-weight:600&quot;&gt;${d.grupo}&lt;/span&gt;&lt;/td&gt;
-      &lt;td&gt;${d.fornec.length&gt;20?d.fornec.slice(0,20)+&#x27;…&#x27;:d.fornec}&lt;/td&gt;
+      &lt;td&gt;${d.fornec}&lt;/td&gt;
       &lt;td class=&quot;num&quot;&gt;${d.qtd}&lt;/td&gt;
       &lt;td class=&quot;num&quot;&gt;${fmtBRL(d.vlrUnit)}&lt;/td&gt;
       &lt;td class=&quot;num&quot; style=&quot;color:var(--accent);font-weight:600&quot;&gt;${fmtBRL(d.total)}&lt;/td&gt;
