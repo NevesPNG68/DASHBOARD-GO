@@ -3065,46 +3065,115 @@ function loadFile(file) {
 }
 
 
+
 function parseReceitaSheet(wb){
   receitaData = [];
   try{
-    const sh = wb.Sheets[&#x27;DADOS&#x27;] || wb.Sheets[wb.SheetNames[0]];
+    const sh = wb.Sheets['DADOS'] || wb.Sheets[wb.SheetNames[0]];
     if(!sh) return;
-    const rows = XLSX.utils.sheet_to_json(sh, {defval:&#x27;&#x27;});
-    const pick = (obj, keys)=&gt; {
+
+    const rows = XLSX.utils.sheet_to_json(sh, {defval:''});
+    const rawRows = XLSX.utils.sheet_to_json(sh, {header:1, defval:''});
+
+    const pick = (obj, keys)=> {
       for(const k of keys){
-        if(obj[k]!==undefined &amp;&amp; obj[k]!==null &amp;&amp; String(obj[k]).trim()!==&#x27;&#x27;) return obj[k];
+        if(obj[k]!==undefined && obj[k]!==null && String(obj[k]).trim()!=='') return obj[k];
       }
-      return &#x27;&#x27;;
+      return '';
     };
+
+    const pushReceita = (mes, ano, total)=>{
+      const y = Number(String(ano||'').replace(/\D/g,''));
+      let num = 0;
+      if(typeof total === 'number') num = total;
+      else {
+        const s = String(total).replace(/\s/g,'').replace(/R\$/g,'');
+        num = Number(s.replace(/\./g,'').replace(/,/g,'.')) || 0;
+      }
+      if(!mes || !y || !num) return;
+      receitaData.push({ mes: String(mes).trim(), ano: String(y), total: num });
+    };
+
+    const parseMesAno = (val)=>{
+      const s0 = String(val || '').trim();
+      if(!s0) return null;
+      const s = s0.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+      let mm = 0, yy = 0;
+      const map = {
+        jan:1, janeiro:1,
+        fev:2, fevereiro:2,
+        mar:3, marco:3, março:3,
+        abr:4, abril:4,
+        mai:5, maio:5,
+        jun:6, junho:6,
+        jul:7, julho:7,
+        ago:8, agosto:8,
+        set:9, setembro:9,
+        out:10, outubro:10,
+        nov:11, novembro:11,
+        dez:12, dezembro:12
+      };
+
+      const lower = s.toLowerCase();
+      const parts = lower.split(/[\/\-\s]+/).filter(Boolean);
+      for(const p of parts){ if(map[p]){ mm = map[p]; break; } }
+      const yearMatch = lower.match(/(20\d{2}|\d{2})/g);
+      if(yearMatch && yearMatch.length){
+        const y = Number(yearMatch[yearMatch.length-1]);
+        yy = y < 100 ? 2000 + y : y;
+      }
+
+      if(!mm){
+        const m = lower.match(/^(\d{1,2})[\/\-](20\d{2}|\d{2})$/);
+        if(m){
+          mm = Number(m[1]);
+          const y = Number(m[2]);
+          yy = y < 100 ? 2000 + y : y;
+        }
+      }
+
+      if(mm && yy) return { mes: Object.keys(map).find(k => map[k]===mm && k.length===3).replace('mar','Mar').replace('jan','Jan').replace('fev','Fev').replace('abr','Abr').replace('mai','Mai').replace('jun','Jun').replace('jul','Jul').replace('ago','Ago').replace('set','Set').replace('out','Out').replace('nov','Nov').replace('dez','Dez') + '/' + String(yy).slice(-2), ano: yy };
+      return null;
+    };
+
     for(const r of rows){
-      const data = pick(r, [&#x27;date&#x27;,&#x27;DATA&#x27;,&#x27;Data&#x27;,&#x27;DATA &#x27;,&#x27;DATA DA ORDEM&#x27;,&#x27;Data da Ordem&#x27;,&#x27;DATA DA ORDEM &#x27;]);
-      const faixa = pick(r, [&#x27;faixa&#x27;,&#x27;FAIXA&#x27;,&#x27;Faixa&#x27;,&#x27;FAIXA DE HORA&#x27;,&#x27;FAIXA HORA&#x27;]);
-      const total = pick(r, [&#x27;total&#x27;,&#x27;Total&#x27;,&#x27;TOTAL&#x27;,&#x27;Valor&#x27;,&#x27;V&#x27;,&#x27;LIQUIDO&#x27;,&#x27;Líquido&#x27;,&#x27;VLR LIQ&#x27;]);
-      if(!data || !faixa) continue;
-      let iso = &#x27;&#x27;;
-      if(typeof data === &#x27;number&#x27;){
+      const data = pick(r, ['date','DATA','Data','DATA ','DATA DA ORDEM','Data da Ordem','DATA DA ORDEM ']);
+      const faixa = pick(r, ['faixa','FAIXA','Faixa','FAIXA DE HORA','FAIXA HORA','T']);
+      const total = pick(r, ['total','Total','TOTAL','Valor','V','LIQUIDO','Líquido','VLR LIQ','VALOR LÍQUIDO','Valor Líquido','VALOR LIQUIDO']);
+      const mesCompet = pick(r, ['mes','MÊS','MES','Mês','Competência','COMPETENCIA','Competencia','U']);
+
+      let iso = '';
+      if(typeof data === 'number'){
         const dtc = XLSX.SSF.parse_date_code(data);
-        if(dtc) iso = `${dtc.y}-${String(dtc.m).padStart(2,&#x27;0&#x27;)}-${String(dtc.d).padStart(2,&#x27;0&#x27;)}`;
+        if(dtc) iso = `${dtc.y}-${String(dtc.m).padStart(2,'0')}-${String(dtc.d).padStart(2,'0')}`;
       } else {
         const s = String(data).trim();
         const m = s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
         if(m) iso = `${m[3]}-${m[2]}-${m[1]}`;
         else if(/^\d{4}-\d{2}-\d{2}$/.test(s)) iso = s;
       }
-      if(!iso) continue;
-      let num = 0;
-      if(typeof total === &#x27;number&#x27;) num = total;
-      else {
-        const s = String(total).replace(/\s/g,&#x27;&#x27;).replace(/R\$/g,&#x27;&#x27;);
-        num = Number(s.replace(/\./g,&#x27;&#x27;).replace(/,/g,&#x27;.&#x27;)) || 0;
+
+      if(iso && faixa){
+        const dt = new Date(iso+'T00:00:00');
+        if(!isNaN(dt)) pushReceita(monthLabelPt(dt), dt.getFullYear(), total);
+        continue;
       }
-      if(!num) continue;
-      const dt = new Date(iso+&#x27;T00:00:00&#x27;);
-      if(isNaN(dt)) continue;
-      receitaData.push({ mes: monthLabelPt(dt), ano: String(dt.getFullYear()), total: num });
+
+      const ma = parseMesAno(mesCompet);
+      if(ma) pushReceita(ma.mes, ma.ano, total);
     }
-  }catch(err){ console.error(&#x27;Erro ao ler aba DADOS para CMV:&#x27;, err); }
+
+    if(!receitaData.length && rawRows && rawRows.length){
+      for(const row of rawRows){
+        if(!row || !row.length) continue;
+        const mesCompet = row[20] || row[21] || row[19] || '';
+        const total = row[21] || row[22] || row[20] || '';
+        const ma = parseMesAno(mesCompet);
+        if(ma) pushReceita(ma.mes, ma.ano, total);
+      }
+    }
+  }catch(err){ console.error('Erro ao ler aba DADOS para CMV:', err); }
 }
 
 function cmvMonthNum(v){
