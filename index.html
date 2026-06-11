@@ -7490,5 +7490,427 @@ window._pagReady = false;
 })();
 </script>
 
+
+
+<!-- ============================================================
+     PATCH FINAL — FATURAMENTO: filtros nativos no estilo Pagamentos
+     - Remove popup/multiselect do Faturamento no mobile
+     - Usa <select> nativo, igual Pagamentos
+     - Ano dinâmico: 2025, 2026 e próximos anos presentes na planilha
+     - Mês dependente do ano: ao escolher 2025, mostra apenas meses de 2025
+     - No mobile, não re-renderiza a tela a cada toque; aplica pelo botão Aplicar
+     ============================================================ -->
+<style id="faturamento-filtros-nativos-pagamentos-style-final">
+#rec-page .filters-panel{
+  --edge-rgb:0,229,255;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.75) !important;
+  background:linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 34%, rgba(15,23,42,.86)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 18px 52px rgba(0,0,0,.30), 0 0 18px rgba(var(--edge-rgb),.06) !important;
+  overflow:visible !important;
+}
+#rec-page .filters-panel:hover,
+#rec-page .filters-panel:focus-within{
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 9px 18px rgba(var(--edge-rgb),.06), 0 18px 52px rgba(0,0,0,.32), 0 0 24px rgba(var(--edge-rgb),.10) !important;
+}
+#rec-page .filters-head{
+  background:linear-gradient(90deg, rgba(0,229,255,.08), rgba(15,23,42,.35), rgba(57,255,20,.055)) !important;
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+}
+#rec-page .filters-head .title{
+  color:#F8FAFC !important;
+  font-weight:950 !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+}
+#rec-page .filters-grid{
+  display:grid !important;
+  grid-template-columns:repeat(5, minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+#rec-page .filters-grid .f{grid-column:span 1 !important; min-width:0 !important;}
+#rec-page .filters-grid .f > label{
+  display:block !important;
+  color:rgba(203,213,225,.92) !important;
+  font-size:11px !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  font-weight:950 !important;
+  margin-bottom:7px !important;
+}
+#rec-page .rec-native-wrap{width:100% !important; position:relative !important;}
+#rec-page .rec-native-select{
+  width:100% !important;
+  min-height:52px !important;
+  appearance:auto !important;
+  -webkit-appearance:menulist !important;
+  border-radius:18px !important;
+  border:1px solid rgba(var(--edge-rgb),.24) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.58) !important;
+  background:linear-gradient(180deg, rgba(var(--edge-rgb),.06), rgba(15,23,42,.94) 35%, rgba(15,23,42,.86)) !important;
+  color:#F8FAFC !important;
+  outline:none !important;
+  padding:10px 12px !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 12px 28px rgba(0,0,0,.22) !important;
+}
+#rec-page .rec-native-select:focus,
+#rec-page .rec-native-select:active{
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  border-color:rgba(var(--edge-rgb),.42) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 9px 18px rgba(var(--edge-rgb),.065), 0 0 0 3px rgba(var(--edge-rgb),.11), 0 14px 34px rgba(0,0,0,.28) !important;
+}
+#rec-page .rec-native-select option{background:#10151f !important; color:#fff !important;}
+#rec-page #fAno{--edge-rgb:0,229,255;}
+#rec-page #fMes{--edge-rgb:57,255,20;}
+#rec-page #fDiaSemana{--edge-rgb:168,85,247;}
+#rec-page #fSemana{--edge-rgb:245,158,11;}
+#rec-page #fFaixa{--edge-rgb:251,54,93;}
+#rec-page .filters-head .right label[for="fileInput"]{display:none !important;}
+#rec-page #btnLimpar,
+#rec-page #btnAplicar{
+  border-radius:16px !important;
+  border:1px solid rgba(var(--edge-rgb),.24) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.58) !important;
+  background:linear-gradient(180deg, rgba(var(--edge-rgb),.06), rgba(15,23,42,.94) 35%, rgba(15,23,42,.86)) !important;
+  color:#F8FAFC !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 12px 28px rgba(0,0,0,.22) !important;
+}
+#rec-page #btnLimpar{--edge-rgb:251,54,93;}
+#rec-page #btnAplicar{--edge-rgb:57,255,20;}
+#rec-page #btnAplicar::after{
+  content:'';
+}
+#rec-page .chip{
+  border:1px solid rgba(0,229,255,.22) !important;
+  border-top:3px solid rgba(0,229,255,.62) !important;
+  background:linear-gradient(180deg, rgba(0,229,255,.06), rgba(15,23,42,.82)) !important;
+  color:#CBD5E1 !important;
+  font-weight:850 !important;
+}
+#rec-page .chip b{color:#F8FAFC !important;}
+#rec-page .chip .x{color:#39FF14 !important; font-weight:1000 !important;}
+@media (max-width:980px){
+  #rec-page .filters-grid{grid-template-columns:repeat(2, minmax(0,1fr)) !important;}
+}
+@media (max-width:760px){
+  #rec-page .filters-grid{grid-template-columns:1fr !important; gap:10px !important;}
+  #rec-page .filters-grid .f > label{display:block !important; font-size:10px !important; margin-left:2px !important;}
+  #rec-page .rec-native-select{min-height:56px !important; font-size:16px !important; border-radius:18px !important; padding:12px 13px !important;}
+  #rec-page .filters-head .right{display:grid !important; grid-template-columns:1fr 1fr !important; width:100% !important; gap:8px !important;}
+  #rec-page #btnLimpar,#rec-page #btnAplicar{min-height:48px !important; font-size:12px !important;}
+}
+</style>
+
+<script id="faturamento-filtros-nativos-pagamentos-style-final-js">
+(function(){
+  const MONTHS_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const MONTHS_FULL  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DOW = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const IDS = ['fAno','fMes','fDiaSemana','fSemana','fFaixa'];
+  const LABELS = {fAno:'Ano', fMes:'Mês', fDiaSemana:'Dia da semana', fSemana:'Nº semana', fFaixa:'Faixa de hora'};
+  let refreshing = false;
+  let renderTimer = null;
+
+  function mobile(){ return window.matchMedia && window.matchMedia('(max-width:760px)').matches; }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function shortMonth(n){ return MONTHS_SHORT[Math.max(1, Math.min(12, Number(n))) - 1] || ''; }
+  function fullMonth(n){ return MONTHS_FULL[Math.max(1, Math.min(12, Number(n))) - 1] || ''; }
+  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+  function rows(){ try{ return Array.isArray(BASE_N) ? BASE_N : []; }catch(e){ return []; } }
+  function el(id){ return document.getElementById(id); }
+  function sel(id){ const root = el(id); return root ? root.querySelector('select.rec-native-select') : null; }
+  function parseMonthFromLabel(v){
+    const s = String(v || '').trim();
+    const m = s.match(/^([A-Za-zÀ-ÿ]{3})\/(\d{2}|\d{4})$/);
+    if(!m) return null;
+    const idx = MONTHS_SHORT.findIndex(x => x.toLowerCase() === m[1].slice(0,3).toLowerCase());
+    if(idx < 0) return null;
+    let y = Number(m[2]);
+    if(y < 100) y += 2000;
+    return {year:y, month:idx+1};
+  }
+  function parseDate(v){
+    if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+    const s = String(v ?? '').trim();
+    if(!s) return null;
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})/);
+    if(m){ let y = Number(m[3]); if(y < 100) y += 2000; return new Date(y, Number(m[2])-1, Number(m[1])); }
+    return null;
+  }
+  function ensureMeta(list){
+    (list || []).forEach(r => {
+      if(!r) return;
+      let dt = parseDate(r.date);
+      if(!dt && r.ano && r.mes){
+        const pm = parseMonthFromLabel(r.mes);
+        if(pm) dt = new Date(pm.year, pm.month-1, 1);
+      }
+      if(!dt || isNaN(dt)) return;
+      const y = dt.getFullYear();
+      const m = dt.getMonth()+1;
+      r._recAno = y;
+      r._recMesNum = m;
+      r._recMesKey = y + '-' + pad(m);
+      r._recMesShort = shortMonth(m) + '/' + String(y).slice(-2);
+      r._recMesFull = fullMonth(m);
+      r.ano = y;
+      r.mes = r._recMesShort;
+      if(!r.date) r.date = y + '-' + pad(m) + '-' + pad(dt.getDate());
+      if(!r.diaSemana && typeof weekdayPt === 'function') r.diaSemana = weekdayPt(dt);
+      if(!r.semana && typeof weekOfMonth === 'function') r.semana = weekOfMonth(dt);
+    });
+  }
+  function makeSelect(rootId){
+    const root = el(rootId);
+    if(!root) return;
+    root.classList.add('rec-native-wrap');
+    root.innerHTML = `<select class="rec-native-select" aria-label="${esc(LABELS[rootId] || rootId)}"></select>`;
+    const s = sel(rootId);
+    if(!s) return;
+    s.addEventListener('change', function(ev){
+      ev.stopPropagation();
+      if(refreshing) return;
+      refreshFilterOptions();
+      if(mobile()){
+        recRenderChips(recGetFilters());
+        const metaExtra = el('metaFiltros');
+        if(metaExtra) metaExtra.innerHTML = 'Filtros selecionados. Toque em <b>Aplicar</b> para atualizar o Faturamento.';
+      }else{
+        recGenerateDebounced();
+      }
+    });
+  }
+  function fill(id, opts, placeholder){
+    const s = sel(id);
+    if(!s) return;
+    const old = s.value;
+    s.innerHTML = `<option value="">${esc(placeholder || 'Todos')}</option>` + (opts || []).map(o => `<option value="${esc(o.value)}">${esc(o.text)}</option>`).join('');
+    if((opts || []).some(o => String(o.value) === String(old))) s.value = old;
+    else s.value = '';
+  }
+  function selected(id){ const s = sel(id); return s ? String(s.value || '') : ''; }
+  function currentBaseFiltered(skip){
+    ensureMeta(rows());
+    let out = rows().slice();
+    const ano = selected('fAno');
+    const mes = selected('fMes');
+    const dia = selected('fDiaSemana');
+    const semana = selected('fSemana');
+    const faixa = selected('fFaixa');
+    if(skip !== 'ano' && ano) out = out.filter(r => String(r._recAno) === ano);
+    if(skip !== 'mes' && mes){
+      if(ano) out = out.filter(r => String(r._recMesNum) === mes);
+      else out = out.filter(r => String(r._recMesKey) === mes);
+    }
+    if(skip !== 'dia' && dia) out = out.filter(r => String(r.diaSemana) === dia);
+    if(skip !== 'semana' && semana) out = out.filter(r => String(r.semana) === semana);
+    if(skip !== 'faixa' && faixa) out = out.filter(r => String(r.faixa) === faixa);
+    return out;
+  }
+  function refreshFilterOptions(){
+    refreshing = true;
+    try{
+      ensureMeta(rows());
+      const allRows = rows();
+      const years = [...new Set(allRows.map(r => r._recAno).filter(Boolean).map(String))]
+        .sort((a,b)=>Number(a)-Number(b))
+        .map(y => ({value:y, text:y}));
+      fill('fAno', years, 'Todos os anos');
+
+      const ano = selected('fAno');
+      let monthRows = currentBaseFiltered('mes');
+      let monthOpts;
+      if(ano){
+        monthOpts = [...new Map(monthRows
+          .filter(r => String(r._recAno) === ano)
+          .map(r => [r._recMesNum, {value:String(r._recMesNum), text:r._recMesFull}])
+        ).values()].sort((a,b)=>Number(a.value)-Number(b.value));
+        fill('fMes', monthOpts, 'Todos os meses');
+      }else{
+        monthOpts = [...new Map(monthRows
+          .map(r => [r._recMesKey, {value:r._recMesKey, text:r._recMesShort}])
+        ).values()].sort((a,b)=>String(a.value).localeCompare(String(b.value)));
+        fill('fMes', monthOpts, 'Todos os meses');
+      }
+
+      const diaRows = currentBaseFiltered('dia');
+      fill('fDiaSemana', DOW.filter(d => diaRows.some(r => r.diaSemana === d)).map(d => ({value:d, text:d})), 'Todos os dias');
+
+      const semanaRows = currentBaseFiltered('semana');
+      const semanas = [...new Set(semanaRows.map(r => r.semana).filter(Boolean).map(String))]
+        .sort((a,b)=>Number(a)-Number(b)).map(v => ({value:v, text:v + 'ª semana'}));
+      fill('fSemana', semanas, 'Todas as semanas');
+
+      const faixaRows = currentBaseFiltered('faixa');
+      const faixas = [...new Set(faixaRows.map(r => r.faixa).filter(Boolean).map(String))]
+        .sort((a,b)=> (typeof parseFaixaStart === 'function' ? parseFaixaStart(a) : 0) - (typeof parseFaixaStart === 'function' ? parseFaixaStart(b) : 0))
+        .map(v => ({value:v, text:v}));
+      fill('fFaixa', faixas, 'Todas as faixas');
+    } finally {
+      refreshing = false;
+    }
+  }
+  function recGetFilters(){
+    const ano = selected('fAno');
+    const mes = selected('fMes');
+    const dia = selected('fDiaSemana');
+    const semana = selected('fSemana');
+    const faixa = selected('fFaixa');
+    let mesLabel = '';
+    if(mes){
+      if(ano) mesLabel = fullMonth(Number(mes));
+      else {
+        const found = rows().find(r => r._recMesKey === mes);
+        mesLabel = found ? found._recMesShort : mes;
+      }
+    }
+    return {
+      anos: ano ? [ano] : [],
+      meses: mes ? [mesLabel] : [],
+      diasSemana: dia ? [dia] : [],
+      semanas: semana ? [semana] : [],
+      faixas: faixa ? [faixa] : [],
+      _ano: ano,
+      _mes: mes,
+      _dia: dia,
+      _semana: semana,
+      _faixa: faixa
+    };
+  }
+  function recApplyFilters(list, f){
+    ensureMeta(list || []);
+    const ano = f && f._ano;
+    const mes = f && f._mes;
+    const dia = f && f._dia;
+    const semana = f && f._semana;
+    const faixa = f && f._faixa;
+    return (list || []).filter(r => {
+      if(ano && String(r._recAno) !== String(ano)) return false;
+      if(mes){
+        if(ano){ if(String(r._recMesNum) !== String(mes)) return false; }
+        else { if(String(r._recMesKey) !== String(mes)) return false; }
+      }
+      if(dia && String(r.diaSemana) !== String(dia)) return false;
+      if(semana && String(r.semana) !== String(semana)) return false;
+      if(faixa && String(r.faixa) !== String(faixa)) return false;
+      return true;
+    });
+  }
+  function clearOne(id, applyNow){
+    const s = sel(id);
+    if(s) s.value = '';
+    refreshFilterOptions();
+    if(applyNow) recGenerateDebounced(0);
+    else recRenderChips(recGetFilters());
+  }
+  function recRenderChips(f){
+    const chipsEl = el('chips');
+    if(!chipsEl) return;
+    chipsEl.innerHTML = '';
+    const chips = [];
+    if(f.anos.length) chips.push(['Ano', f.anos.join(', '), 'fAno']);
+    if(f.meses.length) chips.push(['Mês', f.meses.join(', '), 'fMes']);
+    if(f.diasSemana.length) chips.push(['Dia', f.diasSemana.join(', '), 'fDiaSemana']);
+    if(f.semanas.length) chips.push(['Semana', f.semanas.join(', '), 'fSemana']);
+    if(f.faixas.length) chips.push(['Faixa', f.faixas.join(', '), 'fFaixa']);
+    chips.forEach(([k,v,id]) => {
+      const div = document.createElement('div');
+      div.className = 'chip';
+      div.innerHTML = `<span>${esc(k)}: <b>${esc(v)}</b></span><button class="x" type="button" title="Remover">×</button>`;
+      div.querySelector('button').addEventListener('click', function(){ clearOne(id, true); });
+      chipsEl.appendChild(div);
+    });
+  }
+  function recGenerate(){
+    const list = rows();
+    ensureMeta(list);
+    const f = recGetFilters();
+    recRenderChips(f);
+    const filtered = recApplyFilters(list, f);
+    const selTxt = arr => (arr && arr.length) ? arr.join(', ') : 'Todos';
+    const metaExtra = el('metaFiltros');
+    if(metaExtra){
+      metaExtra.innerHTML = `Ano: <b>${esc(selTxt(f.anos))}</b> • Mês: <b>${esc(selTxt(f.meses))}</b> • Dia: <b>${esc(selTxt(f.diasSemana))}</b> • Semana: <b>${esc(selTxt(f.semanas))}</b> • Faixa: <b>${esc(selTxt(f.faixas))}</b> • Registros: <b>${filtered.length}</b>`;
+    }
+    const tagAtualizado = el('tagAtualizado');
+    if(tagAtualizado) tagAtualizado.textContent = new Date().toLocaleString('pt-BR');
+    const metaPeriodo = el('metaPeriodo');
+    const report = el('report');
+    if(typeof compute !== 'function' || !report) return;
+    const data = compute(filtered);
+    const days = data.days, daily = data.daily, dayFaixa = data.dayFaixa;
+    if(!daily.length){
+      if(metaPeriodo) metaPeriodo.innerHTML = 'Sem registros no recorte selecionado.';
+      report.innerHTML = `<div class="panel" style="margin-top:14px;"><div class="pc"><div class="foot"><b>Nenhum registro encontrado</b> com esses filtros. Tente remover um filtro ou ampliar o período.</div></div></div>`;
+      return;
+    }
+    const ini = daily[0].dateBR;
+    const fim = daily[daily.length-1].dateBR;
+    const months = [...new Set(daily.map(x => x.mes).filter(Boolean))];
+    const mesTxt = months.length === 1 ? months[0] : (months.length ? months[0] + ' … ' + months[months.length-1] : '—');
+    if(metaPeriodo) metaPeriodo.innerHTML = `Período: <b>${esc(ini)} a ${esc(fim)}</b> • Meses: <b>${esc(mesTxt)}</b>`;
+    const faixas = [...new Set(dayFaixa.map(r => r.faixa))].sort((a,b)=> (typeof parseFaixaStart === 'function' ? parseFaixaStart(a) : 0) - (typeof parseFaixaStart === 'function' ? parseFaixaStart(b) : 0));
+    let html = '';
+    if(typeof buildCards === 'function') html += buildCards(daily);
+    if(typeof buildCharts === 'function') html += buildCharts(daily);
+    if(typeof buildHeatmap === 'function') html += buildHeatmap(dayFaixa, days, faixas);
+    if(typeof buildResumoSemana === 'function') html += buildResumoSemana(daily, dayFaixa);
+    if(typeof buildResumoDia === 'function') html += buildResumoDia(daily, dayFaixa);
+    if(typeof buildJump === 'function') html += buildJump(daily);
+    if(typeof buildDayDetails === 'function') html += buildDayDetails(daily, dayFaixa);
+    report.innerHTML = html;
+    if(typeof initInteractiveChartLegends === 'function') initInteractiveChartLegends();
+  }
+  function recGenerateDebounced(delay){
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(recGenerate, delay == null ? 80 : delay);
+  }
+  function recClear(){
+    IDS.forEach(id => { const s = sel(id); if(s) s.value = ''; });
+    refreshFilterOptions();
+    recGenerateDebounced(0);
+  }
+  function replaceButton(id, handler, text){
+    const b = el(id);
+    if(!b || !b.parentNode) return null;
+    const clone = b.cloneNode(true);
+    if(text) clone.textContent = text;
+    b.parentNode.replaceChild(clone, b);
+    clone.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); handler(); });
+    return clone;
+  }
+  function expose(){
+    try{ getFilters = recGetFilters; }catch(e){}
+    try{ applyFilters = recApplyFilters; }catch(e){}
+    try{ renderChips = recRenderChips; }catch(e){}
+    try{ refreshFilterOptions = refreshFilterOptions; }catch(e){}
+    try{ limpar = recClear; }catch(e){}
+    try{ generate = recGenerate; }catch(e){}
+    window.getFilters = recGetFilters;
+    window.applyFilters = recApplyFilters;
+    window.renderChips = recRenderChips;
+    window.refreshFilterOptions = refreshFilterOptions;
+    window.limpar = recClear;
+    window.generate = recGenerate;
+    window.__recRefreshNativeFilters = refreshFilterOptions;
+  }
+  function init(){
+    IDS.forEach(makeSelect);
+    replaceButton('btnLimpar', recClear, 'Limpar');
+    replaceButton('btnAplicar', function(){ refreshFilterOptions(); recGenerateDebounced(0); }, 'Aplicar');
+    expose();
+    refreshFilterOptions();
+    recGenerateDebounced(0);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
 </body>
 </html>
