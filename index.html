@@ -4104,6 +4104,41 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 #pag-page .pag-table{width:100%;border-collapse:collapse;min-width:980px}
 #pag-page .pag-table th,#pag-page .pag-table td{padding:14px 10px;border-bottom:1px solid rgba(255,255,255,.07);text-align:left;color:#fff}
 #pag-page .pag-table th{color:rgba(190,210,255,.92);font-size:13px;font-weight:850}
+#pag-page .pag-table tbody tr{
+  transition:background .18s ease, box-shadow .18s ease, transform .18s ease, filter .18s ease;
+}
+#pag-page .pag-table tbody tr.pag-row-pago{
+  background:linear-gradient(90deg, rgba(57,255,20,.24), rgba(0,229,255,.12) 58%, rgba(57,255,20,.06));
+  box-shadow:inset 5px 0 0 rgba(57,255,20,.95), inset 0 0 0 1px rgba(57,255,20,.16);
+}
+#pag-page .pag-table tbody tr.pag-row-pago td{
+  color:#f8fff4;
+  font-weight:850;
+  border-bottom-color:rgba(57,255,20,.24);
+}
+#pag-page .pag-table tbody tr:hover,
+#pag-page .pag-table tbody tr:active,
+#pag-page .pag-table tbody tr.row-touch,
+#pag-page .pag-table tbody tr:focus-within{
+  background:linear-gradient(90deg, rgba(255,214,10,.34), rgba(0,229,255,.22) 52%, rgba(255,61,184,.14)) !important;
+  box-shadow:inset 6px 0 0 #FFD60A, inset 0 0 0 1px rgba(255,214,10,.50), 0 0 26px rgba(255,214,10,.20);
+  transform:translateY(-1px);
+  filter:brightness(1.10);
+}
+#pag-page .pag-table tbody tr:hover td,
+#pag-page .pag-table tbody tr:active td,
+#pag-page .pag-table tbody tr.row-touch td,
+#pag-page .pag-table tbody tr:focus-within td{
+  color:#ffffff;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+#pag-page .pag-table tbody tr.pag-row-pago:hover,
+#pag-page .pag-table tbody tr.pag-row-pago:active,
+#pag-page .pag-table tbody tr.pag-row-pago.row-touch,
+#pag-page .pag-table tbody tr.pag-row-pago:focus-within{
+  background:linear-gradient(90deg, rgba(57,255,20,.32), rgba(0,229,255,.24) 50%, rgba(255,214,10,.18)) !important;
+  box-shadow:inset 6px 0 0 #39FF14, inset 0 0 0 1px rgba(57,255,20,.55), 0 0 28px rgba(57,255,20,.22);
+}
 #pag-page .pag-table td:nth-child(6),#pag-page .pag-table td:nth-child(7){white-space:nowrap}
 #pag-page .pag-badge{
   display:inline-flex;align-items:center;justify-content:center;
@@ -4510,8 +4545,10 @@ function pagRender(){
 
     const rows = items.map(d => {
       const st = String(d.status || '').toUpperCase();
-      const badgeClass = st === 'PAGO' ? 'pag-badge ok' : 'pag-badge due';
-      return `<tr>
+      const isPago = st === 'PAGO' || (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+      const badgeClass = isPago ? 'pag-badge ok' : 'pag-badge due';
+      const rowClass = isPago ? 'pag-row-pago' : '';
+      return `<tr class="${rowClass}">
         <td>${d.fornec || ''}</td>
         <td>${d.nf || ''}</td>
         <td>${d.item || ''}</td>
@@ -4584,6 +4621,23 @@ function pagSetupUpload(){
   if(window.pagData && window.pagData.length) pagShowDashboard(); else pagShowUpload();
 }
 window._pagReady = false;
+(function(){
+  if(window.__pagRowTouchGlow) return;
+  window.__pagRowTouchGlow = true;
+  let lastRow = null;
+  function clearLast(){
+    if(lastRow){ lastRow.classList.remove('row-touch'); lastRow = null; }
+  }
+  document.addEventListener('touchstart', function(e){
+    const row = e.target.closest && e.target.closest('#pag-page .pag-table tbody tr');
+    if(!row) return;
+    clearLast();
+    row.classList.add('row-touch');
+    lastRow = row;
+  }, {passive:true});
+  document.addEventListener('touchend', function(){ setTimeout(clearLast, 180); }, {passive:true});
+  document.addEventListener('touchcancel', clearLast, {passive:true});
+})();
 </script>
 
 <script>
