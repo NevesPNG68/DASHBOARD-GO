@@ -938,6 +938,186 @@ img, svg, canvas{max-width:100%; height:auto}
 }
 </style>
 
+
+<style id="pagamentos-neon-borda-superior-v1">
+/* ===== PAGAMENTOS — borda superior + neon discreto ===== */
+#pag-page .pag-table{
+  width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 10px !important;
+  min-width:980px !important;
+}
+#pag-page .pag-table th,
+#pag-page .pag-table td{
+  border-bottom:none !important;
+}
+#pag-page .pag-table tbody tr{
+  position:relative !important;
+  background:linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.012)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 0 0 1px rgba(255,255,255,.06), 0 14px 34px rgba(0,0,0,.24) !important;
+  transition:box-shadow .18s ease, filter .18s ease, transform .18s ease, background .18s ease !important;
+}
+#pag-page .pag-table tbody tr::before{
+  content:'' !important;
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  top:0 !important;
+  height:3px !important;
+  border-radius:18px 18px 0 0 !important;
+  background:rgba(145,155,170,.72) !important;
+  box-shadow:0 0 10px rgba(145,155,170,.18) !important;
+  pointer-events:none !important;
+}
+#pag-page .pag-table tbody td{
+  background:transparent !important;
+  color:#f5f7fb !important;
+  border-top:none !important;
+  border-bottom:none !important;
+  text-shadow:none !important;
+}
+#pag-page .pag-table tbody td:first-child{
+  border-left:none !important;
+  border-radius:18px 0 0 18px !important;
+}
+#pag-page .pag-table tbody td:last-child{
+  border-right:none !important;
+  border-radius:0 18px 18px 0 !important;
+}
+
+/* Linhas A PAGAR: contraste cinza elegante */
+#pag-page .pag-table tbody tr:not(.pag-row-pago){
+  background:linear-gradient(90deg, rgba(255,255,255,.018), rgba(162,172,185,.06) 52%, rgba(255,255,255,.018)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025), 0 0 0 1px rgba(255,255,255,.06), 0 16px 34px rgba(0,0,0,.24) !important;
+}
+#pag-page .pag-table tbody tr:not(.pag-row-pago)::before{
+  background:linear-gradient(90deg, rgba(130,140,152,.92), rgba(182,190,200,.72), rgba(110,120,132,.92)) !important;
+  box-shadow:0 0 14px rgba(165,175,188,.12) !important;
+}
+#pag-page .pag-table tbody tr:not(.pag-row-pago):hover,
+#pag-page .pag-table tbody tr:not(.pag-row-pago):active,
+#pag-page .pag-table tbody tr:not(.pag-row-pago).row-touch,
+#pag-page .pag-table tbody tr:not(.pag-row-pago):focus-within{
+  background:linear-gradient(90deg, rgba(255,255,255,.03), rgba(178,188,200,.10) 52%, rgba(255,255,255,.03)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 0 0 1px rgba(185,195,208,.18), 0 0 20px rgba(175,185,195,.10), 0 16px 34px rgba(0,0,0,.26) !important;
+  transform:translateY(-1px) !important;
+  filter:none !important;
+}
+#pag-page .pag-table tbody tr:not(.pag-row-pago):hover::before,
+#pag-page .pag-table tbody tr:not(.pag-row-pago):active::before,
+#pag-page .pag-table tbody tr:not(.pag-row-pago).row-touch::before,
+#pag-page .pag-table tbody tr:not(.pag-row-pago):focus-within::before{
+  box-shadow:0 0 16px rgba(188,196,206,.18) !important;
+}
+
+/* Linhas PAGO: azul com borda superior neon */
+#pag-page .pag-table tbody tr.pag-row-pago{
+  background:linear-gradient(90deg, rgba(44,132,255,.17), rgba(0,229,255,.09) 56%, rgba(44,132,255,.08)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), 0 0 0 1px rgba(76,163,255,.18), 0 0 18px rgba(76,163,255,.10), 0 16px 34px rgba(0,0,0,.24) !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago::before{
+  background:linear-gradient(90deg, rgba(72,183,255,.98), rgba(0,229,255,.82), rgba(44,114,255,.98)) !important;
+  box-shadow:0 0 16px rgba(72,183,255,.26), 0 0 24px rgba(0,229,255,.10) !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago td{
+  color:#f6fbff !important;
+  font-weight:850 !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child{
+  position:relative !important;
+  padding-left:56px !important;
+  overflow:visible !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child::before{
+  content:'✓' !important;
+  position:absolute !important;
+  left:16px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:25px !important;
+  height:25px !important;
+  border-radius:999px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:linear-gradient(180deg, #48b7ff, #2c72ff) !important;
+  color:#fff !important;
+  font-size:17px !important;
+  font-weight:1000 !important;
+  border:1px solid rgba(255,255,255,.34) !important;
+  box-shadow:0 0 0 3px rgba(72,183,255,.12), 0 0 16px rgba(72,183,255,.18), 0 10px 22px rgba(0,0,0,.24) !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child::after{
+  display:none !important;
+  content:none !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago:hover,
+#pag-page .pag-table tbody tr.pag-row-pago:active,
+#pag-page .pag-table tbody tr.pag-row-pago.row-touch,
+#pag-page .pag-table tbody tr.pag-row-pago:focus-within{
+  background:linear-gradient(90deg, rgba(44,132,255,.20), rgba(0,229,255,.12) 56%, rgba(44,132,255,.10)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 0 0 1px rgba(76,163,255,.24), 0 0 22px rgba(76,163,255,.14), 0 16px 34px rgba(0,0,0,.26) !important;
+  transform:translateY(-1px) !important;
+  filter:none !important;
+}
+#pag-page .pag-table tbody tr.pag-row-pago:hover::before,
+#pag-page .pag-table tbody tr.pag-row-pago:active::before,
+#pag-page .pag-table tbody tr.pag-row-pago.row-touch::before,
+#pag-page .pag-table tbody tr.pag-row-pago:focus-within::before{
+  box-shadow:0 0 18px rgba(72,183,255,.34), 0 0 26px rgba(0,229,255,.12) !important;
+}
+
+/* Badges */
+#pag-page .pag-badge.ok{
+  background:rgba(76,163,255,.14) !important;
+  border-color:rgba(76,163,255,.38) !important;
+  color:#b8ddff !important;
+}
+#pag-page .pag-badge.due{
+  background:rgba(176,186,198,.10) !important;
+  border-color:rgba(176,186,198,.26) !important;
+  color:#d9e0e8 !important;
+}
+
+@media (max-width:760px){
+  #pag-page .pag-table{border-spacing:0 8px !important;}
+  #pag-page .pag-table tbody td:first-child{border-radius:16px 0 0 16px !important;}
+  #pag-page .pag-table tbody td:last-child{border-radius:0 16px 16px 0 !important;}
+  #pag-page .pag-table tbody tr::before{border-radius:16px 16px 0 0 !important;}
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child{padding-left:52px !important;}
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child::before{left:14px !important;width:23px !important;height:23px !important;font-size:16px !important;}
+}
+</style>
+
+
+<style id="pagamentos-status-texto-vermelho-verde-v1">
+/* ===== STATUS PAGAMENTOS — texto solicitado ===== */
+#pag-page .pag-badge.due,
+#pag-page .pag-badge.due *{
+  color:#ff355e !important;
+  font-weight:1000 !important;
+}
+
+#pag-page .pag-badge.ok,
+#pag-page .pag-badge.ok *{
+  color:#a3ff12 !important;
+  font-weight:1000 !important;
+}
+
+/* Mantém o fundo elegante, só reforçando a leitura do status */
+#pag-page .pag-badge.due{
+  background:rgba(255,53,94,.10) !important;
+  border-color:rgba(255,53,94,.40) !important;
+  text-shadow:0 0 10px rgba(255,53,94,.12) !important;
+}
+
+#pag-page .pag-badge.ok{
+  background:rgba(163,255,18,.10) !important;
+  border-color:rgba(163,255,18,.40) !important;
+  text-shadow:0 0 10px rgba(163,255,18,.14) !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4420,13 +4600,13 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   transition:background .18s ease, box-shadow .18s ease, transform .18s ease, filter .18s ease;
 }
 #pag-page .pag-table tbody tr.pag-row-pago{
-  background:linear-gradient(90deg, rgba(57,255,20,.24), rgba(0,229,255,.12) 58%, rgba(57,255,20,.06));
-  box-shadow:inset 0 0 0 1px rgba(57,255,20,.16), 0 0 18px rgba(57,255,20,.08);
+  background:linear-gradient(90deg, rgba(76,163,255,.24), rgba(0,229,255,.12) 58%, rgba(76,163,255,.06));
+  box-shadow:inset 0 0 0 1px rgba(76,163,255,.20), 0 0 18px rgba(76,163,255,.10);
 }
 #pag-page .pag-table tbody tr.pag-row-pago td{
-  color:#f8fff4;
+  color:#f4fbff;
   font-weight:850;
-  border-bottom-color:rgba(57,255,20,.24);
+  border-bottom-color:rgba(76,163,255,.28);
 }
 #pag-page .pag-table tbody tr.pag-row-pago td:first-child{
   position:relative;
@@ -4445,11 +4625,11 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   display:flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(180deg, #26b39a, #1f8f88);
+  background:linear-gradient(180deg, #48b7ff, #2c72ff);
   color:#ffffff;
   font-size:20px;
   font-weight:1000;
-  box-shadow:0 0 0 4px rgba(38,179,154,.12), 0 10px 24px rgba(0,0,0,.24);
+  box-shadow:0 0 0 4px rgba(72,183,255,.14), 0 10px 24px rgba(0,0,0,.24);
 }
 #pag-page .pag-table tbody tr.pag-row-pago td:first-child::after{
   content:'';
@@ -4459,8 +4639,8 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   bottom:10px;
   width:8px;
   border-radius:999px;
-  background:linear-gradient(180deg, rgba(57,255,20,.98), rgba(0,229,255,.72));
-  box-shadow:0 0 14px rgba(57,255,20,.22);
+  background:linear-gradient(180deg, rgba(76,163,255,.98), rgba(0,229,255,.72));
+  box-shadow:0 0 14px rgba(76,163,255,.24);
 }
 #pag-page .pag-table tbody tr:hover,
 #pag-page .pag-table tbody tr:active,
@@ -4489,8 +4669,8 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 #pag-page .pag-table tbody tr.pag-row-pago:active,
 #pag-page .pag-table tbody tr.pag-row-pago.row-touch,
 #pag-page .pag-table tbody tr.pag-row-pago:focus-within{
-  background:linear-gradient(90deg, rgba(57,255,20,.32), rgba(0,229,255,.24) 50%, rgba(255,214,10,.18)) !important;
-  box-shadow:inset 0 0 0 1px rgba(57,255,20,.55), 0 0 28px rgba(57,255,20,.22);
+  background:linear-gradient(90deg, rgba(76,163,255,.34), rgba(0,229,255,.24) 50%, rgba(76,163,255,.14)) !important;
+  box-shadow:inset 0 0 0 1px rgba(76,163,255,.55), 0 0 28px rgba(76,163,255,.22);
 }
 #pag-page .pag-table td:nth-child(6),#pag-page .pag-table td:nth-child(7){white-space:nowrap}
 #pag-page .pag-badge{
@@ -4498,7 +4678,7 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   min-width:74px;padding:6px 12px;border-radius:999px;
   font-size:12px;font-weight:900;border:1px solid rgba(255,255,255,.16)
 }
-#pag-page .pag-badge.ok{background:rgba(82,255,170,.12);border-color:rgba(82,255,170,.35);color:#73ffbf}
+#pag-page .pag-badge.ok{background:rgba(76,163,255,.14);border-color:rgba(76,163,255,.38);color:#b8ddff}
 #pag-page .pag-badge.due{background:rgba(255,84,84,.12);border-color:rgba(255,84,84,.35);color:#ff6666}
 @media (max-width: 760px){
   #pag-page .pag-table tbody tr.pag-row-pago td:first-child{padding-left:60px}
@@ -4677,7 +4857,7 @@ function switchTab(tab) {
             <div class="pag-meta">
               Filtro aplicado: <b>Mês Pgto (coluna P)</b> = <span id="pag-meta-mes">—</span> e <b>Ano Pgto (coluna Q)</b> = <span id="pag-meta-ano">—</span> (aba <b>📋 Despesas</b>).<br>
               Conferência principal conforme a própria planilha: <b>linha 4</b>.<br>
-              Regra exibida no HTML: <b>N = Total, L = Valor a Pagar, Pago = Σ(N−L) e Saldo = ΣL.</b>
+              Regra exibida no HTML: <b>N = Total, L = Valor a Pagar, Pago = soma do Total (N) somente quando Status Pgto = PAGO, e Saldo = ΣL.</b>
             </div>
             <div class="pag-pills">
               <div class="pag-pill">Lançamentos: <span id="pag-pill-itens">0</span></div>
@@ -5005,6 +5185,2308 @@ window._pagReady = false;
   df.addEventListener('load', function(){
     try{ ensureDespMobileScroll(); }catch(e){}
   });
+})();
+</script>
+
+
+<style id="pagamentos-neon-padrao-nvs-final-v1">
+/* ============================================================
+   GO COFFEE PAGAMENTOS — NEON NO PADRÃO NVS
+   Mesmo conceito do HTML de referência:
+   borda superior 4px, brilho discreto, realce só no hover/toque.
+   ============================================================ */
+
+/* Remove interferências anteriores fortes na área de pagamentos */
+#pag-page .pag-kpi,
+#pag-page .pag-day{
+  --edge-rgb:0,229,255;
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 18px 52px rgba(0,0,0,.30) !important;
+  transform:none !important;
+  filter:none !important;
+  transition:
+    border-color .20s ease,
+    border-top-color .20s ease,
+    box-shadow .20s ease,
+    background .20s ease !important;
+}
+
+#pag-page .pag-kpi:hover,
+#pag-page .pag-day:hover,
+#pag-page .pag-kpi:focus-within,
+#pag-page .pag-day:focus-within,
+#pag-page .pag-kpi:active,
+#pag-page .pag-day:active,
+#pag-page .pag-kpi.touch-glow,
+#pag-page .pag-day.touch-glow{
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 18px 52px rgba(0,0,0,.32) !important;
+  transform:none !important;
+  filter:none !important;
+}
+
+/* Cores dos cards KPI */
+#pag-page .pag-kpi:nth-child(1){--edge-rgb:0,229,255;}     /* Total */
+#pag-page .pag-kpi:nth-child(2){--edge-rgb:57,255,20;}     /* Pago */
+#pag-page .pag-kpi:nth-child(3){--edge-rgb:251,54,93;}     /* A pagar */
+#pag-page .pag-kpi:nth-child(4){--edge-rgb:168,85,247;}    /* Itens */
+
+/* Cada bloco de dia com neon verde-limão/ciano discreto */
+#pag-page .pag-day{--edge-rgb:57,255,20;}
+#pag-page .pag-day summary{
+  background:
+    linear-gradient(90deg, rgba(57,255,20,.16), rgba(15,23,42,.50) 34%, rgba(0,229,255,.08) 100%) !important;
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+}
+
+/* Tabela em formato liso, com linhas tipo card */
+#pag-page .pag-table{
+  width:100% !important;
+  border-collapse:separate !important;
+  border-spacing:0 10px !important;
+  min-width:980px !important;
+}
+
+#pag-page .pag-table th,
+#pag-page .pag-table td{
+  border-bottom:none !important;
+}
+
+#pag-page .pag-table thead th{
+  background:transparent !important;
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+}
+
+#pag-page .pag-table tbody tr{
+  --edge-rgb:148,163,184;
+  position:relative !important;
+  background:transparent !important;
+  transform:none !important;
+  filter:none !important;
+  box-shadow:none !important;
+  isolation:isolate !important;
+  transition:none !important;
+}
+
+/* Fundo/borda única da linha inteira, evitando aparência de colunas */
+#pag-page .pag-table tbody tr::before{
+  content:'' !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  border-radius:18px !important;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 18px 52px rgba(0,0,0,.30) !important;
+  pointer-events:none !important;
+  transition:
+    border-color .20s ease,
+    border-top-color .20s ease,
+    box-shadow .20s ease,
+    background .20s ease !important;
+}
+
+/* Células transparentes para a linha parecer lisa */
+#pag-page .pag-table tbody td{
+  position:relative !important;
+  z-index:1 !important;
+  background:transparent !important;
+  color:#F8FAFC !important;
+  border:none !important;
+  text-shadow:none !important;
+}
+
+#pag-page .pag-table tbody td:first-child{
+  border-radius:18px 0 0 18px !important;
+}
+
+#pag-page .pag-table tbody td:last-child{
+  border-radius:0 18px 18px 0 !important;
+}
+
+/* A PAGAR: contraste cinza premium */
+#pag-page .pag-table tbody tr:not(.pag-row-pago){
+  --edge-rgb:148,163,184;
+}
+
+#pag-page .pag-table tbody tr:not(.pag-row-pago):hover::before,
+#pag-page .pag-table tbody tr:not(.pag-row-pago):active::before,
+#pag-page .pag-table tbody tr:not(.pag-row-pago).row-touch::before,
+#pag-page .pag-table tbody tr:not(.pag-row-pago):focus-within::before{
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 18px 52px rgba(0,0,0,.32) !important;
+}
+
+/* PAGO: linha azul, neon no mesmo padrão */
+#pag-page .pag-table tbody tr.pag-row-pago{
+  --edge-rgb:0,229,255;
+}
+
+#pag-page .pag-table tbody tr.pag-row-pago td{
+  color:#F8FAFC !important;
+  font-weight:850 !important;
+}
+
+#pag-page .pag-table tbody tr.pag-row-pago:hover::before,
+#pag-page .pag-table tbody tr.pag-row-pago:active::before,
+#pag-page .pag-table tbody tr.pag-row-pago.row-touch::before,
+#pag-page .pag-table tbody tr.pag-row-pago:focus-within::before{
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 18px 52px rgba(0,0,0,.32) !important;
+}
+
+/* Check azul do pago, sem barra lateral grossa */
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child{
+  position:relative !important;
+  padding-left:56px !important;
+  overflow:visible !important;
+}
+
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child::before{
+  content:'✓' !important;
+  position:absolute !important;
+  left:16px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  width:25px !important;
+  height:25px !important;
+  border-radius:999px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:linear-gradient(180deg, #48b7ff, #2c72ff) !important;
+  color:#fff !important;
+  font-size:17px !important;
+  font-weight:1000 !important;
+  border:1px solid rgba(255,255,255,.34) !important;
+  box-shadow:
+    0 0 0 3px rgba(72,183,255,.12),
+    0 0 16px rgba(72,183,255,.18),
+    0 10px 22px rgba(0,0,0,.24) !important;
+}
+
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child::after,
+#pag-page .pag-table tbody tr:hover td:first-child::after,
+#pag-page .pag-table tbody tr:active td:first-child::after,
+#pag-page .pag-table tbody tr.row-touch td:first-child::after,
+#pag-page .pag-table tbody tr:focus-within td:first-child::after{
+  display:none !important;
+  content:none !important;
+}
+
+/* Sem amarelo, sem roxo forte, sem pulo exagerado */
+#pag-page .pag-table tbody tr:hover,
+#pag-page .pag-table tbody tr:active,
+#pag-page .pag-table tbody tr.row-touch,
+#pag-page .pag-table tbody tr:focus-within{
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+  filter:none !important;
+}
+
+#pag-page .pag-table tbody tr:hover td,
+#pag-page .pag-table tbody tr:active td,
+#pag-page .pag-table tbody tr.row-touch td,
+#pag-page .pag-table tbody tr:focus-within td{
+  color:#FFFFFF !important;
+  text-shadow:none !important;
+  background:transparent !important;
+}
+
+/* Texto dos status exatamente como solicitado */
+#pag-page .pag-badge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:74px !important;
+  padding:6px 12px !important;
+  border-radius:999px !important;
+  font-size:12px !important;
+  font-weight:1000 !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+}
+
+#pag-page .pag-badge.due,
+#pag-page .pag-badge.due *{
+  color:#FB365D !important;
+  font-weight:1000 !important;
+}
+
+#pag-page .pag-badge.due{
+  background:rgba(251,54,93,.08) !important;
+  border-color:rgba(251,54,93,.25) !important;
+  text-shadow:0 0 10px rgba(251,54,93,.10) !important;
+}
+
+#pag-page .pag-badge.ok,
+#pag-page .pag-badge.ok *{
+  color:#39FF14 !important;
+  font-weight:1000 !important;
+}
+
+#pag-page .pag-badge.ok{
+  background:rgba(57,255,20,.08) !important;
+  border-color:rgba(57,255,20,.25) !important;
+  text-shadow:0 0 10px rgba(57,255,20,.10) !important;
+}
+
+/* Mobile */
+@media (max-width:760px){
+  #pag-page .pag-table{
+    border-spacing:0 8px !important;
+  }
+  #pag-page .pag-table tbody tr::before{
+    border-radius:16px !important;
+  }
+  #pag-page .pag-table tbody td:first-child{
+    border-radius:16px 0 0 16px !important;
+  }
+  #pag-page .pag-table tbody td:last-child{
+    border-radius:0 16px 16px 0 !important;
+  }
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child{
+    padding-left:52px !important;
+  }
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child::before{
+    left:14px !important;
+    width:23px !important;
+    height:23px !important;
+    font-size:16px !important;
+  }
+}
+</style>
+
+
+<style id="faturamento-filtros-mobile-do-zero-neon-v1">
+/* ============================================================
+   FATURAMENTO — FILTROS REFEITOS PARA MOBILE + NEON PADRÃO NVS
+   - PC preservado
+   - Mobile em bottom sheet limpo, sem travar/reconstruir a tela a cada toque
+   - Borda superior 4px + efeito neon discreto
+   ============================================================ */
+
+#rec-page .filters-panel{
+  --edge-rgb:0,229,255;
+  position:relative !important;
+  overflow:visible !important;
+  isolation:isolate !important;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 18px 52px rgba(0,0,0,.30) !important;
+  transform:none !important;
+  filter:none !important;
+  transition:
+    border-color .20s ease,
+    border-top-color .20s ease,
+    box-shadow .20s ease,
+    background .20s ease !important;
+}
+
+#rec-page .filters-panel:hover,
+#rec-page .filters-panel:focus-within,
+#rec-page .filters-panel:active,
+#rec-page .filters-panel.touch-glow{
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 18px 52px rgba(0,0,0,.32) !important;
+}
+
+#rec-page .filters-head{
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+  background:linear-gradient(90deg, rgba(0,229,255,.08), rgba(15,23,42,.35), rgba(57,255,20,.055)) !important;
+}
+#rec-page .filters-head .title{
+  color:#F8FAFC !important;
+  font-weight:950 !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+}
+
+#rec-page .filters-grid{
+  grid-template-columns:repeat(5, minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+#rec-page .filters-grid .f{
+  grid-column:span 1 !important;
+}
+#rec-page .filters-grid .f > label{
+  color:rgba(203,213,225,.92) !important;
+  font-size:11px !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  font-weight:950 !important;
+  margin-bottom:7px !important;
+}
+
+#rec-page .ms{
+  --edge-rgb:0,229,255;
+  position:relative !important;
+  width:100% !important;
+  z-index:1 !important;
+}
+#rec-page #fAno{--edge-rgb:0,229,255;}
+#rec-page #fMes{--edge-rgb:57,255,20;}
+#rec-page #fDiaSemana{--edge-rgb:168,85,247;}
+#rec-page #fSemana{--edge-rgb:245,158,11;}
+#rec-page #fFaixa{--edge-rgb:251,54,93;}
+
+#rec-page .ms.is-open{
+  z-index:12000 !important;
+}
+#rec-page .ms-btn{
+  width:100% !important;
+  min-height:54px !important;
+  border-radius:18px !important;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  color:#F8FAFC !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  padding:11px 13px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 12px 28px rgba(0,0,0,.22) !important;
+  cursor:pointer !important;
+  transition:
+    border-color .20s ease,
+    border-top-color .20s ease,
+    box-shadow .20s ease,
+    background .20s ease !important;
+}
+#rec-page .ms-btn:hover,
+#rec-page .ms-btn.open,
+#rec-page .ms.is-open .ms-btn,
+#rec-page .ms-btn:focus-visible{
+  outline:none !important;
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 14px 34px rgba(0,0,0,.28) !important;
+}
+#rec-page .ms-btn > span:first-child{
+  font-size:11px !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+  color:rgba(203,213,225,.72) !important;
+  font-weight:950 !important;
+  white-space:nowrap !important;
+}
+#rec-page .ms-btn .hint{
+  min-width:0 !important;
+  flex:1 !important;
+  text-align:left !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-overflow:ellipsis !important;
+  color:#F8FAFC !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+}
+#rec-page .ms-btn .caret{
+  color:rgb(var(--edge-rgb)) !important;
+  font-weight:1000 !important;
+  opacity:1 !important;
+}
+
+/* Dropdown PC */
+#rec-page .ms-pop{
+  position:absolute !important;
+  left:0 !important;
+  right:auto !important;
+  top:calc(100% + 10px) !important;
+  width:min(360px, 92vw) !important;
+  max-height:min(470px, 72vh) !important;
+  display:none !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  border:1px solid rgba(var(--edge-rgb),.26) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.78) !important;
+  background:rgba(8,12,18,.985) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 28px 70px rgba(0,0,0,.62),
+    0 0 24px rgba(var(--edge-rgb),.10) !important;
+  backdrop-filter:blur(14px) !important;
+  z-index:12001 !important;
+}
+#rec-page .ms-pop.open{
+  display:flex !important;
+}
+#rec-page .ms-sheet-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  padding:13px 14px 10px !important;
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+  background:linear-gradient(90deg, rgba(var(--edge-rgb),.10), rgba(15,23,42,.30)) !important;
+}
+#rec-page .ms-sheet-title{
+  color:#F8FAFC !important;
+  font-size:13px !important;
+  font-weight:1000 !important;
+  letter-spacing:.04em !important;
+}
+#rec-page .ms-close{
+  appearance:none !important;
+  width:32px !important;
+  height:32px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(148,163,184,.18) !important;
+  background:rgba(255,255,255,.04) !important;
+  color:#CBD5E1 !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-top{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  padding:12px 14px !important;
+  border-bottom:1px solid rgba(148,163,184,.12) !important;
+}
+#rec-page .ms-search{
+  display:block !important;
+  width:100% !important;
+  min-height:44px !important;
+  border-radius:14px !important;
+  border:1px solid rgba(148,163,184,.22) !important;
+  background:#07111F !important;
+  color:#F8FAFC !important;
+  padding:11px 12px !important;
+  font-weight:800 !important;
+  outline:none !important;
+}
+#rec-page .ms-search:focus{
+  border-color:rgba(var(--edge-rgb),.70) !important;
+  box-shadow:0 0 0 4px rgba(var(--edge-rgb),.08) !important;
+}
+#rec-page .ms-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+}
+#rec-page .ms-actions button,
+#rec-page .ms-sheet-apply{
+  appearance:none !important;
+  border-radius:14px !important;
+  min-height:40px !important;
+  border:1px solid rgba(var(--edge-rgb),.24) !important;
+  background:rgba(var(--edge-rgb),.08) !important;
+  color:#F8FAFC !important;
+  font-weight:950 !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-actions button:hover,
+#rec-page .ms-sheet-apply:hover{
+  border-color:rgba(var(--edge-rgb),.52) !important;
+  filter:brightness(1.08) !important;
+}
+#rec-page .ms-list{
+  flex:1 1 auto !important;
+  max-height:260px !important;
+  overflow:auto !important;
+  padding:10px !important;
+  scrollbar-width:auto !important;
+  scrollbar-color:rgba(var(--edge-rgb),.55) rgba(255,255,255,.08) !important;
+}
+#rec-page .ms-list::-webkit-scrollbar{width:14px;height:14px;}
+#rec-page .ms-list::-webkit-scrollbar-thumb{
+  background:rgba(var(--edge-rgb),.55);
+  border-radius:999px;
+  border:3px solid rgba(0,0,0,.28);
+}
+#rec-page .ms-list::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.08);
+  border-radius:999px;
+}
+#rec-page .ms-item{
+  width:100% !important;
+  min-height:46px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:11px 12px !important;
+  border:1px solid transparent !important;
+  border-radius:14px !important;
+  background:transparent !important;
+  color:#F8FAFC !important;
+  cursor:pointer !important;
+  font-size:13px !important;
+  font-weight:820 !important;
+  transition:background .16s ease, border-color .16s ease, box-shadow .16s ease !important;
+}
+#rec-page .ms-item + .ms-item{margin-top:5px !important;}
+#rec-page .ms-item:hover{
+  background:rgba(var(--edge-rgb),.07) !important;
+  border-color:rgba(var(--edge-rgb),.18) !important;
+}
+#rec-page .ms-item.is-selected{
+  background:linear-gradient(90deg, rgba(var(--edge-rgb),.14), rgba(255,255,255,.035)) !important;
+  border-color:rgba(var(--edge-rgb),.28) !important;
+}
+#rec-page .ms-item input{
+  appearance:none !important;
+  width:20px !important;
+  height:20px !important;
+  flex:0 0 20px !important;
+  border-radius:7px !important;
+  border:1px solid rgba(203,213,225,.36) !important;
+  background:rgba(255,255,255,.03) !important;
+  display:grid !important;
+  place-items:center !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-item input:checked{
+  border-color:rgb(var(--edge-rgb)) !important;
+  background:rgb(var(--edge-rgb)) !important;
+  box-shadow:0 0 14px rgba(var(--edge-rgb),.18) !important;
+}
+#rec-page .ms-item input:checked::after{
+  content:'✓' !important;
+  color:#031016 !important;
+  font-weight:1000 !important;
+  font-size:14px !important;
+}
+#rec-page .ms-item .txt{
+  flex:1 !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+#rec-page .ms-empty{
+  padding:18px 12px !important;
+  text-align:center !important;
+  color:rgba(203,213,225,.62) !important;
+  font-size:13px !important;
+}
+#rec-page .ms-foot{
+  display:block !important;
+  padding:10px 14px 12px !important;
+  color:rgba(203,213,225,.58) !important;
+  font-size:12px !important;
+  border-top:1px solid rgba(148,163,184,.12) !important;
+}
+#rec-page .ms-sheet-mobile-actions{
+  display:none !important;
+}
+
+/* Botões principais dos filtros com neon */
+#rec-page .filters-head .right .btn,
+#rec-page #btnLimpar,
+#rec-page #btnAplicar{
+  --edge-rgb:0,229,255;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  border-radius:16px !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  color:#F8FAFC !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 12px 28px rgba(0,0,0,.22) !important;
+}
+#rec-page #btnLimpar{--edge-rgb:251,54,93;}
+#rec-page #btnAplicar{--edge-rgb:57,255,20;}
+#rec-page .filters-head .right .btn:hover,
+#rec-page #btnLimpar:hover,
+#rec-page #btnAplicar:hover{
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 14px 34px rgba(0,0,0,.28) !important;
+}
+
+#rec-page .chips{
+  gap:8px !important;
+}
+#rec-page .chip{
+  border:1px solid rgba(0,229,255,.20) !important;
+  border-top:3px solid rgba(0,229,255,.55) !important;
+  background:linear-gradient(180deg, rgba(0,229,255,.055), rgba(15,23,42,.80)) !important;
+  color:#CBD5E1 !important;
+  font-weight:800 !important;
+}
+#rec-page .chip b{color:#F8FAFC !important;}
+#rec-page .chip .x{color:#39FF14 !important;font-weight:1000 !important;}
+
+/* Mobile: filtros realmente refeitos em bottom sheet */
+@media (max-width:760px){
+  body.filter-sheet-open{
+    overflow:hidden !important;
+    touch-action:none !important;
+  }
+  body.filter-sheet-open::before{
+    content:'' !important;
+    position:fixed !important;
+    inset:0 !important;
+    z-index:10020 !important;
+    background:rgba(2,6,23,.68) !important;
+    backdrop-filter:blur(6px) !important;
+  }
+
+  #rec-page .filters-panel{
+    border-radius:22px !important;
+    overflow:visible !important;
+  }
+  #rec-page .filters-head{
+    align-items:center !important;
+  }
+  #rec-page .filters-head .right{
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+  }
+  #rec-page .filters-head .right label[for="fileInput"]{
+    display:none !important;
+  }
+  #rec-page #btnLimpar,
+  #rec-page #btnAplicar{
+    min-height:46px !important;
+    font-size:12px !important;
+  }
+
+  #rec-page .filters-grid{
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+  #rec-page .filters-grid .f{
+    grid-column:span 1 !important;
+  }
+  #rec-page .filters-grid .f > label{
+    display:none !important;
+  }
+  #rec-page .ms-btn{
+    min-height:58px !important;
+    border-radius:18px !important;
+    padding:12px 14px !important;
+  }
+  #rec-page .ms-btn > span:first-child{
+    min-width:98px !important;
+  }
+  #rec-page .ms-btn .hint{
+    font-size:14px !important;
+  }
+
+  #rec-page .ms-pop{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    bottom:10px !important;
+    top:auto !important;
+    width:auto !important;
+    max-height:min(78vh, 620px) !important;
+    border-radius:26px !important;
+    z-index:10060 !important;
+    transform:none !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.07),
+      0 28px 90px rgba(0,0,0,.72),
+      0 0 26px rgba(var(--edge-rgb),.15) !important;
+  }
+  #rec-page .ms-sheet-head{
+    padding:15px 16px 11px !important;
+  }
+  #rec-page .ms-sheet-title{
+    font-size:15px !important;
+  }
+  #rec-page .ms-close{
+    width:38px !important;
+    height:38px !important;
+    font-size:20px !important;
+  }
+  #rec-page .ms-top{
+    padding:12px 16px !important;
+  }
+  #rec-page .ms-search{
+    min-height:48px !important;
+    font-size:16px !important;
+  }
+  #rec-page .ms-actions{
+    grid-template-columns:1fr 1fr !important;
+  }
+  #rec-page .ms-actions button{
+    min-height:44px !important;
+    font-size:13px !important;
+  }
+  #rec-page .ms-list{
+    max-height:calc(min(78vh, 620px) - 238px) !important;
+    padding:10px 12px !important;
+  }
+  #rec-page .ms-item{
+    min-height:56px !important;
+    padding:14px 14px !important;
+    font-size:16px !important;
+  }
+  #rec-page .ms-item input{
+    width:22px !important;
+    height:22px !important;
+    flex-basis:22px !important;
+  }
+  #rec-page .ms-foot{
+    display:none !important;
+  }
+  #rec-page .ms-sheet-mobile-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    padding:12px 16px 16px !important;
+    border-top:1px solid rgba(148,163,184,.14) !important;
+    background:linear-gradient(180deg, rgba(15,23,42,.88), rgba(8,12,18,.98)) !important;
+  }
+  #rec-page .ms-sheet-apply{
+    min-height:48px !important;
+    border-color:rgba(57,255,20,.34) !important;
+    background:rgba(57,255,20,.10) !important;
+    color:#39FF14 !important;
+  }
+  #rec-page .ms-sheet-cancel{
+    appearance:none !important;
+    border-radius:14px !important;
+    min-height:48px !important;
+    border:1px solid rgba(148,163,184,.24) !important;
+    background:rgba(148,163,184,.08) !important;
+    color:#CBD5E1 !important;
+    font-weight:950 !important;
+    cursor:pointer !important;
+  }
+}
+
+@media (max-width:420px){
+  #rec-page .ms-btn > span:first-child{
+    min-width:84px !important;
+    font-size:10px !important;
+  }
+  #rec-page .ms-btn .hint{
+    font-size:13px !important;
+  }
+}
+</style>
+
+<script id="faturamento-filtros-mobile-do-zero-neon-js-v1">
+(function(){
+  const cfgs = [
+    {id:'fAno', label:'Ano', rgb:'0,229,255'},
+    {id:'fMes', label:'Mês', rgb:'57,255,20'},
+    {id:'fDiaSemana', label:'Dia da semana', rgb:'168,85,247'},
+    {id:'fSemana', label:'Nº semana', rgb:'245,158,11'},
+    {id:'fFaixa', label:'Faixa de hora', rgb:'251,54,93'}
+  ];
+
+  function isMobile(){ return window.matchMedia('(max-width: 760px)').matches; }
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, s => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[s]));
+  }
+  function getSt(id){
+    if(!window.MS || !window.MS[id]) return null;
+    return window.MS[id];
+  }
+  function labelFor(id){
+    const c = cfgs.find(x=>x.id===id);
+    return c ? c.label : id;
+  }
+  function accentFor(id){
+    const c = cfgs.find(x=>x.id===id);
+    return c ? c.rgb : '0,229,255';
+  }
+  function closeAll(apply){
+    document.querySelectorAll('#rec-page .ms-pop.open').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('#rec-page .ms.open, #rec-page .ms.is-open').forEach(r=>{
+      r.classList.remove('open');
+      r.classList.remove('is-open');
+    });
+    document.querySelectorAll('#rec-page .ms-btn.open').forEach(b=>b.classList.remove('open'));
+    document.body.classList.remove('filter-sheet-open');
+    if(apply && typeof window.generate === 'function') window.generate();
+  }
+
+  function updateHint(id){
+    const st = getSt(id);
+    if(!st || !st.hint) return;
+    const n = st.selected ? st.selected.size : 0;
+    if(!n){
+      st.hint.textContent = 'Todos';
+      return;
+    }
+    const arr = [...st.selected];
+    st.hint.textContent = n === 1 ? arr[0] : `${n} selecionados`;
+  }
+
+  window.msRender = function(id, q=''){
+    const st = getSt(id);
+    if(!st || !st.list) return;
+
+    const query = String(q || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+    const all = Array.isArray(st.all) ? st.all : [];
+    const items = all
+      .map((v,i)=>({v:String(v), i}))
+      .filter(o=>{
+        if(!query) return true;
+        return o.v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query);
+      });
+
+    if(!items.length){
+      st.list.innerHTML = `<div class="ms-empty">Nenhuma opção encontrada</div>`;
+    }else{
+      st.list.innerHTML = items.map(o=>{
+        const checked = st.selected && st.selected.has(o.v);
+        return `
+          <label class="ms-item ${checked ? 'is-selected' : ''}" data-i="${o.i}">
+            <input type="checkbox" ${checked ? 'checked' : ''} />
+            <span class="txt">${esc(o.v)}</span>
+          </label>
+        `;
+      }).join('');
+    }
+
+    st.list.querySelectorAll('.ms-item[data-i]').forEach(row=>{
+      const handler = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+
+        const i = Number(row.getAttribute('data-i'));
+        const v = all[i];
+        if(v === undefined) return;
+
+        const currentScroll = st.list.scrollTop;
+        if(st.selected.has(String(v))) st.selected.delete(String(v));
+        else st.selected.add(String(v));
+
+        window.msRender(id, st.search ? st.search.value : '');
+        st.list.scrollTop = currentScroll;
+
+        if(!isMobile() && typeof window.generate === 'function') window.generate();
+      };
+      row.addEventListener('click', handler);
+      const cb = row.querySelector('input[type="checkbox"]');
+      if(cb) cb.addEventListener('click', handler);
+    });
+
+    updateHint(id);
+  };
+
+  function rebuildOne(c){
+    const root = document.getElementById(c.id);
+    const st = getSt(c.id);
+    if(!root || !st) return;
+
+    const selected = st.selected || new Set();
+    const all = Array.isArray(st.all) ? st.all.slice() : [];
+
+    root.classList.add('ms-neon');
+    root.style.setProperty('--edge-rgb', c.rgb);
+    root.innerHTML = `
+      <button type="button" class="ms-btn" aria-haspopup="dialog" aria-expanded="false">
+        <span>${esc(c.label)}</span>
+        <span class="hint">Todos</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="ms-pop" role="dialog" aria-label="${esc(c.label)}">
+        <div class="ms-sheet-head">
+          <div class="ms-sheet-title">${esc(c.label)}</div>
+          <button type="button" class="ms-close" aria-label="Fechar">×</button>
+        </div>
+        <div class="ms-top">
+          <input class="ms-search" type="text" placeholder="Buscar ${esc(c.label.toLowerCase())}" autocomplete="off"/>
+          <div class="ms-actions">
+            <button type="button" data-act="all">Todos</button>
+            <button type="button" data-act="none">Nenhum</button>
+          </div>
+        </div>
+        <div class="ms-list"></div>
+        <div class="ms-foot">No celular, use Aplicar para atualizar sem travar.</div>
+        <div class="ms-sheet-mobile-actions">
+          <button type="button" class="ms-sheet-cancel">Fechar</button>
+          <button type="button" class="ms-sheet-apply">Aplicar</button>
+        </div>
+      </div>
+    `;
+
+    st.root = root;
+    st.pop = root.querySelector('.ms-pop');
+    st.list = root.querySelector('.ms-list');
+    st.search = root.querySelector('.ms-search');
+    st.hint = root.querySelector('.ms-btn .hint');
+    st.selected = selected;
+    st.all = all;
+
+    const btn = root.querySelector('.ms-btn');
+    const pop = st.pop;
+    const search = st.search;
+
+    function open(){
+      const willOpen = !pop.classList.contains('open');
+      closeAll(false);
+      if(!willOpen) return;
+      pop.classList.add('open');
+      root.classList.add('is-open');
+      btn.classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+      document.body.classList.add('filter-sheet-open');
+      if(search){
+        search.value = '';
+        window.msRender(c.id, '');
+        setTimeout(()=>search.focus({preventScroll:true}), 60);
+      }
+    }
+    function close(apply){
+      pop.classList.remove('open');
+      root.classList.remove('is-open');
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded','false');
+      document.body.classList.remove('filter-sheet-open');
+      if(apply && typeof window.generate === 'function') window.generate();
+    }
+
+    btn.addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      open();
+    });
+    pop.addEventListener('click', e=>e.stopPropagation());
+
+    root.querySelector('.ms-close').addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      close(false);
+    });
+    root.querySelector('.ms-sheet-cancel').addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      close(false);
+    });
+    root.querySelector('.ms-sheet-apply').addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      close(true);
+    });
+    root.querySelector('[data-act="all"]').addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      st.selected = new Set(st.all.map(String));
+      window.msRender(c.id, search ? search.value : '');
+      if(!isMobile() && typeof window.generate === 'function') window.generate();
+    });
+    root.querySelector('[data-act="none"]').addEventListener('click', e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      st.selected.clear();
+      window.msRender(c.id, search ? search.value : '');
+      if(!isMobile() && typeof window.generate === 'function') window.generate();
+    });
+    if(search){
+      search.addEventListener('click', e=>e.stopPropagation());
+      search.addEventListener('input', ()=>window.msRender(c.id, search.value));
+    }
+
+    window.msRender(c.id);
+  }
+
+  function enhance(){
+    if(!window.MS) return;
+    cfgs.forEach(rebuildOne);
+
+    // Garante que novos uploads, refreshFilterOptions e limpar continuem com o novo visual
+    const oldSetOptions = window.msSetOptions;
+    if(typeof oldSetOptions === 'function' && !window.__msSetOptionsNeonWrapped){
+      window.msSetOptions = function(id, options){
+        oldSetOptions(id, options);
+        const root = document.getElementById(id);
+        if(root && !root.querySelector('.ms-sheet-head')){
+          const c = cfgs.find(x=>x.id===id);
+          if(c) rebuildOne(c);
+        }
+        if(typeof window.msRender === 'function') window.msRender(id);
+      };
+      window.__msSetOptionsNeonWrapped = true;
+    }
+
+    document.addEventListener('click', e=>{
+      if(!e.target.closest('#rec-page .ms-pop') && !e.target.closest('#rec-page .ms-btn')){
+        closeAll(false);
+      }
+    }, true);
+
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Escape') closeAll(false);
+    });
+
+    const applyBtn = document.getElementById('btnAplicar');
+    if(applyBtn){
+      applyBtn.addEventListener('click', ()=>{
+        closeAll(true);
+      });
+    }
+    const clearBtn = document.getElementById('btnLimpar');
+    if(clearBtn){
+      clearBtn.addEventListener('click', ()=>{
+        closeAll(false);
+      });
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ()=>setTimeout(enhance, 80));
+  }else{
+    setTimeout(enhance, 80);
+  }
+})();
+</script>
+
+
+<style id="faturamento-filtros-corrigidos-ano-mes-neon-v2">
+/* ============================================================
+   FATURAMENTO — FILTROS CORRIGIDOS
+   - Ano dinâmico: 2025, 2026 e próximos anos
+   - Mês dependente do ano
+   - Se houver 1 ano selecionado: mostra Jan, Fev, Mar...
+   - Sem ano ou múltiplos anos: mostra Jan/25, Jan/26...
+   - Mobile em painel inferior, com Aplicar
+   - Neon no padrão NVS
+   ============================================================ */
+
+#rec-page .filters-panel{
+  --edge-rgb:0,229,255;
+  position:relative !important;
+  overflow:visible !important;
+  isolation:isolate !important;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 18px 52px rgba(0,0,0,.30) !important;
+  transform:none !important;
+  filter:none !important;
+}
+
+#rec-page .filters-panel:hover,
+#rec-page .filters-panel:focus-within,
+#rec-page .filters-panel.touch-glow{
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 18px 52px rgba(0,0,0,.32) !important;
+}
+
+#rec-page .filters-head{
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+  background:linear-gradient(90deg, rgba(0,229,255,.08), rgba(15,23,42,.35), rgba(57,255,20,.055)) !important;
+}
+#rec-page .filters-head .title{
+  color:#F8FAFC !important;
+  font-weight:950 !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+}
+#rec-page .filters-grid{
+  grid-template-columns:repeat(5, minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+#rec-page .filters-grid .f{grid-column:span 1 !important;}
+#rec-page .filters-grid .f > label{
+  color:rgba(203,213,225,.92) !important;
+  font-size:11px !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  font-weight:950 !important;
+  margin-bottom:7px !important;
+}
+
+#rec-page .ms{
+  --edge-rgb:0,229,255;
+  position:relative !important;
+  width:100% !important;
+  z-index:1 !important;
+}
+#rec-page #fAno{--edge-rgb:0,229,255;}
+#rec-page #fMes{--edge-rgb:57,255,20;}
+#rec-page #fDiaSemana{--edge-rgb:168,85,247;}
+#rec-page #fSemana{--edge-rgb:245,158,11;}
+#rec-page #fFaixa{--edge-rgb:251,54,93;}
+#rec-page .ms.is-open{z-index:12000 !important;}
+
+#rec-page .ms-btn{
+  width:100% !important;
+  min-height:54px !important;
+  border-radius:18px !important;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  color:#F8FAFC !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  padding:11px 13px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 12px 28px rgba(0,0,0,.22) !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-btn:hover,
+#rec-page .ms-btn.open,
+#rec-page .ms.is-open .ms-btn,
+#rec-page .ms-btn:focus-visible{
+  outline:none !important;
+  border-color:rgba(var(--edge-rgb),.38) !important;
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.078), rgba(15,23,42,.94) 30%, rgba(15,23,42,.88)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 9px 18px rgba(var(--edge-rgb),.07),
+    0 -1px 0 rgba(var(--edge-rgb),.55),
+    0 14px 34px rgba(0,0,0,.28) !important;
+}
+#rec-page .ms-btn > span:first-child{
+  min-width:84px !important;
+  font-size:11px !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+  color:rgba(203,213,225,.72) !important;
+  font-weight:950 !important;
+  white-space:nowrap !important;
+}
+#rec-page .ms-btn .hint{
+  min-width:0 !important;
+  flex:1 !important;
+  text-align:left !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-overflow:ellipsis !important;
+  color:#F8FAFC !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+}
+#rec-page .ms-btn .caret{
+  color:rgb(var(--edge-rgb)) !important;
+  font-weight:1000 !important;
+  opacity:1 !important;
+}
+
+#rec-page .ms-pop{
+  position:absolute !important;
+  left:0 !important;
+  right:auto !important;
+  top:calc(100% + 10px) !important;
+  width:min(370px, 92vw) !important;
+  max-height:min(470px, 72vh) !important;
+  display:none !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+  border-radius:22px !important;
+  border:1px solid rgba(var(--edge-rgb),.26) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.78) !important;
+  background:rgba(8,12,18,.985) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 28px 70px rgba(0,0,0,.62),
+    0 0 24px rgba(var(--edge-rgb),.10) !important;
+  backdrop-filter:blur(14px) !important;
+  z-index:12001 !important;
+}
+#rec-page .ms-pop.open{display:flex !important;}
+
+#rec-page .ms-sheet-head{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  padding:13px 14px 10px !important;
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+  background:linear-gradient(90deg, rgba(var(--edge-rgb),.10), rgba(15,23,42,.30)) !important;
+}
+#rec-page .ms-sheet-title{
+  color:#F8FAFC !important;
+  font-size:13px !important;
+  font-weight:1000 !important;
+  letter-spacing:.04em !important;
+}
+#rec-page .ms-close{
+  appearance:none !important;
+  width:32px !important;
+  height:32px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(148,163,184,.18) !important;
+  background:rgba(255,255,255,.04) !important;
+  color:#CBD5E1 !important;
+  font-size:18px !important;
+  font-weight:900 !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-top{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+  padding:12px 14px !important;
+  border-bottom:1px solid rgba(148,163,184,.12) !important;
+}
+#rec-page .ms-search{
+  display:block !important;
+  width:100% !important;
+  min-height:44px !important;
+  border-radius:14px !important;
+  border:1px solid rgba(148,163,184,.22) !important;
+  background:#07111F !important;
+  color:#F8FAFC !important;
+  padding:11px 12px !important;
+  font-weight:800 !important;
+  outline:none !important;
+}
+#rec-page .ms-search:focus{
+  border-color:rgba(var(--edge-rgb),.70) !important;
+  box-shadow:0 0 0 4px rgba(var(--edge-rgb),.08) !important;
+}
+#rec-page .ms-actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+}
+#rec-page .ms-actions button,
+#rec-page .ms-sheet-apply{
+  appearance:none !important;
+  border-radius:14px !important;
+  min-height:40px !important;
+  border:1px solid rgba(var(--edge-rgb),.24) !important;
+  background:rgba(var(--edge-rgb),.08) !important;
+  color:#F8FAFC !important;
+  font-weight:950 !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-list{
+  flex:1 1 auto !important;
+  max-height:260px !important;
+  overflow:auto !important;
+  padding:10px !important;
+  scrollbar-width:auto !important;
+  scrollbar-color:rgba(var(--edge-rgb),.55) rgba(255,255,255,.08) !important;
+}
+#rec-page .ms-list::-webkit-scrollbar{width:14px;height:14px;}
+#rec-page .ms-list::-webkit-scrollbar-thumb{
+  background:rgba(var(--edge-rgb),.55);
+  border-radius:999px;
+  border:3px solid rgba(0,0,0,.28);
+}
+#rec-page .ms-list::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.08);
+  border-radius:999px;
+}
+#rec-page .ms-item{
+  width:100% !important;
+  min-height:46px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:11px 12px !important;
+  border:1px solid transparent !important;
+  border-radius:14px !important;
+  background:transparent !important;
+  color:#F8FAFC !important;
+  cursor:pointer !important;
+  font-size:13px !important;
+  font-weight:820 !important;
+}
+#rec-page .ms-item + .ms-item{margin-top:5px !important;}
+#rec-page .ms-item:hover{
+  background:rgba(var(--edge-rgb),.07) !important;
+  border-color:rgba(var(--edge-rgb),.18) !important;
+}
+#rec-page .ms-item.is-selected{
+  background:linear-gradient(90deg, rgba(var(--edge-rgb),.14), rgba(255,255,255,.035)) !important;
+  border-color:rgba(var(--edge-rgb),.28) !important;
+}
+#rec-page .ms-item input{
+  appearance:none !important;
+  width:20px !important;
+  height:20px !important;
+  flex:0 0 20px !important;
+  border-radius:7px !important;
+  border:1px solid rgba(203,213,225,.36) !important;
+  background:rgba(255,255,255,.03) !important;
+  display:grid !important;
+  place-items:center !important;
+  cursor:pointer !important;
+}
+#rec-page .ms-item input:checked{
+  border-color:rgb(var(--edge-rgb)) !important;
+  background:rgb(var(--edge-rgb)) !important;
+  box-shadow:0 0 14px rgba(var(--edge-rgb),.18) !important;
+}
+#rec-page .ms-item input:checked::after{
+  content:'✓' !important;
+  color:#031016 !important;
+  font-weight:1000 !important;
+  font-size:14px !important;
+}
+#rec-page .ms-item .txt{
+  flex:1 !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+#rec-page .ms-empty{
+  padding:18px 12px !important;
+  text-align:center !important;
+  color:rgba(203,213,225,.62) !important;
+  font-size:13px !important;
+}
+#rec-page .ms-foot{
+  display:block !important;
+  padding:10px 14px 12px !important;
+  color:rgba(203,213,225,.58) !important;
+  font-size:12px !important;
+  border-top:1px solid rgba(148,163,184,.12) !important;
+}
+#rec-page .ms-sheet-mobile-actions{display:none !important;}
+
+#rec-page .filters-head .right .btn,
+#rec-page #btnLimpar,
+#rec-page #btnAplicar{
+  --edge-rgb:0,229,255;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.52) !important;
+  border-radius:16px !important;
+  background:
+    linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 30%, rgba(15,23,42,.84)) !important;
+  color:#F8FAFC !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 12px 28px rgba(0,0,0,.22) !important;
+}
+#rec-page #btnLimpar{--edge-rgb:251,54,93;}
+#rec-page #btnAplicar{--edge-rgb:57,255,20;}
+#rec-page .chip{
+  border:1px solid rgba(0,229,255,.20) !important;
+  border-top:3px solid rgba(0,229,255,.55) !important;
+  background:linear-gradient(180deg, rgba(0,229,255,.055), rgba(15,23,42,.80)) !important;
+  color:#CBD5E1 !important;
+  font-weight:800 !important;
+}
+#rec-page .chip b{color:#F8FAFC !important;}
+#rec-page .chip .x{color:#39FF14 !important;font-weight:1000 !important;}
+
+@media (max-width:760px){
+  body.filter-sheet-open{
+    overflow:hidden !important;
+    touch-action:none !important;
+  }
+  body.filter-sheet-open::before{
+    content:'' !important;
+    position:fixed !important;
+    inset:0 !important;
+    z-index:10020 !important;
+    background:rgba(2,6,23,.68) !important;
+    backdrop-filter:blur(6px) !important;
+  }
+  #rec-page .filters-panel{
+    border-radius:22px !important;
+  }
+  #rec-page .filters-head .right{
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+  }
+  #rec-page .filters-head .right label[for="fileInput"]{
+    display:none !important;
+  }
+  #rec-page #btnLimpar,
+  #rec-page #btnAplicar{
+    min-height:46px !important;
+    font-size:12px !important;
+  }
+  #rec-page .filters-grid{
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+  #rec-page .filters-grid .f{grid-column:span 1 !important;}
+  #rec-page .filters-grid .f > label{display:none !important;}
+  #rec-page .ms-btn{
+    min-height:58px !important;
+    border-radius:18px !important;
+    padding:12px 14px !important;
+  }
+  #rec-page .ms-btn > span:first-child{
+    min-width:98px !important;
+  }
+  #rec-page .ms-btn .hint{
+    font-size:14px !important;
+  }
+  #rec-page .ms-pop{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    bottom:10px !important;
+    top:auto !important;
+    width:auto !important;
+    max-height:min(78vh, 620px) !important;
+    border-radius:26px !important;
+    z-index:10060 !important;
+    transform:none !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.07),
+      0 28px 90px rgba(0,0,0,.72),
+      0 0 26px rgba(var(--edge-rgb),.15) !important;
+  }
+  #rec-page .ms-sheet-head{
+    padding:15px 16px 11px !important;
+  }
+  #rec-page .ms-sheet-title{
+    font-size:15px !important;
+  }
+  #rec-page .ms-close{
+    width:38px !important;
+    height:38px !important;
+    font-size:20px !important;
+  }
+  #rec-page .ms-search{
+    min-height:48px !important;
+    font-size:16px !important;
+  }
+  #rec-page .ms-actions button{
+    min-height:44px !important;
+    font-size:13px !important;
+  }
+  #rec-page .ms-list{
+    max-height:calc(min(78vh, 620px) - 238px) !important;
+    padding:10px 12px !important;
+  }
+  #rec-page .ms-item{
+    min-height:56px !important;
+    padding:14px 14px !important;
+    font-size:16px !important;
+  }
+  #rec-page .ms-item input{
+    width:22px !important;
+    height:22px !important;
+    flex-basis:22px !important;
+  }
+  #rec-page .ms-foot{display:none !important;}
+  #rec-page .ms-sheet-mobile-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    padding:12px 16px 16px !important;
+    border-top:1px solid rgba(148,163,184,.14) !important;
+    background:linear-gradient(180deg, rgba(15,23,42,.88), rgba(8,12,18,.98)) !important;
+  }
+  #rec-page .ms-sheet-apply{
+    min-height:48px !important;
+    border-color:rgba(57,255,20,.34) !important;
+    background:rgba(57,255,20,.10) !important;
+    color:#39FF14 !important;
+  }
+  #rec-page .ms-sheet-cancel{
+    appearance:none !important;
+    border-radius:14px !important;
+    min-height:48px !important;
+    border:1px solid rgba(148,163,184,.24) !important;
+    background:rgba(148,163,184,.08) !important;
+    color:#CBD5E1 !important;
+    font-weight:950 !important;
+    cursor:pointer !important;
+  }
+}
+@media (max-width:420px){
+  #rec-page .ms-btn > span:first-child{
+    min-width:84px !important;
+    font-size:10px !important;
+  }
+  #rec-page .ms-btn .hint{
+    font-size:13px !important;
+  }
+}
+</style>
+
+<script id="faturamento-filtros-corrigidos-ano-mes-neon-v2">
+(function(){
+  const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const DOW = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const CFG = [
+    {id:'fAno', label:'Ano', rgb:'0,229,255'},
+    {id:'fMes', label:'Mês', rgb:'57,255,20'},
+    {id:'fDiaSemana', label:'Dia da semana', rgb:'168,85,247'},
+    {id:'fSemana', label:'Semana', rgb:'245,158,11'},
+    {id:'fFaixa', label:'Faixa de hora', rgb:'251,54,93'}
+  ];
+
+  let syncing = false;
+  let generating = false;
+
+  function mobile(){ return window.matchMedia('(max-width:760px)').matches; }
+  function safe(v){ return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+  function msObj(id){ try{ return (typeof MS !== 'undefined') ? MS[id] : null; }catch(e){ return null; } }
+  function cfg(id){ return CFG.find(x=>x.id===id) || {id,label:id,rgb:'0,229,255'}; }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function monthName(n){ return MONTHS[Math.max(1, Math.min(12, Number(n))) - 1] || ''; }
+  function monthKey(y,m){ return `${monthName(m)}/${String(y).slice(-2)}`; }
+  function parseMonthLabel(v){
+    const s = String(v || '').trim();
+    let m = s.match(/^([A-Za-zÀ-ÿ]{3})\/(\d{2}|\d{4})$/);
+    if(m){
+      const idx = MONTHS.findIndex(x=>x.toLowerCase() === m[1].slice(0,3).toLowerCase());
+      if(idx >= 0){
+        const yy = Number(m[2]);
+        return {name:MONTHS[idx], month:idx+1, year: yy < 100 ? 2000 + yy : yy, key:monthKey(yy < 100 ? 2000 + yy : yy, idx+1)};
+      }
+    }
+    const idx = MONTHS.findIndex(x=>x.toLowerCase() === s.slice(0,3).toLowerCase());
+    if(idx >= 0) return {name:MONTHS[idx], month:idx+1, year:null, key:null};
+    return {name:s, month:null, year:null, key:s};
+  }
+  function parseDateAny(v){
+    if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+    if(typeof v === 'number' && isFinite(v)){
+      if(typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code){
+        const d = XLSX.SSF.parse_date_code(v);
+        if(d) return new Date(d.y, d.m - 1, d.d);
+      }
+      return null;
+    }
+    const s0 = String(v ?? '').trim();
+    if(!s0) return null;
+    const s = s0.split(' ')[0].split('T')[0].trim();
+
+    let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+    if(m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+
+    m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2}|\d{4})$/);
+    if(m){
+      let y = Number(m[3]);
+      if(y < 100) y += 2000;
+      return new Date(y, Number(m[2])-1, Number(m[1]));
+    }
+
+    if(/^\d+(\.\d+)?$/.test(s)){
+      const n = Number(s);
+      if(n > 20000 && n < 90000 && typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code){
+        const d = XLSX.SSF.parse_date_code(n);
+        if(d) return new Date(d.y, d.m - 1, d.d);
+      }
+    }
+    return null;
+  }
+  function dateISO(dt){ return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`; }
+
+  function ensureMeta(rows){
+    (rows || []).forEach(r=>{
+      if(!r) return;
+      const dt = parseDateAny(r.date || r.DATA || r.Data || r['DATA '] || r['Data da Venda'] || r['DATA DA VENDA']);
+      if(!dt || isNaN(dt)) return;
+      const y = dt.getFullYear(), m = dt.getMonth()+1;
+      r.date = r.date || dateISO(dt);
+      r.ano = y;
+      r._ano = y;
+      r._mesNum = m;
+      r._mesNome = monthName(m);
+      r._mesKey = monthKey(y,m);
+      r.mes = r._mesKey;
+      if(!r.diaSemana && typeof weekdayPt === 'function') r.diaSemana = weekdayPt(dt);
+      if(!r.semana && typeof weekOfMonth === 'function') r.semana = weekOfMonth(dt);
+    });
+  }
+
+  function getSelected(id){
+    const st = msObj(id);
+    return st && st.selected ? [...st.selected].map(String) : [];
+  }
+
+  function optionSortMonth(a,b){
+    const pa = parseMonthLabel(a), pb = parseMonthLabel(b);
+    const ya = pa.year || 0, yb = pb.year || 0;
+    if(ya !== yb) return ya - yb;
+    return (pa.month || 99) - (pb.month || 99);
+  }
+
+  function rowMatchesMonth(r, selected){
+    if(!selected || !selected.length) return true;
+    return selected.some(v=>{
+      const p = parseMonthLabel(v);
+      if(p.year) return r._mesKey === p.key;
+      if(p.month) return r._mesNum === p.month;
+      return String(r.mes) === String(v);
+    });
+  }
+
+  function applyLocalFilters(rows, f, skip){
+    ensureMeta(rows);
+    let out = rows || [];
+    if(skip !== 'ano' && f.anos && f.anos.length){
+      const set = new Set(f.anos.map(String));
+      out = out.filter(r=>set.has(String(r._ano ?? r.ano)));
+    }
+    if(skip !== 'mes' && f.meses && f.meses.length){
+      out = out.filter(r=>rowMatchesMonth(r, f.meses));
+    }
+    if(skip !== 'dia' && f.diasSemana && f.diasSemana.length){
+      const set = new Set(f.diasSemana.map(String));
+      out = out.filter(r=>set.has(String(r.diaSemana)));
+    }
+    if(skip !== 'semana' && f.semanas && f.semanas.length){
+      const set = new Set(f.semanas.map(String));
+      out = out.filter(r=>set.has(String(r.semana)));
+    }
+    if(skip !== 'faixa' && f.faixas && f.faixas.length){
+      const set = new Set(f.faixas.map(String));
+      out = out.filter(r=>set.has(String(r.faixa)));
+    }
+    return out;
+  }
+
+  function currentFilters(){
+    return {
+      anos:getSelected('fAno'),
+      meses:getSelected('fMes'),
+      diasSemana:getSelected('fDiaSemana'),
+      semanas:getSelected('fSemana'),
+      faixas:getSelected('fFaixa')
+    };
+  }
+
+  function renderMS(id, q=''){
+    const st = msObj(id);
+    if(!st || !st.list) return;
+    const query = String(q || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+    const all = Array.isArray(st.all) ? st.all.map(String) : [];
+    const items = all.map((v,i)=>({v,i})).filter(o=>{
+      if(!query) return true;
+      return o.v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query);
+    });
+
+    st.list.innerHTML = items.length ? items.map(o=>{
+      const checked = st.selected && st.selected.has(o.v);
+      return `
+        <label class="ms-item ${checked ? 'is-selected' : ''}" data-i="${o.i}">
+          <input type="checkbox" ${checked ? 'checked' : ''}/>
+          <span class="txt">${safe(o.v)}</span>
+        </label>`;
+    }).join('') : `<div class="ms-empty">Nenhuma opção encontrada</div>`;
+
+    st.list.querySelectorAll('.ms-item[data-i]').forEach(row=>{
+      const toggle = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        const i = Number(row.getAttribute('data-i'));
+        const v = all[i];
+        if(v === undefined) return;
+        if(st.selected.has(v)) st.selected.delete(v);
+        else st.selected.add(v);
+        const sc = st.list.scrollTop;
+        renderMS(id, st.search ? st.search.value : '');
+        st.list.scrollTop = sc;
+        if(!mobile() && typeof generate === 'function') generate();
+      };
+      row.addEventListener('click', toggle);
+      const cb = row.querySelector('input');
+      if(cb) cb.addEventListener('click', toggle);
+    });
+
+    const n = st.selected ? st.selected.size : 0;
+    if(st.hint){
+      if(!n) st.hint.textContent = 'Todos';
+      else if(n === 1) st.hint.textContent = [...st.selected][0];
+      else st.hint.textContent = `${n} selecionados`;
+    }
+  }
+
+  function setOptions(id, options, convertSelection){
+    const st = msObj(id);
+    if(!st) return;
+    const oldSel = st.selected ? [...st.selected].map(String) : [];
+    const opts = [...new Set((options || []).filter(v=>v !== undefined && v !== null && String(v).trim() !== '').map(String))];
+    const allowed = new Set(opts);
+    let nextSel = [];
+    oldSel.forEach(v=>{
+      const mapped = convertSelection ? convertSelection(v, opts) : [v];
+      (Array.isArray(mapped) ? mapped : [mapped]).forEach(x=>{
+        if(allowed.has(String(x))) nextSel.push(String(x));
+      });
+    });
+    st.all = opts;
+    st.selected = new Set(nextSel);
+    renderMS(id);
+  }
+
+  function convertMonthSelection(v, opts, displayMode, selectedYears){
+    const p = parseMonthLabel(v);
+    const out = [];
+    if(displayMode === 'name'){
+      if(p.month) out.push(monthName(p.month));
+      else if(opts.includes(v)) out.push(v);
+    }else{
+      if(p.year && p.key) out.push(p.key);
+      else if(p.month){
+        opts.forEach(o=>{
+          const po = parseMonthLabel(o);
+          if(po.month === p.month) out.push(o);
+        });
+      }else if(opts.includes(v)) out.push(v);
+    }
+    return out;
+  }
+
+  function syncFilterOptions(){
+    if(syncing) return;
+    syncing = true;
+    try{
+      const rows = (typeof BASE_N !== 'undefined' && Array.isArray(BASE_N)) ? BASE_N : [];
+      ensureMeta(rows);
+
+      const allYears = [...new Set(rows.map(r=>r._ano ?? r.ano).filter(Boolean).map(String))].sort((a,b)=>Number(a)-Number(b));
+      setOptions('fAno', allYears);
+
+      const f1 = currentFilters();
+
+      const monthRows = applyLocalFilters(rows, f1, 'mes');
+      const selectedYears = getSelected('fAno');
+      const yearUniverse = selectedYears.length ? selectedYears : allYears;
+      const displayMonthNameOnly = yearUniverse.length === 1;
+
+      let monthOptions;
+      if(displayMonthNameOnly){
+        monthOptions = [...new Map(monthRows
+          .filter(r=>String(r._ano ?? r.ano) === String(yearUniverse[0]))
+          .map(r=>[r._mesNum, monthName(r._mesNum)])
+        ).entries()].sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+      }else{
+        monthOptions = [...new Set(monthRows.map(r=>r._mesKey || r.mes).filter(Boolean))].sort(optionSortMonth);
+      }
+      setOptions('fMes', monthOptions, (v, opts)=>convertMonthSelection(v, opts, displayMonthNameOnly ? 'name' : 'key', yearUniverse));
+
+      const f2 = currentFilters();
+
+      const diaRows = applyLocalFilters(rows, f2, 'dia');
+      const dias = DOW.filter(d=>diaRows.some(r=>r.diaSemana === d));
+      setOptions('fDiaSemana', dias);
+
+      const f3 = currentFilters();
+      const semanaRows = applyLocalFilters(rows, f3, 'semana');
+      const semanas = [...new Set(semanaRows.map(r=>r.semana).filter(Boolean).map(String))]
+        .sort((a,b)=>Number(a)-Number(b));
+      setOptions('fSemana', semanas);
+
+      const f4 = currentFilters();
+      const faixaRows = applyLocalFilters(rows, f4, 'faixa');
+      const faixas = [...new Set(faixaRows.map(r=>r.faixa).filter(Boolean).map(String))]
+        .sort((a,b)=>(typeof parseFaixaStart === 'function' ? parseFaixaStart(a) : 0) - (typeof parseFaixaStart === 'function' ? parseFaixaStart(b) : 0));
+      setOptions('fFaixa', faixas);
+    } finally {
+      syncing = false;
+    }
+  }
+
+  function rebuildUI(){
+    CFG.forEach(c=>{
+      const root = document.getElementById(c.id);
+      const st = msObj(c.id);
+      if(!root || !st) return;
+
+      const selected = st.selected || new Set();
+      const all = Array.isArray(st.all) ? st.all.slice() : [];
+      root.style.setProperty('--edge-rgb', c.rgb);
+      root.classList.add('ms-neon-final');
+
+      root.innerHTML = `
+        <button type="button" class="ms-btn" aria-haspopup="dialog" aria-expanded="false">
+          <span>${safe(c.label)}</span>
+          <span class="hint">Todos</span>
+          <span class="caret">▾</span>
+        </button>
+        <div class="ms-pop" role="dialog" aria-label="${safe(c.label)}">
+          <div class="ms-sheet-head">
+            <div class="ms-sheet-title">${safe(c.label)}</div>
+            <button type="button" class="ms-close" aria-label="Fechar">×</button>
+          </div>
+          <div class="ms-top">
+            <input class="ms-search" type="text" placeholder="Buscar ${safe(c.label.toLowerCase())}" autocomplete="off"/>
+            <div class="ms-actions">
+              <button type="button" data-act="all">Todos</button>
+              <button type="button" data-act="none">Nenhum</button>
+            </div>
+          </div>
+          <div class="ms-list"></div>
+          <div class="ms-foot">No celular, selecione e toque em Aplicar.</div>
+          <div class="ms-sheet-mobile-actions">
+            <button type="button" class="ms-sheet-cancel">Fechar</button>
+            <button type="button" class="ms-sheet-apply">Aplicar</button>
+          </div>
+        </div>`;
+
+      st.root = root;
+      st.pop = root.querySelector('.ms-pop');
+      st.list = root.querySelector('.ms-list');
+      st.search = root.querySelector('.ms-search');
+      st.hint = root.querySelector('.ms-btn .hint');
+      st.selected = selected;
+      st.all = all;
+
+      const btn = root.querySelector('.ms-btn');
+      const pop = st.pop;
+      const search = st.search;
+
+      function close(apply){
+        pop.classList.remove('open');
+        root.classList.remove('is-open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+        document.body.classList.remove('filter-sheet-open');
+        if(apply && typeof generate === 'function') generate();
+      }
+      function open(){
+        const willOpen = !pop.classList.contains('open');
+        closeAll(false);
+        if(!willOpen) return;
+        pop.classList.add('open');
+        root.classList.add('is-open');
+        btn.classList.add('open');
+        btn.setAttribute('aria-expanded','true');
+        if(mobile()) document.body.classList.add('filter-sheet-open');
+        if(search){
+          search.value = '';
+          renderMS(c.id, '');
+          setTimeout(()=>search.focus({preventScroll:true}), 60);
+        }
+      }
+
+      btn.addEventListener('click', e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        open();
+      });
+      pop.addEventListener('click', e=>e.stopPropagation());
+      root.querySelector('.ms-close').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(false);});
+      root.querySelector('.ms-sheet-cancel').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(false);});
+      root.querySelector('.ms-sheet-apply').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(true);});
+      root.querySelector('[data-act="all"]').addEventListener('click', e=>{
+        e.preventDefault(); e.stopPropagation();
+        st.selected = new Set(st.all.map(String));
+        renderMS(c.id, search ? search.value : '');
+        if(!mobile() && typeof generate === 'function') generate();
+      });
+      root.querySelector('[data-act="none"]').addEventListener('click', e=>{
+        e.preventDefault(); e.stopPropagation();
+        st.selected.clear();
+        renderMS(c.id, search ? search.value : '');
+        if(!mobile() && typeof generate === 'function') generate();
+      });
+      if(search) search.addEventListener('input', ()=>renderMS(c.id, search.value));
+      renderMS(c.id);
+    });
+  }
+
+  function closeAll(apply){
+    document.querySelectorAll('#rec-page .ms-pop.open').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('#rec-page .ms.is-open').forEach(r=>r.classList.remove('is-open'));
+    document.querySelectorAll('#rec-page .ms-btn.open').forEach(b=>{
+      b.classList.remove('open');
+      b.setAttribute('aria-expanded','false');
+    });
+    document.body.classList.remove('filter-sheet-open');
+    if(apply && typeof generate === 'function') generate();
+  }
+
+  function parseNumberBR(v){
+    if(typeof v === 'number') return v;
+    const s = String(v ?? '').replace(/\s/g,'').replace(/R\$/gi,'');
+    return Number(s.replace(/\./g,'').replace(/,/g,'.')) || 0;
+  }
+  function pick(obj, keys){
+    for(const k of keys){
+      if(Object.prototype.hasOwnProperty.call(obj, k) && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== '') return obj[k];
+    }
+    const lower = {};
+    Object.keys(obj || {}).forEach(k=>lower[k.trim().toLowerCase()] = obj[k]);
+    for(const k of keys){
+      const v = lower[String(k).trim().toLowerCase()];
+      if(v !== undefined && v !== null && String(v).trim() !== '') return v;
+    }
+    return '';
+  }
+
+  function buildParsedRowsFromWorkbook(buf){
+    const wb = XLSX.read(buf, {type:'array', cellDates:true});
+    const sheet = wb.Sheets['DADOS'] || wb.Sheets['Dados'] || wb.Sheets['dados'] || wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, {defval:'', raw:true});
+    const parsed = [];
+    for(const r of rows){
+      const data = pick(r, [
+        'date','DATA','Data','DATA ','DATA DA ORDEM','Data da Ordem','DATA DA ORDEM ',
+        'DATA DA VENDA','Data da Venda','Data Venda','DATA VENDA','COMPETENCIA','Competência','COMPETÊNCIA'
+      ]);
+      const faixa = pick(r, [
+        'faixa','FAIXA','Faixa','FAIXA DE HORA','FAIXA HORA','FAIXA HORARIA','FAIXA HORÁRIA',
+        'HORARIO','HORÁRIO','Hora','HORA'
+      ]);
+      const total = pick(r, [
+        'total','Total','TOTAL','Valor','VALOR','V','LIQUIDO','Líquido','LÍQUIDO','VLR LIQ','VLR LIQUIDO',
+        'FATURAMENTO','Faturamento','TOTAL VENDA'
+      ]);
+
+      const dt = parseDateAny(data);
+      if(!dt || isNaN(dt) || !faixa) continue;
+
+      const faixaStart = (typeof parseFaixaStart === 'function') ? parseFaixaStart(faixa) : null;
+      if(faixaStart === null || faixaStart === undefined || isNaN(faixaStart)) continue;
+
+      const y = dt.getFullYear(), m = dt.getMonth()+1;
+      parsed.push({
+        date:dateISO(dt),
+        faixa:String(faixa).trim(),
+        total:parseNumberBR(total),
+        faixaStart,
+        semana:(typeof weekOfMonth === 'function') ? weekOfMonth(dt) : 1,
+        mes:monthKey(y,m),
+        ano:y,
+        diaSemana:(typeof weekdayPt === 'function') ? weekdayPt(dt) : '',
+        _ano:y,
+        _mesNum:m,
+        _mesNome:monthName(m),
+        _mesKey:monthKey(y,m)
+      });
+    }
+    return parsed;
+  }
+
+  function patchGlobals(){
+    if(typeof MS === 'undefined') return false;
+
+    // Recria a interface mobile/PC correta
+    rebuildUI();
+
+    // Substitui as funções globais dos filtros
+    msSetOptions = function(id, options){ setOptions(id, options); };
+    msClear = function(id){
+      const st = msObj(id);
+      if(!st) return;
+      st.selected.clear();
+      renderMS(id);
+    };
+    msGetSelected = function(id){ return getSelected(id); };
+
+    getFilters = function(){ return currentFilters(); };
+
+    applyFilters = function(rows, f){
+      return applyLocalFilters(rows, f || currentFilters());
+    };
+
+    renderChips = function(f){
+      if(!els || !els.chips) return;
+      els.chips.innerHTML = '';
+      const chips = [];
+      const add = (k,v,clear)=>chips.push({k,v,clear});
+      if(f.anos && f.anos.length) add('Ano', f.anos.join(', '), ()=>msClear('fAno'));
+      if(f.meses && f.meses.length) add('Mês', f.meses.join(', '), ()=>msClear('fMes'));
+      if(f.diasSemana && f.diasSemana.length) add('Dia', f.diasSemana.join(', '), ()=>msClear('fDiaSemana'));
+      if(f.semanas && f.semanas.length) add('Semana', f.semanas.join(', '), ()=>msClear('fSemana'));
+      if(f.faixas && f.faixas.length) add('Faixa', f.faixas.length>3 ? (f.faixas.length+' selecionadas') : f.faixas.join(', '), ()=>msClear('fFaixa'));
+      chips.forEach(c=>{
+        const div = document.createElement('div');
+        div.className = 'chip';
+        div.innerHTML = `<span>${safe(c.k)}: <b>${safe(c.v)}</b></span><button class="x" title="Remover">×</button>`;
+        div.querySelector('button').addEventListener('click', ()=>{ c.clear(); if(typeof generate === 'function') generate(); });
+        els.chips.appendChild(div);
+      });
+    };
+
+    refreshFilterOptions = function(){ syncFilterOptions(); };
+
+    const oldGenerate = generate;
+    generate = function(){
+      if(generating) return oldGenerate();
+      generating = true;
+      try{
+        syncFilterOptions();
+        return oldGenerate();
+      } finally {
+        generating = false;
+      }
+    };
+
+    const oldLimpar = limpar;
+    limpar = function(){
+      ['fAno','fMes','fDiaSemana','fSemana','fFaixa'].forEach(id=>msClear(id));
+      if(typeof generate === 'function') generate();
+    };
+
+    // Leitura mais robusta da planilha, para capturar 2025/2026 e anos futuros
+    if(typeof handleWorkbookBuffer === 'function'){
+      handleWorkbookBuffer = async function(buf, fileName, fromAutoLoad){
+        const show = () => { if(els.uploadWrap) els.uploadWrap.classList.remove('hidden'); };
+        const hide = () => { if(els.uploadWrap) els.uploadWrap.classList.add('hidden'); };
+        const setP = (p) => {
+          const pct = Math.max(0, Math.min(100, Math.round(p)));
+          if(els.uploadTxt) els.uploadTxt.textContent = `Carregando… ${pct}%`;
+          if(els.uploadFill) els.uploadFill.style.width = pct + '%';
+        };
+
+        show();
+        setP(fromAutoLoad ? 35 : 70);
+        if(window.__bootSetProg) window.__bootSetProg(fromAutoLoad ? 40 : 70, 'Processando planilha…');
+
+        const parsed = buildParsedRowsFromWorkbook(buf);
+
+        if(window.__bootSetProg) window.__bootSetProg(fromAutoLoad ? 78 : 92, 'Gerando filtros e gráficos…');
+
+        try { __lastFileBuffer = buf; __lastFileName = fileName || 'planilha.xlsx'; } catch(e){}
+        window.__lastFileBuffer = buf;
+        window.__lastFileName = fileName || 'planilha.xlsx';
+
+        BASE_N = parsed;
+        ensureMeta(BASE_N);
+        refreshFilterOptions();
+        limpar();
+
+        const despFrame = document.getElementById('desp-frame');
+        if(despFrame && despFrame.contentWindow){
+          despFrame.contentWindow.postMessage({
+            type:'LOAD_FILE',
+            arrayBuffer:buf,
+            fileName:window.__lastFileName
+          }, '*');
+        }
+        try { if(typeof pagLoadFile === 'function') pagLoadFile(buf, window.__lastFileName); } catch(e) {}
+
+        setP(100);
+        if(window.__bootDone) window.__bootDone();
+        setTimeout(hide, 400);
+      };
+    }
+
+    document.addEventListener('click', e=>{
+      if(!e.target.closest('#rec-page .ms-pop') && !e.target.closest('#rec-page .ms-btn')) closeAll(false);
+    }, true);
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Escape') closeAll(false);
+    });
+
+    const applyBtn = document.getElementById('btnAplicar');
+    if(applyBtn) applyBtn.addEventListener('click', ()=>closeAll(true));
+
+    ensureMeta(typeof BASE_N !== 'undefined' ? BASE_N : []);
+    syncFilterOptions();
+    if(typeof generate === 'function') generate();
+
+    return true;
+  }
+
+  function waitAndPatch(tries=0){
+    if(patchGlobals()) return;
+    if(tries < 40) setTimeout(()=>waitAndPatch(tries+1), 80);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ()=>waitAndPatch());
+  else waitAndPatch();
+})();
+</script>
+
+
+<script id="pagamentos-calculo-pago-por-status-v1">
+/* ============================================================
+   PAGAMENTOS — CORREÇÃO DO "PAGO NO MÊS"
+   Antes estava considerando N-L em todas as linhas.
+   Agora considera PAGO apenas quando Status Pgto = PAGO.
+   ============================================================ */
+(function(){
+  function fmt(v){
+    if(typeof pagFmt === 'function') return pagFmt(v);
+    return 'R$ ' + Number(v || 0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+
+  function setText(id, value){
+    if(typeof pagSafeSetText === 'function') return pagSafeSetText(id, value);
+    const el = document.getElementById(id);
+    if(el) el.textContent = value;
+  }
+
+  function isPagoStatus(d){
+    return String(d && d.status || '').trim().toUpperCase() === 'PAGO';
+  }
+
+  function statusDisplay(d){
+    return isPagoStatus(d) ? 'PAGO' : 'A PAGAR';
+  }
+
+  window.pagRender = function(){
+    const data = Array.isArray(window.pagData) ? window.pagData : [];
+    const filtered = data.filter(d => d.mesPgto === pagMesAtivo && String(d.anoPgto) === String(pagAnoAtivo));
+
+    const totalMes = filtered.reduce((s,d)=>s + Number(d.total || 0), 0);
+    const saldoMes = filtered.reduce((s,d)=>s + Number(d.aPagar || 0), 0);
+
+    /* Correção principal: pago somente pelo status PAGO */
+    const pagoMes = filtered.reduce((s,d)=>s + (isPagoStatus(d) ? Number(d.total || 0) : 0), 0);
+
+    const diasCount = [...new Set(filtered.map(d => d.vencimento).filter(Boolean))].length;
+
+    setText('pag-titulo', 'Pagamentos por dia — ' + pagMonthLabel(pagMesAtivo) + '/' + pagAnoAtivo);
+    setText('pag-meta-mes', pagMesAtivo || '—');
+    setText('pag-meta-ano', pagAnoAtivo || '—');
+    setText('pag-pill-itens', String(filtered.length));
+    setText('pag-pill-dias', String(diasCount));
+    setText('pag-kpi-total', fmt(totalMes));
+    setText('pag-kpi-pago', fmt(pagoMes));
+    setText('pag-kpi-apagar', fmt(saldoMes));
+    setText('pag-kpi-conf', filtered.length + ' lançamentos');
+
+    const byDate = {};
+    filtered.forEach(d => {
+      const key = d.vencimento || 'Sem vencimento';
+      if(!byDate[key]) byDate[key] = [];
+      byDate[key].push(d);
+    });
+
+    const dates = Object.keys(byDate).sort((a,b)=>{
+      const pa = a.split('/'), pb = b.split('/');
+      if(pa.length===3 && pb.length===3){
+        return new Date(pa[2], pa[1]-1, pa[0]) - new Date(pb[2], pb[1]-1, pb[0]);
+      }
+      if(a === 'Sem vencimento') return 1;
+      if(b === 'Sem vencimento') return -1;
+      return a.localeCompare(b);
+    });
+
+    const weekdays = ['dom','seg','ter','qua','qui','sex','sáb'];
+    const container = document.getElementById('pag-days');
+    if(!container) return;
+    container.innerHTML = '';
+
+    dates.forEach(date => {
+      const items = byDate[date];
+
+      const aPagarDia = items.reduce((s,d)=>s + Number(d.aPagar || 0), 0);
+
+      /* Correção também no resumo do dia */
+      const pagoDia = items.reduce((s,d)=>s + (isPagoStatus(d) ? Number(d.total || 0) : 0), 0);
+
+      let diasem = '';
+      const p = date.split('/');
+      if(p.length === 3){
+        const dt = new Date(p[2], p[1]-1, p[0]);
+        if(!isNaN(dt)) diasem = ' • ' + weekdays[dt.getDay()];
+      }
+
+      const rows = items.map(d => {
+        const isPago = isPagoStatus(d);
+        const stLabel = statusDisplay(d);
+        const badgeClass = isPago ? 'pag-badge ok' : 'pag-badge due';
+        const rowClass = isPago ? 'pag-row-pago' : '';
+        return `<tr class="${rowClass}">
+          <td>${d.fornec || ''}</td>
+          <td>${d.nf || ''}</td>
+          <td>${d.item || ''}</td>
+          <td>${d.forma || ''}</td>
+          <td><span class="${badgeClass}">${stLabel}</span></td>
+          <td>${fmt(d.total)}</td>
+          <td>${fmt(d.aPagar)}</td>
+        </tr>`;
+      }).join('');
+
+      container.innerHTML += `
+        <details class="pag-day" open>
+          <summary>
+            <div>
+              <div class="pag-dayDate">${date}${diasem}</div>
+              <div class="pag-dayHint">A pagar: ${fmt(aPagarDia)} • Pago: ${fmt(pagoDia)}</div>
+            </div>
+            <div class="pag-dayTotal">${fmt(aPagarDia)}</div>
+          </summary>
+          <div class="pag-tableWrap">
+            <table class="pag-table">
+              <thead>
+                <tr>
+                  <th>Fornecedor</th>
+                  <th>NF/Pedido</th>
+                  <th>Item</th>
+                  <th>Forma</th>
+                  <th>Status</th>
+                  <th>Total (N)</th>
+                  <th>A pagar (L)</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </details>`;
+    });
+
+    if(!dates.length){
+      container.innerHTML = '<div class="pag-empty">Nenhum registro encontrado para este mês.</div>';
+    }
+  };
+
+  /* Se a planilha já tiver carregado quando este patch entrar, redesenha com a regra correta. */
+  setTimeout(function(){
+    try{
+      if(Array.isArray(window.pagData) && window.pagData.length) window.pagRender();
+    }catch(e){}
+  }, 250);
 })();
 </script>
 
