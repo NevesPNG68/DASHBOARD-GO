@@ -2738,6 +2738,198 @@ generate();
   /* PULSE ANIMATION */
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
   .pulsing { animation:pulse 1.5s infinite; }
+
+
+  /* ===== FILTROS DESPESAS — PADRÃO REFEITO / NEON PROFISSIONAL ===== */
+  .topbar{
+    gap:1rem;
+    align-items:flex-start;
+    background:rgba(8,10,14,.97);
+    border-bottom:1px solid rgba(255,214,10,.18);
+    box-shadow:0 14px 42px rgba(0,0,0,.38);
+  }
+  .filters.filtros-despesas-refeito{
+    display:grid;
+    grid-template-columns:repeat(7, minmax(132px, 1fr));
+    gap:10px;
+    flex:1 1 760px;
+    width:100%;
+    align-items:end;
+  }
+  .filter-group{
+    min-width:0;
+    position:relative;
+    z-index:1;
+  }
+  .filter-group.is-open{z-index:9999;}
+  .filter-group.filter-wide{grid-column:span 2;}
+  .filter-group label{
+    display:block;
+    color:rgba(255,255,255,.74);
+    font-size:.68rem;
+    font-weight:900;
+    letter-spacing:.11em;
+    margin-bottom:5px;
+  }
+  .ms-btn{
+    min-width:0!important;
+    max-width:none!important;
+    width:100%;
+    min-height:42px;
+    border-radius:13px;
+    padding:.62rem .78rem;
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+    border:1px solid rgba(255,214,10,.26);
+    color:rgba(255,255,255,.94);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 10px 24px rgba(0,0,0,.18);
+  }
+  .ms-btn:hover,
+  .ms-btn.open{
+    border-color:rgba(255,214,10,.72);
+    box-shadow:0 0 0 2px rgba(255,214,10,.10), 0 12px 30px rgba(0,0,0,.28);
+    filter:brightness(1.06);
+  }
+  .ms-label{font-weight:850;}
+  .ms-arrow{color:#FFD60A;opacity:.9!important;}
+  .ms-dropdown{
+    display:none!important;
+    position:absolute;
+    left:0;
+    top:calc(100% + 8px);
+    z-index:10000;
+    width:min(360px, 86vw);
+    min-width:280px;
+    max-width:420px;
+    max-height:72vh;
+    overflow:hidden;
+    border-radius:18px;
+    background:rgba(10,12,16,.985);
+    border:1px solid rgba(255,214,10,.34);
+    box-shadow:0 28px 80px rgba(0,0,0,.70), 0 0 0 1px rgba(163,255,18,.08) inset;
+    backdrop-filter:blur(12px);
+    margin-top:0;
+  }
+  .ms-dropdown.open{display:flex!important;flex-direction:column;}
+  .ms-search{
+    flex:0 0 auto;
+    background:rgba(255,255,255,.07);
+    border:0;
+    border-bottom:1px solid rgba(255,255,255,.10);
+    color:rgba(255,255,255,.96);
+    padding:12px 14px;
+    font-size:.9rem;
+  }
+  .ms-search::placeholder{color:rgba(255,255,255,.42);}
+  .ms-list{
+    flex:1 1 auto;
+    max-height:360px;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:auto;
+    scrollbar-color:rgba(255,214,10,.60) rgba(255,255,255,.08);
+  }
+  .ms-list::-webkit-scrollbar{width:14px;}
+  .ms-list::-webkit-scrollbar-thumb{background:rgba(255,214,10,.60);border-radius:999px;border:3px solid rgba(0,0,0,.25);}
+  .ms-list::-webkit-scrollbar-track{background:rgba(255,255,255,.08);border-radius:999px;}
+  .ms-item{
+    min-height:44px;
+    padding:11px 14px;
+    gap:11px;
+    border-bottom:1px solid rgba(255,255,255,.065);
+    color:rgba(255,255,255,.90);
+    background:transparent;
+  }
+  .ms-item:hover,
+  .ms-item:active{
+    background:linear-gradient(90deg, rgba(255,214,10,.12), rgba(163,255,18,.06));
+    color:#fff;
+  }
+  .ms-item input[type=checkbox]{
+    width:18px;
+    height:18px;
+    accent-color:#FFD60A;
+  }
+  .ms-txt{
+    flex:1;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .ms-empty{
+    padding:18px 14px;
+    color:rgba(255,255,255,.56);
+    font-size:.86rem;
+  }
+  .ms-footer{
+    flex:0 0 auto;
+    padding:10px 12px;
+    background:rgba(255,255,255,.035);
+    border-top:1px solid rgba(255,255,255,.10);
+  }
+  .ms-clear,.ms-apply{
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:.78rem;
+    font-weight:900;
+  }
+  .ms-clear{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.13);
+    color:rgba(255,255,255,.72);
+  }
+  .ms-clear:hover{border-color:rgba(232,93,58,.70);color:#ff967e;}
+  .ms-apply{
+    background:linear-gradient(90deg,#FFD60A,#FFB000);
+    color:#201700;
+  }
+  .ms-count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:23px;
+    height:18px;
+    padding:0 7px;
+    border-radius:999px;
+    background:#FFD60A;
+    color:#1b1200;
+    font-size:.70rem;
+    font-weight:1000;
+    vertical-align:middle;
+  }
+  @media (max-width:1280px){
+    .filters.filtros-despesas-refeito{grid-template-columns:repeat(4, minmax(140px, 1fr));}
+    .filter-group.filter-wide{grid-column:span 2;}
+  }
+  @media (max-width:860px){
+    .topbar{position:relative;top:auto;padding:.85rem .85rem;}
+    .topbar-divider{display:none;}
+    .topbar-logo{width:100%;text-align:center;}
+    .filters.filtros-despesas-refeito{grid-template-columns:repeat(2, minmax(0, 1fr));flex-basis:100%;}
+    .filter-group.filter-wide{grid-column:span 2;}
+    .topbar-actions{width:100%;align-items:stretch;}
+    .reload-btn{width:100%;justify-content:center;margin-left:0;}
+    .file-name{text-align:center;max-width:100%;}
+    .ms-dropdown.open{
+      position:fixed!important;
+      left:14px!important;
+      right:14px!important;
+      top:50%!important;
+      transform:translateY(-50%);
+      width:auto!important;
+      min-width:0!important;
+      max-width:none!important;
+      max-height:min(72vh,560px)!important;
+      border-radius:24px!important;
+    }
+    .ms-list{max-height:calc(min(72vh,560px) - 108px)!important;}
+    .ms-item{min-height:54px;font-size:1rem;}
+  }
+  @media (max-width:460px){
+    .filters.filtros-despesas-refeito{grid-template-columns:1fr;}
+    .filter-group.filter-wide{grid-column:auto;}
+  }
+
 &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -2764,10 +2956,10 @@ generate();
   &lt;div class=&quot;topbar&quot;&gt;
     &lt;div class=&quot;topbar-logo&quot;&gt;GO &lt;span&gt;COFFEE&lt;/span&gt;&lt;/div&gt;
     &lt;div class=&quot;topbar-divider&quot;&gt;&lt;/div&gt;
-    &lt;div class=&quot;filters&quot;&gt;
+    &lt;div class=&quot;filters filtros-despesas-refeito&quot;&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-ano&quot;&gt;
         &lt;label&gt;Ano&lt;/label&gt;
-        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;ano&#x27;)&quot;&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;ano&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-ano&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
         &lt;/div&gt;
@@ -2782,7 +2974,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-mes&quot;&gt;
         &lt;label&gt;Mês&lt;/label&gt;
-        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;mes&#x27;)&quot;&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;mes&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-mes&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
         &lt;/div&gt;
@@ -2796,8 +2988,8 @@ generate();
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-grupo&quot;&gt;
-        &lt;label&gt;Grupo / Insumo&lt;/label&gt;
-        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;grupo&#x27;)&quot;&gt;
+        &lt;label&gt;Grupo&lt;/label&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;grupo&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-grupo&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
         &lt;/div&gt;
@@ -2811,8 +3003,8 @@ generate();
         &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-custo&quot;&gt;
-        &lt;label&gt;Custo&lt;/label&gt;
-        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;custo&#x27;)&quot;&gt;
+        &lt;label&gt;Tipo de custo&lt;/label&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;custo&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-custo&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
         &lt;/div&gt;
@@ -2825,9 +3017,24 @@ generate();
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-      &lt;div class=&quot;filter-group&quot; id=&quot;fg-item&quot;&gt;
+      &lt;div class=&quot;filter-group filter-wide&quot; id=&quot;fg-fornec&quot;&gt;
+        &lt;label&gt;Fornecedor&lt;/label&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;fornec&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
+          &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-fornec&quot;&gt;Todos&lt;/span&gt;
+          &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;ms-dropdown&quot; id=&quot;ms-drop-fornec&quot;&gt;
+          &lt;input class=&quot;ms-search&quot; placeholder=&quot;Buscar fornecedor...&quot; oninput=&quot;filterDropdown(&#x27;fornec&#x27;,this.value)&quot;&gt;
+          &lt;div class=&quot;ms-list&quot; id=&quot;ms-list-fornec&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;ms-footer&quot;&gt;
+            &lt;button class=&quot;ms-clear&quot; onclick=&quot;clearFilter(&#x27;fornec&#x27;)&quot;&gt;Limpar&lt;/button&gt;
+            &lt;button class=&quot;ms-apply&quot; onclick=&quot;closeDropdown(&#x27;fornec&#x27;)&quot;&gt;OK&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;filter-group filter-wide&quot; id=&quot;fg-item&quot;&gt;
         &lt;label&gt;Item&lt;/label&gt;
-        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;item&#x27;)&quot;&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;item&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-item&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
         &lt;/div&gt;
@@ -2837,6 +3044,21 @@ generate();
           &lt;div class=&quot;ms-footer&quot;&gt;
             &lt;button class=&quot;ms-clear&quot; onclick=&quot;clearFilter(&#x27;item&#x27;)&quot;&gt;Limpar&lt;/button&gt;
             &lt;button class=&quot;ms-apply&quot; onclick=&quot;closeDropdown(&#x27;item&#x27;)&quot;&gt;OK&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;filter-group&quot; id=&quot;fg-status&quot;&gt;
+        &lt;label&gt;Status Pgto&lt;/label&gt;
+        &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;status&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
+          &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-status&quot;&gt;Todos&lt;/span&gt;
+          &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;ms-dropdown&quot; id=&quot;ms-drop-status&quot;&gt;
+          &lt;input class=&quot;ms-search&quot; placeholder=&quot;Buscar...&quot; oninput=&quot;filterDropdown(&#x27;status&#x27;,this.value)&quot;&gt;
+          &lt;div class=&quot;ms-list&quot; id=&quot;ms-list-status&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;ms-footer&quot;&gt;
+            &lt;button class=&quot;ms-clear&quot; onclick=&quot;clearFilter(&#x27;status&#x27;)&quot;&gt;Limpar&lt;/button&gt;
+            &lt;button class=&quot;ms-apply&quot; onclick=&quot;closeDropdown(&#x27;status&#x27;)&quot;&gt;OK&lt;/button&gt;
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -3154,90 +3376,180 @@ function revenueInSelectedPeriod(){
 //  FILTERS
 // ══════════════════════════════════════════════════
 // ── Multi-select state ──────────────────────────────
-const msState = { ano:[], mes:[], grupo:[], custo:[], item:[] };
-const msOptions = { ano:[], mes:[], grupo:[], custo:[], item:[] };
+const FILTER_DEFS = [
+  { key:&#x27;ano&#x27;,    label:&#x27;Ano&#x27;,          get:d=&gt;d.ano },
+  { key:&#x27;mes&#x27;,    label:&#x27;Mês&#x27;,          get:d=&gt;d.mes },
+  { key:&#x27;grupo&#x27;,  label:&#x27;Grupo&#x27;,        get:d=&gt;d.grupo },
+  { key:&#x27;custo&#x27;,  label:&#x27;Tipo de custo&#x27;,get:d=&gt;d.ccusto },
+  { key:&#x27;fornec&#x27;, label:&#x27;Fornecedor&#x27;,   get:d=&gt;d.fornec },
+  { key:&#x27;item&#x27;,   label:&#x27;Item&#x27;,         get:d=&gt;d.item },
+  { key:&#x27;status&#x27;, label:&#x27;Status Pgto&#x27;,  get:d=&gt;d.status }
+];
+const msState = {};
+const msOptions = {};
+FILTER_DEFS.forEach(def =&gt; { msState[def.key] = []; msOptions[def.key] = []; });
+
+function normalizeSearchText(v){
+  return String(v ?? &#x27;&#x27;).normalize(&#x27;NFD&#x27;).replace(/[\u0300-\u036f]/g,&#x27;&#x27;).toLowerCase().trim();
+}
+function getFilterValue(d, key){
+  const def = FILTER_DEFS.find(f =&gt; f.key === key);
+  return def ? String(def.get(d) || &#x27;&#x27;).trim() : &#x27;&#x27;;
+}
+function sortFilterValues(key, values){
+  const arr = [...values];
+  if(key === &#x27;mes&#x27;) {
+    return arr.sort((a,b) =&gt; {
+      const ia = MONTH_ORDER.indexOf(a), ib = MONTH_ORDER.indexOf(b);
+      if(ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      return String(a).localeCompare(String(b), &#x27;pt-BR&#x27;, {numeric:true});
+    });
+  }
+  if(key === &#x27;ano&#x27;) return arr.sort((a,b) =&gt; Number(a) - Number(b));
+  if(key === &#x27;status&#x27;) {
+    const order = v =&gt; normalizeSearchText(v).includes(&#x27;pago&#x27;) ? 1 : (normalizeSearchText(v).includes(&#x27;pend&#x27;) || normalizeSearchText(v).includes(&#x27;aber&#x27;) ? 2 : 3);
+    return arr.sort((a,b) =&gt; order(a)-order(b) || String(a).localeCompare(String(b), &#x27;pt-BR&#x27;, {numeric:true}));
+  }
+  return arr.sort((a,b) =&gt; String(a).localeCompare(String(b), &#x27;pt-BR&#x27;, {numeric:true, sensitivity:&#x27;base&#x27;}));
+}
 
 function populateFilters() {
-  msOptions.ano   = [...new Set(allData.map(d=&gt;d.ano))].filter(Boolean).sort();
-  msOptions.mes   = [...new Set(allData.map(d=&gt;d.mes))].filter(Boolean)
-                     .sort((a,b)=&gt;MONTH_ORDER.indexOf(a)-MONTH_ORDER.indexOf(b));
-  msOptions.grupo = [...new Set(allData.map(d=&gt;d.grupo))].filter(Boolean).sort();
-  msOptions.custo = [...new Set(allData.map(d=&gt;d.ccusto))].filter(Boolean).sort();
-  msOptions.item  = [...new Set(allData.map(d=&gt;d.item))].filter(Boolean).sort();
-
-  Object.keys(msOptions).forEach(k =&gt; buildList(k, msOptions[k]));
+  FILTER_DEFS.forEach(def =&gt; { msState[def.key] = []; });
+  FILTER_DEFS.forEach(def =&gt; {
+    const values = [...new Set(allData.map(d =&gt; getFilterValue(d, def.key)).filter(Boolean))];
+    msOptions[def.key] = sortFilterValues(def.key, values);
+    buildList(def.key, msOptions[def.key]);
+    updateLabel(def.key);
+  });
 }
 
 function buildList(key, values, searchVal=&#x27;&#x27;) {
   const list = document.getElementById(&#x27;ms-list-&#x27;+key);
+  if(!list) return;
   list.innerHTML = &#x27;&#x27;;
-  const filtered = searchVal ? values.filter(v=&gt;v.toLowerCase().includes(searchVal.toLowerCase())) : values;
+  const q = normalizeSearchText(searchVal);
+  const filtered = q ? values.filter(v =&gt; normalizeSearchText(v).includes(q)) : values;
+  if(!filtered.length) {
+    const empty = document.createElement(&#x27;div&#x27;);
+    empty.className = &#x27;ms-empty&#x27;;
+    empty.textContent = &#x27;Nenhuma opção encontrada&#x27;;
+    list.appendChild(empty);
+    return;
+  }
   filtered.forEach(v =&gt; {
-    const div = document.createElement(&#x27;div&#x27;);
-    div.className = &#x27;ms-item&#x27;;
-    const checked = msState[key].includes(v) ? &#x27;checked&#x27; : &#x27;&#x27;;
-    div.innerHTML = `&lt;input type=&quot;checkbox&quot; id=&quot;cb-${key}-${v}&quot; value=&quot;${v}&quot; ${checked} onchange=&quot;onCheck(&#x27;${key}&#x27;,&#x27;${v}&#x27;,this.checked)&quot;&gt;&lt;label for=&quot;cb-${key}-${v}&quot;&gt;${v}&lt;/label&gt;`;
-    list.appendChild(div);
+    const row = document.createElement(&#x27;label&#x27;);
+    row.className = &#x27;ms-item&#x27;;
+
+    const cb = document.createElement(&#x27;input&#x27;);
+    cb.type = &#x27;checkbox&#x27;;
+    cb.checked = msState[key].includes(v);
+    cb.addEventListener(&#x27;change&#x27;, () =&gt; onCheck(key, v, cb.checked));
+
+    const txt = document.createElement(&#x27;span&#x27;);
+    txt.className = &#x27;ms-txt&#x27;;
+    txt.textContent = v;
+
+    row.appendChild(cb);
+    row.appendChild(txt);
+    list.appendChild(row);
   });
 }
 
 function onCheck(key, val, checked) {
-  if(checked) { if(!msState[key].includes(val)) msState[key].push(val); }
-  else { msState[key] = msState[key].filter(v=&gt;v!==val); }
+  if(checked) {
+    if(!msState[key].includes(val)) msState[key].push(val);
+  } else {
+    msState[key] = msState[key].filter(v =&gt; v !== val);
+  }
   updateLabel(key);
   applyFilters();
 }
 
 function updateLabel(key) {
-  const sel = msState[key];
+  const sel = msState[key] || [];
   const lbl = document.getElementById(&#x27;ms-label-&#x27;+key);
-  if(!sel.length) { lbl.innerHTML = &#x27;Todos&#x27;; return; }
-  if(sel.length === 1) { lbl.innerHTML = sel[0]; return; }
-  lbl.innerHTML = `${sel[0]} &lt;span class=&quot;ms-count&quot;&gt;+${sel.length-1}&lt;/span&gt;`;
+  if(!lbl) return;
+  lbl.innerHTML = &#x27;&#x27;;
+  if(!sel.length) { lbl.textContent = &#x27;Todos&#x27;; return; }
+  lbl.appendChild(document.createTextNode(sel[0]));
+  if(sel.length &gt; 1) {
+    const count = document.createElement(&#x27;span&#x27;);
+    count.className = &#x27;ms-count&#x27;;
+    count.textContent = &#x27;+&#x27; + (sel.length - 1);
+    lbl.appendChild(document.createTextNode(&#x27; &#x27;));
+    lbl.appendChild(count);
+  }
 }
 
 function toggleDropdown(key) {
   const drop = document.getElementById(&#x27;ms-drop-&#x27;+key);
+  if(!drop) return;
   const btn  = drop.previousElementSibling;
   const isOpen = drop.classList.contains(&#x27;open&#x27;);
-  // close all
-  document.querySelectorAll(&#x27;.ms-dropdown&#x27;).forEach(d=&gt;d.classList.remove(&#x27;open&#x27;));
-  document.querySelectorAll(&#x27;.ms-btn&#x27;).forEach(b=&gt;b.classList.remove(&#x27;open&#x27;));
-  if(!isOpen) { drop.classList.add(&#x27;open&#x27;); btn.classList.add(&#x27;open&#x27;); }
+  document.querySelectorAll(&#x27;.ms-dropdown&#x27;).forEach(d =&gt; d.classList.remove(&#x27;open&#x27;));
+  document.querySelectorAll(&#x27;.ms-btn&#x27;).forEach(b =&gt; b.classList.remove(&#x27;open&#x27;));
+  document.querySelectorAll(&#x27;.filter-group&#x27;).forEach(g =&gt; g.classList.remove(&#x27;is-open&#x27;));
+  if(!isOpen) {
+    const search = drop.querySelector(&#x27;.ms-search&#x27;);
+    if(search) search.value = &#x27;&#x27;;
+    buildList(key, msOptions[key] || []);
+    drop.classList.add(&#x27;open&#x27;);
+    btn.classList.add(&#x27;open&#x27;);
+    const fg = document.getElementById(&#x27;fg-&#x27;+key);
+    if(fg) fg.classList.add(&#x27;is-open&#x27;);
+    setTimeout(() =&gt; { const s = drop.querySelector(&#x27;.ms-search&#x27;); if(s) s.focus(); }, 30);
+  }
 }
 
 function closeDropdown(key) {
-  document.getElementById(&#x27;ms-drop-&#x27;+key).classList.remove(&#x27;open&#x27;);
-  document.getElementById(&#x27;ms-drop-&#x27;+key).previousElementSibling.classList.remove(&#x27;open&#x27;);
+  const drop = document.getElementById(&#x27;ms-drop-&#x27;+key);
+  if(!drop) return;
+  drop.classList.remove(&#x27;open&#x27;);
+  if(drop.previousElementSibling) drop.previousElementSibling.classList.remove(&#x27;open&#x27;);
+  const fg = document.getElementById(&#x27;fg-&#x27;+key);
+  if(fg) fg.classList.remove(&#x27;is-open&#x27;);
 }
 
 function clearFilter(key) {
   msState[key] = [];
-  buildList(key, msOptions[key]);
+  const search = document.querySelector(&#x27;#ms-drop-&#x27;+key+&#x27; .ms-search&#x27;);
+  if(search) search.value = &#x27;&#x27;;
+  buildList(key, msOptions[key] || []);
   updateLabel(key);
   applyFilters();
 }
 
 function filterDropdown(key, val) {
-  buildList(key, msOptions[key], val);
+  buildList(key, msOptions[key] || [], val);
 }
 
 // Close dropdowns when clicking outside
-document.addEventListener(&#x27;click&#x27;, e =&gt; {
-  if(!e.target.closest(&#x27;.filter-group&#x27;)) {
-    document.querySelectorAll(&#x27;.ms-dropdown&#x27;).forEach(d=&gt;d.classList.remove(&#x27;open&#x27;));
-    document.querySelectorAll(&#x27;.ms-btn&#x27;).forEach(b=&gt;b.classList.remove(&#x27;open&#x27;));
+[&#x27;click&#x27;,&#x27;touchstart&#x27;].forEach(evtName =&gt; {
+  document.addEventListener(evtName, e =&gt; {
+    if(!e.target.closest(&#x27;.filter-group&#x27;)) {
+      document.querySelectorAll(&#x27;.ms-dropdown&#x27;).forEach(d =&gt; d.classList.remove(&#x27;open&#x27;));
+      document.querySelectorAll(&#x27;.ms-btn&#x27;).forEach(b =&gt; b.classList.remove(&#x27;open&#x27;));
+      document.querySelectorAll(&#x27;.filter-group&#x27;).forEach(g =&gt; g.classList.remove(&#x27;is-open&#x27;));
+    }
+  }, {passive:true});
+});
+
+document.addEventListener(&#x27;keydown&#x27;, e =&gt; {
+  if(e.key === &#x27;Escape&#x27;) {
+    document.querySelectorAll(&#x27;.ms-dropdown&#x27;).forEach(d =&gt; d.classList.remove(&#x27;open&#x27;));
+    document.querySelectorAll(&#x27;.ms-btn&#x27;).forEach(b =&gt; b.classList.remove(&#x27;open&#x27;));
+    document.querySelectorAll(&#x27;.filter-group&#x27;).forEach(g =&gt; g.classList.remove(&#x27;is-open&#x27;));
   }
 });
 
 function applyFilters() {
-  filteredData = allData.filter(d =&gt;
-    (!msState.ano.length   || msState.ano.includes(d.ano))      &amp;&amp;
-    (!msState.mes.length   || msState.mes.includes(d.mes))      &amp;&amp;
-    (!msState.grupo.length || msState.grupo.includes(d.grupo))  &amp;&amp;
-    (!msState.custo.length || msState.custo.includes(d.ccusto)) &amp;&amp;
-    (!msState.item.length  || msState.item.includes(d.item))
-  );
+  filteredData = allData.filter(d =&gt; {
+    for(const def of FILTER_DEFS) {
+      const selected = msState[def.key] || [];
+      if(selected.length &amp;&amp; !selected.includes(getFilterValue(d, def.key))) return false;
+    }
+    return true;
+  });
   renderKPIs();
   renderCharts();
   renderTable();
@@ -4109,19 +4421,53 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 }
 #pag-page .pag-table tbody tr.pag-row-pago{
   background:linear-gradient(90deg, rgba(57,255,20,.24), rgba(0,229,255,.12) 58%, rgba(57,255,20,.06));
-  box-shadow:inset 5px 0 0 rgba(57,255,20,.95), inset 0 0 0 1px rgba(57,255,20,.16);
+  box-shadow:inset 0 0 0 1px rgba(57,255,20,.16), 0 0 18px rgba(57,255,20,.08);
 }
 #pag-page .pag-table tbody tr.pag-row-pago td{
   color:#f8fff4;
   font-weight:850;
   border-bottom-color:rgba(57,255,20,.24);
 }
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child{
+  position:relative;
+  padding-left:68px;
+  overflow:visible;
+}
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child::before{
+  content:'✓';
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg, #26b39a, #1f8f88);
+  color:#ffffff;
+  font-size:20px;
+  font-weight:1000;
+  box-shadow:0 0 0 4px rgba(38,179,154,.12), 0 10px 24px rgba(0,0,0,.24);
+}
+#pag-page .pag-table tbody tr.pag-row-pago td:first-child::after{
+  content:'';
+  position:absolute;
+  left:50px;
+  top:10px;
+  bottom:10px;
+  width:8px;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(57,255,20,.98), rgba(0,229,255,.72));
+  box-shadow:0 0 14px rgba(57,255,20,.22);
+}
 #pag-page .pag-table tbody tr:hover,
 #pag-page .pag-table tbody tr:active,
 #pag-page .pag-table tbody tr.row-touch,
 #pag-page .pag-table tbody tr:focus-within{
   background:linear-gradient(90deg, rgba(255,214,10,.34), rgba(0,229,255,.22) 52%, rgba(255,61,184,.14)) !important;
-  box-shadow:inset 6px 0 0 #FFD60A, inset 0 0 0 1px rgba(255,214,10,.50), 0 0 26px rgba(255,214,10,.20);
+  box-shadow:inset 0 0 0 1px rgba(255,214,10,.50), 0 0 26px rgba(255,214,10,.20);
   transform:translateY(-1px);
   filter:brightness(1.10);
 }
@@ -4132,12 +4478,19 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
   color:#ffffff;
   text-shadow:0 1px 2px rgba(0,0,0,.55);
 }
+#pag-page .pag-table tbody tr:hover td:first-child::after,
+#pag-page .pag-table tbody tr:active td:first-child::after,
+#pag-page .pag-table tbody tr.row-touch td:first-child::after,
+#pag-page .pag-table tbody tr:focus-within td:first-child::after{
+  background:linear-gradient(180deg, #FFD60A, rgba(0,229,255,.90));
+  box-shadow:0 0 16px rgba(255,214,10,.28);
+}
 #pag-page .pag-table tbody tr.pag-row-pago:hover,
 #pag-page .pag-table tbody tr.pag-row-pago:active,
 #pag-page .pag-table tbody tr.pag-row-pago.row-touch,
 #pag-page .pag-table tbody tr.pag-row-pago:focus-within{
   background:linear-gradient(90deg, rgba(57,255,20,.32), rgba(0,229,255,.24) 50%, rgba(255,214,10,.18)) !important;
-  box-shadow:inset 6px 0 0 #39FF14, inset 0 0 0 1px rgba(57,255,20,.55), 0 0 28px rgba(57,255,20,.22);
+  box-shadow:inset 0 0 0 1px rgba(57,255,20,.55), 0 0 28px rgba(57,255,20,.22);
 }
 #pag-page .pag-table td:nth-child(6),#pag-page .pag-table td:nth-child(7){white-space:nowrap}
 #pag-page .pag-badge{
@@ -4147,6 +4500,11 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 }
 #pag-page .pag-badge.ok{background:rgba(82,255,170,.12);border-color:rgba(82,255,170,.35);color:#73ffbf}
 #pag-page .pag-badge.due{background:rgba(255,84,84,.12);border-color:rgba(255,84,84,.35);color:#ff6666}
+@media (max-width: 760px){
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child{padding-left:60px}
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child::before{left:12px;width:26px;height:26px;font-size:18px}
+  #pag-page .pag-table tbody tr.pag-row-pago td:first-child::after{left:44px;width:7px;top:12px;bottom:12px}
+}
 #pag-page .pag-empty{color:rgba(255,255,255,.58);padding:28px;text-align:center}
 #pag-upload-screen{
   min-height:calc(100vh - 48px);
