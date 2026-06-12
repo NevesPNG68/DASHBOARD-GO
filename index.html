@@ -1118,6 +1118,23 @@ img, svg, canvas{max-width:100%; height:auto}
 }
 </style>
 
+
+<style id="limpeza-mensagens-visuais-v1">
+/* Remove mensagens/status visuais solicitados */
+#rec-page #metaPeriodo,
+#rec-page #metaFiltros,
+#rec-page .hero .tags,
+#pag-page .pag-meta,
+#pag-page .pag-pills{
+  display:none !important;
+}
+
+/* Mantém o topo mais limpo depois da remoção */
+#pag-page .pag-card-top .pag-topbar{
+  align-items:center !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -3110,7 +3127,11 @@ generate();
     .filter-group.filter-wide{grid-column:auto;}
   }
 
-&lt;/style&gt;
+
+  /* Remove botão/mensagem de atualização dentro da aba Despesas */
+  .topbar-actions, .reload-btn, .file-name{display:none!important;}
+
+  &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 
