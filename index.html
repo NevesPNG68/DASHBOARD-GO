@@ -3111,6 +3111,118 @@ generate();
   }
 
 &lt;/style&gt;
+
+&lt;style id=&quot;despesas-mobile-native-selects-definitivo&quot;&gt;
+/* ============================================================
+   DESPESAS — FILTROS NATIVOS DEFINITIVOS NO MOBILE
+   PC preservado: os multiselects atuais continuam intactos no desktop.
+   Mobile: usa &lt;select&gt; nativo + botão Aplicar, sem popup pesado.
+   ============================================================ */
+@media (min-width:861px){
+  .desp-native-select,
+  #desp-native-actions{display:none !important;}
+}
+@media (max-width:860px){
+  .topbar{
+    position:relative !important;
+    top:auto !important;
+    padding:.85rem .85rem !important;
+    gap:.78rem !important;
+  }
+  .topbar-logo{
+    width:100% !important;
+    text-align:center !important;
+  }
+  .filters.filtros-despesas-refeito{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    flex-basis:100% !important;
+    width:100% !important;
+  }
+  .filter-group,
+  .filter-group.filter-wide{
+    grid-column:auto !important;
+    width:100% !important;
+    min-width:0 !important;
+    position:relative !important;
+  }
+  .filter-group &gt; label{
+    display:block !important;
+    color:rgba(226,232,240,.94) !important;
+    font-size:.72rem !important;
+    letter-spacing:.12em !important;
+    text-transform:uppercase !important;
+    font-weight:950 !important;
+    margin-bottom:7px !important;
+  }
+  .filter-group .ms-btn,
+  .filter-group .ms-dropdown,
+  .filter-group .ms-dropdown.open{
+    display:none !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+  }
+  .desp-native-select{
+    display:block !important;
+    width:100% !important;
+    min-height:56px !important;
+    appearance:auto !important;
+    -webkit-appearance:menulist !important;
+    border-radius:18px !important;
+    border:1px solid rgba(var(--edge-rgb),.28) !important;
+    border-top:4px solid rgba(var(--edge-rgb),.72) !important;
+    background:linear-gradient(180deg, rgba(var(--edge-rgb),.075), rgba(15,23,42,.96) 36%, rgba(15,23,42,.88)) !important;
+    color:#F8FAFC !important;
+    padding:12px 13px !important;
+    font-size:16px !important;
+    font-weight:900 !important;
+    outline:none !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.24), 0 0 14px rgba(var(--edge-rgb),.055) !important;
+  }
+  .desp-native-select:focus,
+  .desp-native-select:active{
+    border-top-color:rgba(var(--edge-rgb),1) !important;
+    border-color:rgba(var(--edge-rgb),.48) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 9px 18px rgba(var(--edge-rgb),.08), 0 0 0 3px rgba(var(--edge-rgb),.12), 0 14px 34px rgba(0,0,0,.30) !important;
+  }
+  .desp-native-select option{
+    background:#10151f !important;
+    color:#fff !important;
+  }
+  #fg-ano{--edge-rgb:0,229,255;}
+  #fg-mes{--edge-rgb:57,255,20;}
+  #fg-grupo{--edge-rgb:168,85,247;}
+  #fg-custo{--edge-rgb:245,158,11;}
+  #fg-fornec{--edge-rgb:0,229,255;}
+  #fg-item{--edge-rgb:251,54,93;}
+  #fg-status{--edge-rgb:57,255,20;}
+
+  #desp-native-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    margin-top:2px !important;
+  }
+  #desp-native-actions .desp-native-btn{
+    min-height:50px !important;
+    border-radius:16px !important;
+    border:1px solid rgba(var(--edge-rgb),.28) !important;
+    border-top:4px solid rgba(var(--edge-rgb),.68) !important;
+    background:linear-gradient(180deg, rgba(var(--edge-rgb),.075), rgba(15,23,42,.96) 36%, rgba(15,23,42,.88)) !important;
+    color:#F8FAFC !important;
+    font-size:12px !important;
+    font-weight:1000 !important;
+    letter-spacing:.08em !important;
+    text-transform:uppercase !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.24), 0 0 14px rgba(var(--edge-rgb),.055) !important;
+  }
+  #desp-native-actions .desp-native-clear{--edge-rgb:251,54,93;}
+  #desp-native-actions .desp-native-apply{--edge-rgb:57,255,20;}
+}
+&lt;/style&gt;
+
 &lt;/head&gt;
 &lt;body&gt;
 
@@ -3139,6 +3251,7 @@ generate();
     &lt;div class=&quot;filters filtros-despesas-refeito&quot;&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-ano&quot;&gt;
         &lt;label&gt;Ano&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-ano&quot; aria-label=&quot;Todos os anos&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os anos&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;ano&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-ano&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -3154,6 +3267,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-mes&quot;&gt;
         &lt;label&gt;Mês&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-mes&quot; aria-label=&quot;Todos os meses&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os meses&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;mes&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-mes&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -3169,6 +3283,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-grupo&quot;&gt;
         &lt;label&gt;Grupo&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-grupo&quot; aria-label=&quot;Todos os grupos&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os grupos&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;grupo&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-grupo&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -3184,6 +3299,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-custo&quot;&gt;
         &lt;label&gt;Tipo de custo&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-custo&quot; aria-label=&quot;Todos os tipos de custo&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os tipos de custo&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;custo&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-custo&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -3199,6 +3315,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group filter-wide&quot; id=&quot;fg-fornec&quot;&gt;
         &lt;label&gt;Fornecedor&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-fornec&quot; aria-label=&quot;Todos os fornecedores&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os fornecedores&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;fornec&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-fornec&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -3214,6 +3331,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group filter-wide&quot; id=&quot;fg-item&quot;&gt;
         &lt;label&gt;Item&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-item&quot; aria-label=&quot;Todos os itens&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os itens&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;item&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-item&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -3229,6 +3347,7 @@ generate();
       &lt;/div&gt;
       &lt;div class=&quot;filter-group&quot; id=&quot;fg-status&quot;&gt;
         &lt;label&gt;Status Pgto&lt;/label&gt;
+        &lt;select class=&quot;desp-native-select&quot; id=&quot;desp-native-status&quot; aria-label=&quot;Todos os status&quot;&gt;&lt;option value=&quot;&quot;&gt;Todos os status&lt;/option&gt;&lt;/select&gt;
         &lt;div class=&quot;ms-btn&quot; onclick=&quot;toggleDropdown(&#x27;status&#x27;)&quot; role=&quot;button&quot; tabindex=&quot;0&quot;&gt;
           &lt;span class=&quot;ms-label&quot; id=&quot;ms-label-status&quot;&gt;Todos&lt;/span&gt;
           &lt;span class=&quot;ms-arrow&quot;&gt;▼&lt;/span&gt;
@@ -4523,253 +4642,166 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
 &lt;/script&gt;
 
 
-
-&lt;!-- ============================================================
-     PATCH FINAL — DESPESAS: filtros nativos no mobile
-     - PC preservado: mantém o multiselect atual
-     - Mobile: troca para &lt;select&gt; nativo, igual Faturamento/Pagamentos
-     - Não renderiza gráfico/tabela a cada toque; aplica somente no botão Aplicar
-     ============================================================ --&gt;
-&lt;style id=&quot;despesas-filtros-nativos-mobile-final-css&quot;&gt;
-@media (min-width:861px){
-  .desp-native-select,
-  .desp-native-actions{display:none !important;}
-}
-@media (max-width:860px){
-  body.desp-mobile-native .topbar{
-    position:relative !important;
-    top:auto !important;
-    padding:.85rem .85rem !important;
-    gap:.78rem !important;
-    background:rgba(8,10,14,.98) !important;
-    border-bottom:1px solid rgba(255,214,10,.18) !important;
-    box-shadow:0 14px 42px rgba(0,0,0,.38) !important;
-  }
-  body.desp-mobile-native .topbar-logo{
-    width:100% !important;
-    text-align:center !important;
-  }
-  body.desp-mobile-native .filters.filtros-despesas-refeito{
-    display:grid !important;
-    grid-template-columns:1fr !important;
-    gap:10px !important;
-    flex-basis:100% !important;
-    width:100% !important;
-  }
-  body.desp-mobile-native .filter-group,
-  body.desp-mobile-native .filter-group.filter-wide{
-    grid-column:auto !important;
-    width:100% !important;
-    min-width:0 !important;
-  }
-  body.desp-mobile-native .filter-group &gt; label{
-    color:rgba(203,213,225,.92) !important;
-    font-size:.70rem !important;
-    letter-spacing:.12em !important;
-    text-transform:uppercase !important;
-    font-weight:950 !important;
-    margin-bottom:7px !important;
-  }
-  body.desp-mobile-native .filter-group .ms-btn,
-  body.desp-mobile-native .filter-group .ms-dropdown{
-    display:none !important;
-  }
-  body.desp-mobile-native .desp-native-select{
-    display:block !important;
-    width:100% !important;
-    min-height:54px !important;
-    appearance:auto !important;
-    -webkit-appearance:menulist !important;
-    border-radius:18px !important;
-    border:1px solid rgba(var(--edge-rgb),.24) !important;
-    border-top:4px solid rgba(var(--edge-rgb),.62) !important;
-    background:linear-gradient(180deg, rgba(var(--edge-rgb),.06), rgba(15,23,42,.94) 35%, rgba(15,23,42,.86)) !important;
-    color:#F8FAFC !important;
-    padding:12px 13px !important;
-    font-size:16px !important;
-    font-weight:900 !important;
-    outline:none !important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 12px 28px rgba(0,0,0,.22) !important;
-  }
-  body.desp-mobile-native .desp-native-select:focus,
-  body.desp-mobile-native .desp-native-select:active{
-    border-top-color:rgba(var(--edge-rgb),1) !important;
-    border-color:rgba(var(--edge-rgb),.42) !important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 9px 18px rgba(var(--edge-rgb),.07), 0 0 0 3px rgba(var(--edge-rgb),.11), 0 14px 34px rgba(0,0,0,.28) !important;
-  }
-  body.desp-mobile-native .desp-native-select option{
-    background:#10151f !important;
-    color:#fff !important;
-  }
-  body.desp-mobile-native #fg-ano{--edge-rgb:0,229,255;}
-  body.desp-mobile-native #fg-mes{--edge-rgb:57,255,20;}
-  body.desp-mobile-native #fg-grupo{--edge-rgb:168,85,247;}
-  body.desp-mobile-native #fg-custo{--edge-rgb:245,158,11;}
-  body.desp-mobile-native #fg-fornec{--edge-rgb:0,229,255;}
-  body.desp-mobile-native #fg-item{--edge-rgb:251,54,93;}
-  body.desp-mobile-native #fg-status{--edge-rgb:57,255,20;}
-
-  body.desp-mobile-native .desp-native-actions{
-    display:grid !important;
-    grid-template-columns:1fr 1fr !important;
-    gap:8px !important;
-    width:100% !important;
-    margin-top:2px !important;
-  }
-  body.desp-mobile-native .desp-native-btn{
-    min-height:48px !important;
-    border-radius:16px !important;
-    border:1px solid rgba(var(--edge-rgb),.24) !important;
-    border-top:4px solid rgba(var(--edge-rgb),.58) !important;
-    background:linear-gradient(180deg, rgba(var(--edge-rgb),.06), rgba(15,23,42,.94) 35%, rgba(15,23,42,.86)) !important;
-    color:#F8FAFC !important;
-    font-size:12px !important;
-    font-weight:1000 !important;
-    letter-spacing:.08em !important;
-    text-transform:uppercase !important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 12px 28px rgba(0,0,0,.22) !important;
-  }
-  body.desp-mobile-native .desp-native-clear{--edge-rgb:251,54,93;}
-  body.desp-mobile-native .desp-native-apply{--edge-rgb:57,255,20;}
-  body.desp-mobile-native .desp-native-btn:active,
-  body.desp-mobile-native .desp-native-btn:focus{
-    border-top-color:rgba(var(--edge-rgb),1) !important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 9px 18px rgba(var(--edge-rgb),.07), 0 0 0 3px rgba(var(--edge-rgb),.11), 0 14px 34px rgba(0,0,0,.28) !important;
-  }
-}
-&lt;/style&gt;
-&lt;script id=&quot;despesas-filtros-nativos-mobile-final-js&quot;&gt;
+&lt;script id=&quot;despesas-mobile-native-selects-definitivo-js&quot;&gt;
 (function(){
   const KEYS = [&#x27;ano&#x27;,&#x27;mes&#x27;,&#x27;grupo&#x27;,&#x27;custo&#x27;,&#x27;fornec&#x27;,&#x27;item&#x27;,&#x27;status&#x27;];
-  const PLACEHOLDERS = {
-    ano:&#x27;Todos os anos&#x27;, mes:&#x27;Todos os meses&#x27;, grupo:&#x27;Todos os grupos&#x27;, custo:&#x27;Todos os tipos&#x27;,
+  const LABELS = {
+    ano:&#x27;Todos os anos&#x27;, mes:&#x27;Todos os meses&#x27;, grupo:&#x27;Todos os grupos&#x27;, custo:&#x27;Todos os tipos de custo&#x27;,
     fornec:&#x27;Todos os fornecedores&#x27;, item:&#x27;Todos os itens&#x27;, status:&#x27;Todos os status&#x27;
   };
   let refreshing = false;
 
-  function mobile(){ return window.matchMedia &amp;&amp; window.matchMedia(&#x27;(max-width:860px)&#x27;).matches; }
-  function esc(v){ return String(v ?? &#x27;&#x27;).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g, s =&gt; ({&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;,&quot;&#x27;&quot;:&#x27;&amp;#39;&#x27;}[s])); }
-  function selectFor(key){ return document.getElementById(&#x27;desp-native-&#x27; + key); }
-  function valueFor(row, key){
+  function isMobile(){
+    try{ if(window.matchMedia &amp;&amp; window.matchMedia(&#x27;(max-width:860px)&#x27;).matches) return true; }catch(e){}
+    try{ if(window.parent &amp;&amp; window.parent.innerWidth &lt;= 860) return true; }catch(e){}
+    return window.innerWidth &lt;= 860;
+  }
+  function esc(v){
+    return String(v == null ? &#x27;&#x27; : v).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g, function(s){
+      return {&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;,&quot;&#x27;&quot;:&#x27;&amp;#39;&#x27;}[s];
+    });
+  }
+  function getSel(key){ return document.getElementById(&#x27;desp-native-&#x27; + key); }
+  function rowValue(row, key){
     try{ if(typeof getFilterValue === &#x27;function&#x27;) return String(getFilterValue(row, key) || &#x27;&#x27;).trim(); }catch(e){}
     return String((row &amp;&amp; row[key]) || &#x27;&#x27;).trim();
   }
-  function selectedMap(){
+  function currentSelections(){
     const out = {};
-    KEYS.forEach(k =&gt; { const s = selectFor(k); out[k] = s ? String(s.value || &#x27;&#x27;) : &#x27;&#x27;; });
+    KEYS.forEach(function(key){
+      const sel = getSel(key);
+      out[key] = sel ? String(sel.value || &#x27;&#x27;) : &#x27;&#x27;;
+    });
     return out;
   }
-  function selectedRows(skipKey){
-    const sel = selectedMap();
-    const source = Array.isArray(allData) ? allData : [];
-    return source.filter(row =&gt; {
+  function rowsRespectingAllExcept(skipKey){
+    const sel = currentSelections();
+    const rows = Array.isArray(allData) ? allData : [];
+    return rows.filter(function(row){
       for(const key of KEYS){
         if(key === skipKey) continue;
-        if(sel[key] &amp;&amp; valueFor(row, key) !== sel[key]) return false;
+        if(sel[key] &amp;&amp; rowValue(row, key) !== sel[key]) return false;
       }
       return true;
     });
   }
-  function sortValues(key, values){
+  function sortedValues(key, values){
     try{ if(typeof sortFilterValues === &#x27;function&#x27;) return sortFilterValues(key, values); }catch(e){}
-    return [...values].sort((a,b)=&gt;String(a).localeCompare(String(b),&#x27;pt-BR&#x27;,{numeric:true,sensitivity:&#x27;base&#x27;}));
+    return values.slice().sort(function(a,b){ return String(a).localeCompare(String(b),&#x27;pt-BR&#x27;,{numeric:true,sensitivity:&#x27;base&#x27;}); });
   }
-  function ensureNativeControls(){
+  function ensureControls(){
     const filters = document.querySelector(&#x27;.filters.filtros-despesas-refeito&#x27;);
     if(!filters) return;
-    KEYS.forEach(key =&gt; {
+    KEYS.forEach(function(key){
       const fg = document.getElementById(&#x27;fg-&#x27; + key);
-      if(!fg || selectFor(key)) return;
-      const sel = document.createElement(&#x27;select&#x27;);
-      sel.id = &#x27;desp-native-&#x27; + key;
-      sel.className = &#x27;desp-native-select&#x27;;
-      sel.setAttribute(&#x27;aria-label&#x27;, PLACEHOLDERS[key] || key);
-      sel.addEventListener(&#x27;change&#x27;, function(){
-        if(refreshing) return;
-        refreshOptions(key);
-      });
-      const label = fg.querySelector(&#x27;label&#x27;);
-      if(label &amp;&amp; label.nextSibling) fg.insertBefore(sel, label.nextSibling);
-      else fg.appendChild(sel);
+      if(!fg) return;
+      let sel = getSel(key);
+      if(!sel){
+        sel = document.createElement(&#x27;select&#x27;);
+        sel.id = &#x27;desp-native-&#x27; + key;
+        sel.className = &#x27;desp-native-select&#x27;;
+        sel.setAttribute(&#x27;aria-label&#x27;, LABELS[key] || key);
+        const label = fg.querySelector(&#x27;label&#x27;);
+        if(label &amp;&amp; label.nextSibling) fg.insertBefore(sel, label.nextSibling);
+        else fg.appendChild(sel);
+      }
+      if(!sel.__despNativeBound){
+        sel.__despNativeBound = true;
+        sel.addEventListener(&#x27;change&#x27;, function(){
+          if(refreshing) return;
+          refreshNativeOptions();
+        });
+      }
     });
     if(!document.getElementById(&#x27;desp-native-actions&#x27;)){
       const actions = document.createElement(&#x27;div&#x27;);
       actions.id = &#x27;desp-native-actions&#x27;;
-      actions.className = &#x27;desp-native-actions&#x27;;
       actions.innerHTML = &#x27;&lt;button type=&quot;button&quot; class=&quot;desp-native-btn desp-native-clear&quot;&gt;Limpar&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;desp-native-btn desp-native-apply&quot;&gt;Aplicar&lt;/button&gt;&#x27;;
-      actions.querySelector(&#x27;.desp-native-clear&#x27;).addEventListener(&#x27;click&#x27;, clearNative);
-      actions.querySelector(&#x27;.desp-native-apply&#x27;).addEventListener(&#x27;click&#x27;, applyNative);
+      actions.querySelector(&#x27;.desp-native-clear&#x27;).addEventListener(&#x27;click&#x27;, clearNativeFilters);
+      actions.querySelector(&#x27;.desp-native-apply&#x27;).addEventListener(&#x27;click&#x27;, applyNativeFilters);
       filters.appendChild(actions);
     }
   }
-  function fillSelect(key, options){
-    const sel = selectFor(key);
+  function fillSelect(key, values){
+    const sel = getSel(key);
     if(!sel) return;
-    const old = sel.value;
-    const valid = new Set(options.map(String));
-    sel.innerHTML = &#x27;&lt;option value=&quot;&quot;&gt;&#x27; + esc(PLACEHOLDERS[key] || &#x27;Todos&#x27;) + &#x27;&lt;/option&gt;&#x27; + options.map(v =&gt; &#x27;&lt;option value=&quot;&#x27; + esc(v) + &#x27;&quot;&gt;&#x27; + esc(v) + &#x27;&lt;/option&gt;&#x27;).join(&#x27;&#x27;);
-    sel.value = valid.has(String(old)) ? old : &#x27;&#x27;;
+    const old = String(sel.value || &#x27;&#x27;);
+    const valid = new Set(values.map(String));
+    sel.innerHTML = &#x27;&lt;option value=&quot;&quot;&gt;&#x27; + esc(LABELS[key] || &#x27;Todos&#x27;) + &#x27;&lt;/option&gt;&#x27; +
+      values.map(function(v){ return &#x27;&lt;option value=&quot;&#x27; + esc(v) + &#x27;&quot;&gt;&#x27; + esc(v) + &#x27;&lt;/option&gt;&#x27;; }).join(&#x27;&#x27;);
+    sel.value = valid.has(old) ? old : &#x27;&#x27;;
   }
-  function refreshOptions(changedKey){
-    if(!mobile()) return;
+  function refreshNativeOptions(){
+    if(!isMobile()) return;
     refreshing = true;
     try{
-      ensureNativeControls();
-      KEYS.forEach(key =&gt; {
-        const rows = selectedRows(key);
-        const vals = sortValues(key, [...new Set(rows.map(r =&gt; valueFor(r, key)).filter(Boolean))]);
-        fillSelect(key, vals);
+      ensureControls();
+      KEYS.forEach(function(key){
+        const rows = rowsRespectingAllExcept(key);
+        const values = sortedValues(key, Array.from(new Set(rows.map(function(r){ return rowValue(r, key); }).filter(Boolean))));
+        fillSelect(key, values);
       });
-    } finally {
-      refreshing = false;
-    }
+    }catch(e){ console.warn(&#x27;native despesas refresh&#x27;, e); }
+    refreshing = false;
   }
-  function syncStateFromNative(){
+  function syncNativeToMultiState(){
     if(typeof msState === &#x27;undefined&#x27;) return;
-    KEYS.forEach(key =&gt; {
-      const val = selectFor(key) ? selectFor(key).value : &#x27;&#x27;;
+    KEYS.forEach(function(key){
+      const sel = getSel(key);
+      const val = sel ? String(sel.value || &#x27;&#x27;) : &#x27;&#x27;;
       msState[key] = val ? [val] : [];
       try{ if(typeof updateLabel === &#x27;function&#x27;) updateLabel(key); }catch(e){}
     });
   }
-  function applyNative(){
-    syncStateFromNative();
-    try{ document.querySelectorAll(&#x27;.ms-dropdown.open&#x27;).forEach(d =&gt; d.classList.remove(&#x27;open&#x27;)); }catch(e){}
-    try{ document.querySelectorAll(&#x27;.ms-btn.open&#x27;).forEach(b =&gt; b.classList.remove(&#x27;open&#x27;)); }catch(e){}
-    try{ document.querySelectorAll(&#x27;.filter-group.is-open&#x27;).forEach(g =&gt; g.classList.remove(&#x27;is-open&#x27;)); }catch(e){}
+  function closeOldDropdowns(){
+    document.querySelectorAll(&#x27;.ms-dropdown.open&#x27;).forEach(function(d){ d.classList.remove(&#x27;open&#x27;); });
+    document.querySelectorAll(&#x27;.ms-btn.open&#x27;).forEach(function(b){ b.classList.remove(&#x27;open&#x27;); });
+    document.querySelectorAll(&#x27;.filter-group.is-open&#x27;).forEach(function(g){ g.classList.remove(&#x27;is-open&#x27;); });
+  }
+  function applyNativeFilters(){
+    syncNativeToMultiState();
+    closeOldDropdowns();
     if(typeof applyFilters === &#x27;function&#x27;) applyFilters();
   }
-  function clearNative(){
-    KEYS.forEach(key =&gt; { const s = selectFor(key); if(s) s.value = &#x27;&#x27;; });
-    refreshOptions();
-    applyNative();
+  function clearNativeFilters(){
+    KEYS.forEach(function(key){ const sel = getSel(key); if(sel) sel.value = &#x27;&#x27;; });
+    syncNativeToMultiState();
+    refreshNativeOptions();
+    closeOldDropdowns();
+    if(typeof applyFilters === &#x27;function&#x27;) applyFilters();
   }
-  function toggleMode(){
-    if(mobile()){
-      document.body.classList.add(&#x27;desp-mobile-native&#x27;);
-      ensureNativeControls();
-      refreshOptions();
-    }else{
-      document.body.classList.remove(&#x27;desp-mobile-native&#x27;);
-    }
+  function activateMode(){
+    ensureControls();
+    if(isMobile()) refreshNativeOptions();
   }
 
-  const originalPopulate = (typeof populateFilters === &#x27;function&#x27;) ? populateFilters : null;
-  if(originalPopulate){
-    populateFilters = function(){
-      const r = originalPopulate.apply(this, arguments);
-      setTimeout(toggleMode, 0);
-      return r;
+  const originalPopulateFilters = (typeof populateFilters === &#x27;function&#x27;) ? populateFilters : null;
+  if(originalPopulateFilters &amp;&amp; !populateFilters.__nativeMobileWrapped){
+    const wrapped = function(){
+      const result = originalPopulateFilters.apply(this, arguments);
+      setTimeout(activateMode, 0);
+      setTimeout(activateMode, 120);
+      return result;
     };
+    wrapped.__nativeMobileWrapped = true;
+    populateFilters = wrapped;
   }
 
-  window.__despNativeMobileRefresh = toggleMode;
-  window.addEventListener(&#x27;resize&#x27;, () =&gt; setTimeout(toggleMode, 80), {passive:true});
-  document.addEventListener(&#x27;DOMContentLoaded&#x27;, toggleMode);
-  setTimeout(toggleMode, 80);
-  setTimeout(toggleMode, 300);
+  window.__despNativeMobileRefresh = activateMode;
+  window.addEventListener(&#x27;resize&#x27;, function(){ setTimeout(activateMode, 80); }, {passive:true});
+  window.addEventListener(&#x27;message&#x27;, function(e){
+    if(e &amp;&amp; e.data &amp;&amp; (e.data.type === &#x27;LOAD_FILE&#x27; || e.data.type === &#x27;FORCE_RESIZE&#x27;)){
+      setTimeout(activateMode, 120);
+      setTimeout(activateMode, 450);
+    }
+  });
+  document.addEventListener(&#x27;DOMContentLoaded&#x27;, activateMode);
+  setTimeout(activateMode, 60);
+  setTimeout(activateMode, 350);
+  setTimeout(activateMode, 900);
 })();
 &lt;/script&gt;
+
 &lt;/body&gt;
 &lt;/html&gt;
 
@@ -8161,40 +8193,31 @@ window._pagReady = false;
 </script>
 
 
-
-<!-- ============================================================
-     PATCH FINAL — PAGAMENTOS: cabeçalhos mobile maiores e com brilho
-     - Somente mobile
-     - Apenas data e valor do cabeçalho do dia
-     ============================================================ -->
-<style id="pagamentos-cabecalhos-mobile-fonte-brilho-final">
+<style id="pagamentos-cabecalhos-mobile-fonte-brilho-definitivo">
+/* PAGAMENTOS — somente no mobile: data e valor maiores/brilhantes apenas no cabeçalho de cada dia */
 @media (max-width:760px){
-  #pag-page .pag-day summary{
-    padding:18px 18px !important;
-  }
-  #pag-page .pag-dayDate{
-    font-size:22px !important;
+  #pag-page .pag-day summary .pag-dayDate{
+    font-size:23px !important;
     line-height:1.12 !important;
     font-weight:1000 !important;
-    letter-spacing:.02em !important;
-    color:#FFFFFF !important;
-    text-shadow:0 0 10px rgba(255,255,255,.24), 0 0 20px rgba(57,255,20,.14) !important;
+    letter-spacing:.01em !important;
+    color:#ffffff !important;
+    text-shadow:0 0 10px rgba(255,255,255,.20), 0 0 18px rgba(57,255,20,.20) !important;
   }
-  #pag-page .pag-dayTotal{
-    font-size:22px !important;
-    line-height:1.12 !important;
+  #pag-page .pag-day summary .pag-dayTotal{
+    font-size:25px !important;
+    line-height:1.08 !important;
     font-weight:1000 !important;
-    color:#A3FF12 !important;
-    padding-top:2px !important;
-    text-shadow:0 0 12px rgba(163,255,18,.48), 0 0 26px rgba(163,255,18,.22) !important;
+    color:#a3ff12 !important;
+    white-space:nowrap !important;
+    text-shadow:0 0 12px rgba(163,255,18,.42), 0 0 24px rgba(163,255,18,.22), 0 0 34px rgba(0,229,255,.10) !important;
   }
 }
 @media (max-width:420px){
-  #pag-page .pag-dayDate,
-  #pag-page .pag-dayTotal{
-    font-size:21px !important;
-  }
+  #pag-page .pag-day summary .pag-dayDate{font-size:21px !important;}
+  #pag-page .pag-day summary .pag-dayTotal{font-size:23px !important;}
 }
 </style>
+
 </body>
 </html>
