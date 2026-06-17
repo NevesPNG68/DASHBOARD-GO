@@ -8650,7 +8650,7 @@ window._pagReady = false;
         ev.stopPropagation();
         if(this.checked) state[id].add(String(this.value));
         else state[id].delete(String(this.value));
-        refreshOptions();
+        refreshOptions(false);
         recRenderChips(recGetFilters());
         const metaExtra = el('metaFiltros');
         if(metaExtra) metaExtra.innerHTML = 'Filtros selecionados. Toque em <b>Aplicar</b> para atualizar o Faturamento.';
@@ -8857,6 +8857,132 @@ window._pagReady = false;
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
   window.addEventListener('resize', function(){ if(!installed && mobile()) init(); }, {passive:true});
+})();
+</script>
+
+
+
+<!-- ============================================================
+     PATCH CIRÚRGICO — MOBILE: evita sobreposição dos filtros multi-escolha
+     Escopo: somente Faturamento/mobile. Não altera dados, abas ou demais layouts.
+     ============================================================ -->
+<style id="faturamento-mobile-multiselect-overlay-fix-v2">
+@media (max-width:760px){
+  body.rec-mm-filter-open{
+    overflow:hidden !important;
+    touch-action:none !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .filters-panel{
+    overflow:visible !important;
+  }
+
+  /* Quando um filtro está aberto, os demais filtros ficam invisíveis para não atravessar o popup. */
+  body.rec-mm-filter-open #rec-page .filters-grid > .f.rec-mm-parent-hidden,
+  body.rec-mm-filter-open #rec-page #chips{
+    visibility:hidden !important;
+    pointer-events:none !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .filters-grid > .f.rec-mm-parent-open{
+    position:relative !important;
+    z-index:2147483000 !important;
+    visibility:visible !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .rec-mm-root.is-open{
+    position:relative !important;
+    z-index:2147483000 !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .rec-mm-root.is-open .rec-mm-pop.open{
+    position:fixed !important;
+    left:14px !important;
+    right:14px !important;
+    top:50% !important;
+    transform:translateY(-50%) !important;
+    z-index:2147483001 !important;
+    background:#080c12 !important;
+    isolation:isolate !important;
+    opacity:1 !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .rec-mm-root.is-open .rec-mm-list{
+    background:#080c12 !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .rec-mm-root.is-open .rec-mm-item{
+    background:#080c12 !important;
+  }
+
+  body.rec-mm-filter-open #rec-page .rec-mm-root.is-open .rec-mm-item.is-selected{
+    background:linear-gradient(90deg, rgba(var(--edge-rgb),.18), rgba(255,255,255,.04)) !important;
+  }
+}
+</style>
+
+<script id="faturamento-mobile-multiselect-overlay-fix-v2-js">
+(function(){
+  const MQ = '(max-width:760px)';
+  const IDS = ['fAno','fMes','fDiaSemana','fSemana','fFaixa'];
+
+  function mobile(){
+    return window.matchMedia && window.matchMedia(MQ).matches;
+  }
+
+  function roots(){
+    return IDS.map(id => document.getElementById(id)).filter(Boolean);
+  }
+
+  function clearParents(){
+    document.querySelectorAll('#rec-page .filters-grid > .f.rec-mm-parent-open, #rec-page .filters-grid > .f.rec-mm-parent-hidden')
+      .forEach(f => f.classList.remove('rec-mm-parent-open','rec-mm-parent-hidden'));
+  }
+
+  function syncOverlayState(){
+    if(!mobile()){
+      document.body.classList.remove('rec-mm-filter-open');
+      clearParents();
+      return;
+    }
+
+    const allRoots = roots();
+    const openRoot = allRoots.find(root => root.classList.contains('is-open') && root.querySelector('.rec-mm-pop.open'));
+
+    if(!openRoot){
+      document.body.classList.remove('rec-mm-filter-open');
+      clearParents();
+      return;
+    }
+
+    document.body.classList.add('rec-mm-filter-open');
+    allRoots.forEach(root => {
+      const parent = root.closest('.f');
+      if(!parent) return;
+      parent.classList.toggle('rec-mm-parent-open', root === openRoot);
+      parent.classList.toggle('rec-mm-parent-hidden', root !== openRoot);
+    });
+  }
+
+  function scheduleSync(){
+    requestAnimationFrame(syncOverlayState);
+    setTimeout(syncOverlayState, 60);
+  }
+
+  document.addEventListener('click', scheduleSync, true);
+  document.addEventListener('change', scheduleSync, true);
+  window.addEventListener('resize', scheduleSync, {passive:true});
+  window.addEventListener('orientationchange', scheduleSync, {passive:true});
+
+  const obs = new MutationObserver(scheduleSync);
+  function startObserver(){
+    const page = document.getElementById('rec-page');
+    if(page) obs.observe(page, {subtree:true, attributes:true, attributeFilter:['class']});
+    scheduleSync();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startObserver);
+  else startObserver();
 })();
 </script>
 
