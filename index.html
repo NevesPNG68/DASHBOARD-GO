@@ -4552,108 +4552,324 @@ window.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){
      - Sem popup/multiselect antigo no celular
      - Não recalcula tudo a cada toque; aplica só no botão Aplicar
      ============================================================ --&gt;
+&lt;style id=&quot;despesas-filtros-nativos-mobile-final-v3&quot;&gt;
+.desp-native-wrap,
+.desp-native-actions,
+.desp-mobile-note{display:none;}
 
-&lt;style id=&quot;despesas-multiselect-mobile-v10&quot;&gt;
-/* Despesas: mantém multi-escolha real no mobile, sem select nativo */
 @media (max-width:860px){
-  .filter-group .desp-native-wrap,
-  .desp-native-actions,
-  .desp-mobile-note{display:none!important;}
-  .filter-group &gt; .ms-btn{display:flex!important;}
-  .filter-group &gt; .ms-dropdown{display:none!important;}
-  .filter-group &gt; .ms-dropdown.open{
-    display:flex!important;
-    position:fixed!important;
-    left:12px!important;
-    right:12px!important;
-    top:50%!important;
-    transform:translateY(-50%)!important;
-    width:auto!important;
-    min-width:0!important;
-    max-width:none!important;
-    max-height:min(76vh, 620px)!important;
-    border-radius:24px!important;
-    z-index:2147483001!important;
-    background:#080b10!important;
-    box-shadow:0 28px 90px rgba(0,0,0,.82), 0 0 30px rgba(255,214,10,.12)!important;
+  .topbar{
+    position:relative !important;
+    top:auto !important;
+    padding:.85rem .85rem 1rem !important;
+    gap:.85rem !important;
+    border-bottom:1px solid rgba(148,163,184,.14) !important;
+    background:rgba(5,7,11,.98) !important;
   }
-  .filter-group &gt; .ms-dropdown.open .ms-list{
-    max-height:calc(min(76vh, 620px) - 112px)!important;
-    overflow:auto!important;
-    -webkit-overflow-scrolling:touch!important;
+  .topbar-logo{
+    width:100% !important;
+    text-align:center !important;
+    color:#FFD60A !important;
+    text-shadow:none !important;
   }
-  .filter-group &gt; .ms-dropdown.open .ms-item{
-    min-height:56px!important;
-    font-size:1rem!important;
+  .topbar-divider{display:none !important;}
+
+  .filters.filtros-despesas-refeito{
+    width:100% !important;
+    flex:0 0 100% !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    overflow:visible !important;
+    padding:0 !important;
   }
-  .filter-group &gt; .ms-dropdown.open .ms-item input[type=checkbox]{
-    width:20px!important;height:20px!important;
+  .filter-group,
+  .filter-group.filter-wide{
+    width:100% !important;
+    grid-column:auto !important;
+    min-width:0 !important;
+    --edge-rgb:0,229,255;
+  }
+  #fg-ano{--edge-rgb:0,229,255;}
+  #fg-mes{--edge-rgb:57,255,20;}
+  #fg-grupo{--edge-rgb:168,85,247;}
+  #fg-custo{--edge-rgb:245,158,11;}
+  #fg-fornec{--edge-rgb:251,54,93;}
+  #fg-item{--edge-rgb:0,229,255;}
+  #fg-status{--edge-rgb:57,255,20;}
+
+  .filter-group &gt; label{
+    display:block !important;
+    color:rgba(203,213,225,.92) !important;
+    font-size:10px !important;
+    letter-spacing:.12em !important;
+    text-transform:uppercase !important;
+    font-weight:950 !important;
+    margin:0 0 7px 2px !important;
+  }
+
+  /* aqui está a correção principal: no mobile some o formato antigo */
+  .filter-group .ms-btn,
+  .filter-group .ms-dropdown{
+    display:none !important;
+    visibility:hidden !important;
+    pointer-events:none !important;
+  }
+
+  .desp-native-wrap{
+    display:block !important;
+    width:100% !important;
+    position:relative !important;
+  }
+  .desp-native-select{
+    width:100% !important;
+    min-height:56px !important;
+    appearance:auto !important;
+    -webkit-appearance:menulist !important;
+    border-radius:18px !important;
+    border:1px solid rgba(var(--edge-rgb),.24) !important;
+    border-top:4px solid rgba(var(--edge-rgb),.62) !important;
+    background:linear-gradient(180deg, rgba(var(--edge-rgb),.07), rgba(15,23,42,.96) 35%, rgba(15,23,42,.88)) !important;
+    color:#F8FAFC !important;
+    outline:none !important;
+    padding:12px 13px !important;
+    font-size:16px !important;
+    font-weight:900 !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.24), 0 0 14px rgba(var(--edge-rgb),.055) !important;
+  }
+  .desp-native-select:focus,
+  .desp-native-select:active{
+    border-top-color:rgba(var(--edge-rgb),1) !important;
+    border-color:rgba(var(--edge-rgb),.44) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 9px 18px rgba(var(--edge-rgb),.07), 0 0 0 3px rgba(var(--edge-rgb),.11), 0 14px 34px rgba(0,0,0,.28), 0 0 22px rgba(var(--edge-rgb),.12) !important;
+  }
+  .desp-native-select option{
+    background:#10151f !important;
+    color:#fff !important;
+  }
+
+  .desp-native-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    margin-top:2px !important;
+  }
+  .desp-native-actions button{
+    min-height:48px !important;
+    border-radius:16px !important;
+    border:1px solid rgba(var(--edge-rgb),.24) !important;
+    border-top:4px solid rgba(var(--edge-rgb),.62) !important;
+    background:linear-gradient(180deg, rgba(var(--edge-rgb),.07), rgba(15,23,42,.96) 35%, rgba(15,23,42,.88)) !important;
+    color:#F8FAFC !important;
+    font-size:12px !important;
+    font-weight:1000 !important;
+    letter-spacing:.08em !important;
+    text-transform:uppercase !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 12px 28px rgba(0,0,0,.24) !important;
+  }
+  .desp-native-actions .desp-clear{--edge-rgb:251,54,93;}
+  .desp-native-actions .desp-apply{--edge-rgb:57,255,20;}
+
+  .desp-mobile-note{
+    display:block !important;
+    grid-column:1 / -1 !important;
+    color:rgba(203,213,225,.72) !important;
+    font-size:11.5px !important;
+    line-height:1.35 !important;
+    padding:6px 2px 0 !important;
+  }
+  .desp-mobile-note b{color:#39FF14 !important;}
+
+  .topbar-actions{
+    width:100% !important;
+    align-items:stretch !important;
+    gap:.5rem !important;
+  }
+  .reload-btn{
+    width:100% !important;
+    justify-content:center !important;
+    margin-left:0 !important;
+    border-radius:16px !important;
+    min-height:44px !important;
+  }
+  .file-name{
+    text-align:center !important;
+    max-width:100% !important;
   }
 }
-body.desp-ms-open{overflow:hidden!important;}
 &lt;/style&gt;
-&lt;script id=&quot;despesas-multiselect-mobile-v10-js&quot;&gt;
+
+&lt;script id=&quot;despesas-filtros-nativos-mobile-final-v3-js&quot;&gt;
 (function(){
   const KEYS = [&#x27;ano&#x27;,&#x27;mes&#x27;,&#x27;grupo&#x27;,&#x27;custo&#x27;,&#x27;fornec&#x27;,&#x27;item&#x27;,&#x27;status&#x27;];
-  function mobile(){return window.matchMedia &amp;&amp; window.matchMedia(&#x27;(max-width:860px)&#x27;).matches;}
-  function closeAll(){
-    document.querySelectorAll(&#x27;.ms-dropdown.open&#x27;).forEach(d=&gt;d.classList.remove(&#x27;open&#x27;));
-    document.querySelectorAll(&#x27;.ms-btn.open&#x27;).forEach(b=&gt;b.classList.remove(&#x27;open&#x27;));
-    document.querySelectorAll(&#x27;.filter-group.is-open&#x27;).forEach(g=&gt;g.classList.remove(&#x27;is-open&#x27;));
-    document.body.classList.remove(&#x27;desp-ms-open&#x27;);
+  const LABELS = {ano:&#x27;Ano&#x27;, mes:&#x27;Mês&#x27;, grupo:&#x27;Grupo&#x27;, custo:&#x27;Tipo de custo&#x27;, fornec:&#x27;Fornecedor&#x27;, item:&#x27;Item&#x27;, status:&#x27;Status Pgto&#x27;};
+  let refreshingNative = false;
+
+  function mobile(){ return window.matchMedia &amp;&amp; window.matchMedia(&#x27;(max-width:860px)&#x27;).matches; }
+  function esc(v){ return String(v ?? &#x27;&#x27;).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g, s =&gt; ({&#x27;&amp;&#x27;:&#x27;&amp;amp;&#x27;,&#x27;&lt;&#x27;:&#x27;&amp;lt;&#x27;,&#x27;&gt;&#x27;:&#x27;&amp;gt;&#x27;,&#x27;&quot;&#x27;:&#x27;&amp;quot;&#x27;,&quot;&#x27;&quot;:&#x27;&amp;#39;&#x27;}[s])); }
+  function q(id){ return document.getElementById(id); }
+  function getSelect(key){ const fg = q(&#x27;fg-&#x27;+key); return fg ? fg.querySelector(&#x27;select.desp-native-select&#x27;) : null; }
+  function getValue(d, key){
+    try{
+      if(typeof getFilterValue === &#x27;function&#x27;) return String(getFilterValue(d, key) || &#x27;&#x27;).trim();
+    }catch(e){}
+    if(!d) return &#x27;&#x27;;
+    if(key === &#x27;ano&#x27;) return String(d.ano || &#x27;&#x27;).trim();
+    if(key === &#x27;mes&#x27;) return String(d.mes || &#x27;&#x27;).trim();
+    if(key === &#x27;grupo&#x27;) return String(d.grupo || &#x27;&#x27;).trim();
+    if(key === &#x27;custo&#x27;) return String(d.ccusto || &#x27;&#x27;).trim();
+    if(key === &#x27;fornec&#x27;) return String(d.fornec || &#x27;&#x27;).trim();
+    if(key === &#x27;item&#x27;) return String(d.item || &#x27;&#x27;).trim();
+    if(key === &#x27;status&#x27;) return String(d.status || &#x27;&#x27;).trim();
+    return &#x27;&#x27;;
   }
-  const oldToggle = (typeof toggleDropdown === &#x27;function&#x27;) ? toggleDropdown : null;
-  window.toggleDropdown = function(key){
-    const drop = document.getElementById(&#x27;ms-drop-&#x27;+key);
-    if(!drop){ if(oldToggle) oldToggle(key); return; }
-    const btn = drop.previousElementSibling;
-    const fg = document.getElementById(&#x27;fg-&#x27;+key);
-    const wasOpen = drop.classList.contains(&#x27;open&#x27;);
-    closeAll();
-    if(wasOpen) return;
-    const search = drop.querySelector(&#x27;.ms-search&#x27;);
-    if(search) search.value = &#x27;&#x27;;
-    try{ if(typeof buildList === &#x27;function&#x27;) buildList(key, msOptions[key] || []); }catch(e){}
-    drop.classList.add(&#x27;open&#x27;);
-    if(btn) btn.classList.add(&#x27;open&#x27;);
-    if(fg) fg.classList.add(&#x27;is-open&#x27;);
-    if(mobile()) document.body.classList.add(&#x27;desp-ms-open&#x27;);
-    setTimeout(()=&gt;{ try{ if(search) search.focus({preventScroll:true}); }catch(e){} }, 40);
-  };
-  try{ toggleDropdown = window.toggleDropdown; }catch(e){}
-  const oldClose = (typeof closeDropdown === &#x27;function&#x27;) ? closeDropdown : null;
-  window.closeDropdown = function(key){
-    const drop = document.getElementById(&#x27;ms-drop-&#x27;+key);
-    if(!drop){ if(oldClose) oldClose(key); return; }
-    drop.classList.remove(&#x27;open&#x27;);
-    if(drop.previousElementSibling) drop.previousElementSibling.classList.remove(&#x27;open&#x27;);
-    const fg = document.getElementById(&#x27;fg-&#x27;+key);
-    if(fg) fg.classList.remove(&#x27;is-open&#x27;);
-    document.body.classList.remove(&#x27;desp-ms-open&#x27;);
-  };
-  try{ closeDropdown = window.closeDropdown; }catch(e){}
-  // Garante que, ao tocar no checkbox no celular, o menu não fecha e a lista preserva a posição.
-  const oldOnCheck = (typeof onCheck === &#x27;function&#x27;) ? onCheck : null;
-  window.onCheck = function(key, val, checked){
-    const list = document.getElementById(&#x27;ms-list-&#x27;+key);
-    const y = list ? list.scrollTop : 0;
-    if(checked){ if(!msState[key].includes(val)) msState[key].push(val); }
-    else { msState[key] = msState[key].filter(v =&gt; v !== val); }
-    try{ if(typeof updateLabel === &#x27;function&#x27;) updateLabel(key); }catch(e){}
-    try{ if(typeof applyFilters === &#x27;function&#x27;) applyFilters(); }catch(e){}
-    try{ if(typeof buildList === &#x27;function&#x27;) buildList(key, msOptions[key] || [], (document.querySelector(&#x27;#ms-drop-&#x27;+key+&#x27; .ms-search&#x27;)||{}).value || &#x27;&#x27;); }catch(e){}
-    if(list) list.scrollTop = y;
-    const drop = document.getElementById(&#x27;ms-drop-&#x27;+key);
-    if(drop) drop.classList.add(&#x27;open&#x27;);
-    const btn = drop &amp;&amp; drop.previousElementSibling; if(btn) btn.classList.add(&#x27;open&#x27;);
-    const fg = document.getElementById(&#x27;fg-&#x27;+key); if(fg) fg.classList.add(&#x27;is-open&#x27;);
-    if(mobile()) document.body.classList.add(&#x27;desp-ms-open&#x27;);
-  };
-  try{ onCheck = window.onCheck; }catch(e){}
-  document.addEventListener(&#x27;click&#x27;, function(e){
-    if(!e.target.closest(&#x27;.filter-group&#x27;)) closeAll();
-  }, true);
-  document.addEventListener(&#x27;keydown&#x27;, e=&gt;{ if(e.key===&#x27;Escape&#x27;) closeAll(); });
+  function rows(){ try{ return Array.isArray(allData) ? allData : []; }catch(e){ return []; } }
+  function sortVals(key, vals){
+    try{ if(typeof sortFilterValues === &#x27;function&#x27;) return sortFilterValues(key, vals); }catch(e){}
+    const arr = [...vals];
+    const monthOrder = (typeof MONTH_ORDER !== &#x27;undefined&#x27; &amp;&amp; Array.isArray(MONTH_ORDER)) ? MONTH_ORDER : [&#x27;Janeiro&#x27;,&#x27;Fevereiro&#x27;,&#x27;Março&#x27;,&#x27;Abril&#x27;,&#x27;Maio&#x27;,&#x27;Junho&#x27;,&#x27;Julho&#x27;,&#x27;Agosto&#x27;,&#x27;Setembro&#x27;,&#x27;Outubro&#x27;,&#x27;Novembro&#x27;,&#x27;Dezembro&#x27;];
+    if(key === &#x27;mes&#x27;) return arr.sort((a,b)=&gt;{
+      const ia = monthOrder.indexOf(a), ib = monthOrder.indexOf(b);
+      if(ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      return String(a).localeCompare(String(b), &#x27;pt-BR&#x27;, {numeric:true});
+    });
+    if(key === &#x27;ano&#x27;) return arr.sort((a,b)=&gt;Number(a)-Number(b));
+    return arr.sort((a,b)=&gt;String(a).localeCompare(String(b),&#x27;pt-BR&#x27;,{numeric:true,sensitivity:&#x27;base&#x27;}));
+  }
+  function selectedObj(){
+    const o = {};
+    KEYS.forEach(k =&gt; { const s = getSelect(k); o[k] = s ? String(s.value || &#x27;&#x27;) : &#x27;&#x27;; });
+    return o;
+  }
+  function filteredForOptions(skipKey){
+    const selected = selectedObj();
+    return rows().filter(d =&gt; {
+      for(const k of KEYS){
+        if(k === skipKey) continue;
+        const v = selected[k];
+        if(v &amp;&amp; getValue(d,k) !== v) return false;
+      }
+      return true;
+    });
+  }
+  function syncStateFromSelects(){
+    KEYS.forEach(k =&gt; {
+      const s = getSelect(k);
+      if(!s) return;
+      const v = String(s.value || &#x27;&#x27;);
+      try{ msState[k] = v ? [v] : []; }catch(e){}
+      try{ if(typeof updateLabel === &#x27;function&#x27;) updateLabel(k); }catch(e){}
+    });
+  }
+  function fillSelect(key){
+    const s = getSelect(key);
+    if(!s) return;
+    const old = s.value;
+    const base = filteredForOptions(key);
+    let vals = [...new Set(base.map(d =&gt; getValue(d, key)).filter(Boolean))];
+    if(!vals.length &amp;&amp; rows().length){
+      vals = [...new Set(rows().map(d =&gt; getValue(d, key)).filter(Boolean))];
+    }
+    vals = sortVals(key, vals);
+    const placeholder = key === &#x27;ano&#x27; ? &#x27;Todos os anos&#x27; : key === &#x27;mes&#x27; ? &#x27;Todos os meses&#x27; : &#x27;Todos&#x27;;
+    s.innerHTML = &#x27;&lt;option value=&quot;&quot;&gt;&#x27; + esc(placeholder) + &#x27;&lt;/option&gt;&#x27; + vals.map(v =&gt; &#x27;&lt;option value=&quot;&#x27;+esc(v)+&#x27;&quot;&gt;&#x27;+esc(v)+&#x27;&lt;/option&gt;&#x27;).join(&#x27;&#x27;);
+    if(vals.some(v =&gt; String(v) === String(old))) s.value = old;
+    else s.value = &#x27;&#x27;;
+  }
+  function refreshNativeOptions(){
+    refreshingNative = true;
+    try{
+      KEYS.forEach(fillSelect);
+      syncStateFromSelects();
+    }finally{
+      refreshingNative = false;
+    }
+  }
+  function ensureNativeControls(){
+    if(!mobile()) return;
+    KEYS.forEach(key =&gt; {
+      const fg = q(&#x27;fg-&#x27;+key);
+      if(!fg) return;
+      if(fg.querySelector(&#x27;.desp-native-wrap&#x27;)) return;
+      const wrap = document.createElement(&#x27;div&#x27;);
+      wrap.className = &#x27;desp-native-wrap&#x27;;
+      wrap.innerHTML = &#x27;&lt;select class=&quot;desp-native-select&quot; aria-label=&quot;&#x27;+esc(LABELS[key] || key)+&#x27;&quot;&gt;&lt;/select&gt;&#x27;;
+      const label = fg.querySelector(&#x27;:scope &gt; label&#x27;);
+      if(label &amp;&amp; label.nextSibling) fg.insertBefore(wrap, label.nextSibling);
+      else fg.insertBefore(wrap, fg.firstChild);
+      const sel = wrap.querySelector(&#x27;select&#x27;);
+      sel.addEventListener(&#x27;change&#x27;, function(ev){
+        ev.stopPropagation();
+        syncStateFromSelects();
+        refreshNativeOptions();
+        setNote(&#x27;Filtros selecionados. Toque em &lt;b&gt;Aplicar&lt;/b&gt; para atualizar.&#x27;);
+      });
+    });
+    ensureActions();
+    refreshNativeOptions();
+  }
+  function setNote(html){
+    let note = document.querySelector(&#x27;.desp-mobile-note&#x27;);
+    if(!note){
+      const filters = document.querySelector(&#x27;.filters.filtros-despesas-refeito&#x27;);
+      if(!filters) return;
+      note = document.createElement(&#x27;div&#x27;);
+      note.className = &#x27;desp-mobile-note&#x27;;
+      filters.appendChild(note);
+    }
+    note.innerHTML = html || &#x27;Filtros em modo mobile nativo.&#x27;;
+  }
+  function ensureActions(){
+    const filters = document.querySelector(&#x27;.filters.filtros-despesas-refeito&#x27;);
+    if(!filters) return;
+    if(!filters.querySelector(&#x27;.desp-native-actions&#x27;)){
+      const actions = document.createElement(&#x27;div&#x27;);
+      actions.className = &#x27;desp-native-actions&#x27;;
+      actions.innerHTML = &#x27;&lt;button type=&quot;button&quot; class=&quot;desp-clear&quot;&gt;Limpar&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;desp-apply&quot;&gt;Aplicar&lt;/button&gt;&#x27;;
+      filters.appendChild(actions);
+      actions.querySelector(&#x27;.desp-clear&#x27;).addEventListener(&#x27;click&#x27;, function(ev){
+        ev.preventDefault(); ev.stopPropagation();
+        KEYS.forEach(k =&gt; { const s = getSelect(k); if(s) s.value = &#x27;&#x27;; try{ msState[k] = []; }catch(e){} });
+        refreshNativeOptions();
+        try{ if(typeof applyFilters === &#x27;function&#x27;) applyFilters(); }catch(e){}
+        setNote(&#x27;Filtros limpos.&#x27;);
+      });
+      actions.querySelector(&#x27;.desp-apply&#x27;).addEventListener(&#x27;click&#x27;, function(ev){
+        ev.preventDefault(); ev.stopPropagation();
+        syncStateFromSelects();
+        try{ if(typeof applyFilters === &#x27;function&#x27;) applyFilters(); }catch(e){}
+        setNote(&#x27;Filtro aplicado com &lt;b&gt;select nativo&lt;/b&gt;.&#x27;);
+      });
+    }
+    setNote(&#x27;No celular, os filtros usam &lt;b&gt;select nativo&lt;/b&gt; e atualizam pelo botão Aplicar.&#x27;);
+  }
+
+  const originalPopulate = (typeof populateFilters === &#x27;function&#x27;) ? populateFilters : null;
+  if(originalPopulate){
+    window.populateFilters = function(){
+      const r = originalPopulate.apply(this, arguments);
+      setTimeout(ensureNativeControls, 0);
+      return r;
+    };
+    try{ populateFilters = window.populateFilters; }catch(e){}
+  }
+
+  const originalApply = (typeof applyFilters === &#x27;function&#x27;) ? applyFilters : null;
+  if(originalApply){
+    window.applyFilters = function(){
+      const r = originalApply.apply(this, arguments);
+      setTimeout(refreshNativeOptions, 0);
+      return r;
+    };
+    try{ applyFilters = window.applyFilters; }catch(e){}
+  }
+
+  window.__despMobileNativeFilters = ensureNativeControls;
+  window.addEventListener(&#x27;resize&#x27;, function(){ setTimeout(ensureNativeControls, 80); });
+  document.addEventListener(&#x27;DOMContentLoaded&#x27;, function(){ setTimeout(ensureNativeControls, 120); });
+  setTimeout(ensureNativeControls, 250);
+  setTimeout(ensureNativeControls, 900);
 })();
 &lt;/script&gt;
 
@@ -7256,7 +7472,7 @@ window._pagReady = false;
         open();
       });
       pop.addEventListener('click', e=>e.stopPropagation());
-      root.querySelector('.ms-close').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(true);});
+      root.querySelector('.ms-close').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(false);});
       root.querySelector('.ms-sheet-cancel').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(false);});
       root.querySelector('.ms-sheet-apply').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(true);});
       root.querySelector('[data-act="all"]').addEventListener('click', e=>{
@@ -7628,6 +7844,428 @@ window._pagReady = false;
 
 
 <!-- ============================================================
+     PATCH FINAL — FATURAMENTO: filtros nativos no estilo Pagamentos
+     - Remove popup/multiselect do Faturamento no mobile
+     - Usa <select> nativo, igual Pagamentos
+     - Ano dinâmico: 2025, 2026 e próximos anos presentes na planilha
+     - Mês dependente do ano: ao escolher 2025, mostra apenas meses de 2025
+     - No mobile, não re-renderiza a tela a cada toque; aplica pelo botão Aplicar
+     ============================================================ -->
+<style id="faturamento-filtros-nativos-pagamentos-style-final">
+#rec-page .filters-panel{
+  --edge-rgb:0,229,255;
+  border:1px solid rgba(var(--edge-rgb),.22) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.75) !important;
+  background:linear-gradient(180deg, rgba(var(--edge-rgb),.055), rgba(15,23,42,.92) 34%, rgba(15,23,42,.86)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 18px 52px rgba(0,0,0,.30), 0 0 18px rgba(var(--edge-rgb),.06) !important;
+  overflow:visible !important;
+}
+#rec-page .filters-panel:hover,
+#rec-page .filters-panel:focus-within{
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 9px 18px rgba(var(--edge-rgb),.06), 0 18px 52px rgba(0,0,0,.32), 0 0 24px rgba(var(--edge-rgb),.10) !important;
+}
+#rec-page .filters-head{
+  background:linear-gradient(90deg, rgba(0,229,255,.08), rgba(15,23,42,.35), rgba(57,255,20,.055)) !important;
+  border-bottom:1px solid rgba(148,163,184,.14) !important;
+}
+#rec-page .filters-head .title{
+  color:#F8FAFC !important;
+  font-weight:950 !important;
+  letter-spacing:.10em !important;
+  text-transform:uppercase !important;
+}
+#rec-page .filters-grid{
+  display:grid !important;
+  grid-template-columns:repeat(5, minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+#rec-page .filters-grid .f{grid-column:span 1 !important; min-width:0 !important;}
+#rec-page .filters-grid .f > label{
+  display:block !important;
+  color:rgba(203,213,225,.92) !important;
+  font-size:11px !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  font-weight:950 !important;
+  margin-bottom:7px !important;
+}
+#rec-page .rec-native-wrap{width:100% !important; position:relative !important;}
+#rec-page .rec-native-select{
+  width:100% !important;
+  min-height:52px !important;
+  appearance:auto !important;
+  -webkit-appearance:menulist !important;
+  border-radius:18px !important;
+  border:1px solid rgba(var(--edge-rgb),.24) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.58) !important;
+  background:linear-gradient(180deg, rgba(var(--edge-rgb),.06), rgba(15,23,42,.94) 35%, rgba(15,23,42,.86)) !important;
+  color:#F8FAFC !important;
+  outline:none !important;
+  padding:10px 12px !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 12px 28px rgba(0,0,0,.22) !important;
+}
+#rec-page .rec-native-select:focus,
+#rec-page .rec-native-select:active{
+  border-top-color:rgba(var(--edge-rgb),1) !important;
+  border-color:rgba(var(--edge-rgb),.42) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07), inset 0 9px 18px rgba(var(--edge-rgb),.065), 0 0 0 3px rgba(var(--edge-rgb),.11), 0 14px 34px rgba(0,0,0,.28) !important;
+}
+#rec-page .rec-native-select option{background:#10151f !important; color:#fff !important;}
+#rec-page #fAno{--edge-rgb:0,229,255;}
+#rec-page #fMes{--edge-rgb:57,255,20;}
+#rec-page #fDiaSemana{--edge-rgb:168,85,247;}
+#rec-page #fSemana{--edge-rgb:245,158,11;}
+#rec-page #fFaixa{--edge-rgb:251,54,93;}
+#rec-page .filters-head .right label[for="fileInput"]{display:none !important;}
+#rec-page #btnLimpar,
+#rec-page #btnAplicar{
+  border-radius:16px !important;
+  border:1px solid rgba(var(--edge-rgb),.24) !important;
+  border-top:4px solid rgba(var(--edge-rgb),.58) !important;
+  background:linear-gradient(180deg, rgba(var(--edge-rgb),.06), rgba(15,23,42,.94) 35%, rgba(15,23,42,.86)) !important;
+  color:#F8FAFC !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055), 0 12px 28px rgba(0,0,0,.22) !important;
+}
+#rec-page #btnLimpar{--edge-rgb:251,54,93;}
+#rec-page #btnAplicar{--edge-rgb:57,255,20;}
+#rec-page #btnAplicar::after{
+  content:'';
+}
+#rec-page .chip{
+  border:1px solid rgba(0,229,255,.22) !important;
+  border-top:3px solid rgba(0,229,255,.62) !important;
+  background:linear-gradient(180deg, rgba(0,229,255,.06), rgba(15,23,42,.82)) !important;
+  color:#CBD5E1 !important;
+  font-weight:850 !important;
+}
+#rec-page .chip b{color:#F8FAFC !important;}
+#rec-page .chip .x{color:#39FF14 !important; font-weight:1000 !important;}
+@media (max-width:980px){
+  #rec-page .filters-grid{grid-template-columns:repeat(2, minmax(0,1fr)) !important;}
+}
+@media (max-width:760px){
+  #rec-page .filters-grid{grid-template-columns:1fr !important; gap:10px !important;}
+  #rec-page .filters-grid .f > label{display:block !important; font-size:10px !important; margin-left:2px !important;}
+  #rec-page .rec-native-select{min-height:56px !important; font-size:16px !important; border-radius:18px !important; padding:12px 13px !important;}
+  #rec-page .filters-head .right{display:grid !important; grid-template-columns:1fr 1fr !important; width:100% !important; gap:8px !important;}
+  #rec-page #btnLimpar,#rec-page #btnAplicar{min-height:48px !important; font-size:12px !important;}
+}
+</style>
+
+<script id="faturamento-filtros-nativos-pagamentos-style-final-js">
+(function(){
+  const MONTHS_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const MONTHS_FULL  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const DOW = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const IDS = ['fAno','fMes','fDiaSemana','fSemana','fFaixa'];
+  const LABELS = {fAno:'Ano', fMes:'Mês', fDiaSemana:'Dia da semana', fSemana:'Nº semana', fFaixa:'Faixa de hora'};
+  let refreshing = false;
+  let renderTimer = null;
+
+  function mobile(){ return window.matchMedia && window.matchMedia('(max-width:760px)').matches; }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function shortMonth(n){ return MONTHS_SHORT[Math.max(1, Math.min(12, Number(n))) - 1] || ''; }
+  function fullMonth(n){ return MONTHS_FULL[Math.max(1, Math.min(12, Number(n))) - 1] || ''; }
+  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+  function rows(){ try{ return Array.isArray(BASE_N) ? BASE_N : []; }catch(e){ return []; } }
+  function el(id){ return document.getElementById(id); }
+  function sel(id){ const root = el(id); return root ? root.querySelector('select.rec-native-select') : null; }
+  function parseMonthFromLabel(v){
+    const s = String(v || '').trim();
+    const m = s.match(/^([A-Za-zÀ-ÿ]{3})\/(\d{2}|\d{4})$/);
+    if(!m) return null;
+    const idx = MONTHS_SHORT.findIndex(x => x.toLowerCase() === m[1].slice(0,3).toLowerCase());
+    if(idx < 0) return null;
+    let y = Number(m[2]);
+    if(y < 100) y += 2000;
+    return {year:y, month:idx+1};
+  }
+  function parseDate(v){
+    if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+    const s = String(v ?? '').trim();
+    if(!s) return null;
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m) return new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})/);
+    if(m){ let y = Number(m[3]); if(y < 100) y += 2000; return new Date(y, Number(m[2])-1, Number(m[1])); }
+    return null;
+  }
+  function ensureMeta(list){
+    (list || []).forEach(r => {
+      if(!r) return;
+      let dt = parseDate(r.date);
+      if(!dt && r.ano && r.mes){
+        const pm = parseMonthFromLabel(r.mes);
+        if(pm) dt = new Date(pm.year, pm.month-1, 1);
+      }
+      if(!dt || isNaN(dt)) return;
+      const y = dt.getFullYear();
+      const m = dt.getMonth()+1;
+      r._recAno = y;
+      r._recMesNum = m;
+      r._recMesKey = y + '-' + pad(m);
+      r._recMesShort = shortMonth(m) + '/' + String(y).slice(-2);
+      r._recMesFull = fullMonth(m);
+      r.ano = y;
+      r.mes = r._recMesShort;
+      if(!r.date) r.date = y + '-' + pad(m) + '-' + pad(dt.getDate());
+      if(!r.diaSemana && typeof weekdayPt === 'function') r.diaSemana = weekdayPt(dt);
+      if(!r.semana && typeof weekOfMonth === 'function') r.semana = weekOfMonth(dt);
+    });
+  }
+  function makeSelect(rootId){
+    const root = el(rootId);
+    if(!root) return;
+    root.classList.add('rec-native-wrap');
+    root.innerHTML = `<select class="rec-native-select" aria-label="${esc(LABELS[rootId] || rootId)}"></select>`;
+    const s = sel(rootId);
+    if(!s) return;
+    s.addEventListener('change', function(ev){
+      ev.stopPropagation();
+      if(refreshing) return;
+      refreshFilterOptions();
+      if(mobile()){
+        recRenderChips(recGetFilters());
+        const metaExtra = el('metaFiltros');
+        if(metaExtra) metaExtra.innerHTML = 'Filtros selecionados. Toque em <b>Aplicar</b> para atualizar o Faturamento.';
+      }else{
+        recGenerateDebounced();
+      }
+    });
+  }
+  function fill(id, opts, placeholder){
+    const s = sel(id);
+    if(!s) return;
+    const old = s.value;
+    s.innerHTML = `<option value="">${esc(placeholder || 'Todos')}</option>` + (opts || []).map(o => `<option value="${esc(o.value)}">${esc(o.text)}</option>`).join('');
+    if((opts || []).some(o => String(o.value) === String(old))) s.value = old;
+    else s.value = '';
+  }
+  function selected(id){ const s = sel(id); return s ? String(s.value || '') : ''; }
+  function currentBaseFiltered(skip){
+    ensureMeta(rows());
+    let out = rows().slice();
+    const ano = selected('fAno');
+    const mes = selected('fMes');
+    const dia = selected('fDiaSemana');
+    const semana = selected('fSemana');
+    const faixa = selected('fFaixa');
+    if(skip !== 'ano' && ano) out = out.filter(r => String(r._recAno) === ano);
+    if(skip !== 'mes' && mes){
+      if(ano) out = out.filter(r => String(r._recMesNum) === mes);
+      else out = out.filter(r => String(r._recMesKey) === mes);
+    }
+    if(skip !== 'dia' && dia) out = out.filter(r => String(r.diaSemana) === dia);
+    if(skip !== 'semana' && semana) out = out.filter(r => String(r.semana) === semana);
+    if(skip !== 'faixa' && faixa) out = out.filter(r => String(r.faixa) === faixa);
+    return out;
+  }
+  function refreshFilterOptions(){
+    refreshing = true;
+    try{
+      ensureMeta(rows());
+      const allRows = rows();
+      const years = [...new Set(allRows.map(r => r._recAno).filter(Boolean).map(String))]
+        .sort((a,b)=>Number(a)-Number(b))
+        .map(y => ({value:y, text:y}));
+      fill('fAno', years, 'Todos os anos');
+
+      const ano = selected('fAno');
+      let monthRows = currentBaseFiltered('mes');
+      let monthOpts;
+      if(ano){
+        monthOpts = [...new Map(monthRows
+          .filter(r => String(r._recAno) === ano)
+          .map(r => [r._recMesNum, {value:String(r._recMesNum), text:r._recMesFull}])
+        ).values()].sort((a,b)=>Number(a.value)-Number(b.value));
+        fill('fMes', monthOpts, 'Todos os meses');
+      }else{
+        monthOpts = [...new Map(monthRows
+          .map(r => [r._recMesKey, {value:r._recMesKey, text:r._recMesShort}])
+        ).values()].sort((a,b)=>String(a.value).localeCompare(String(b.value)));
+        fill('fMes', monthOpts, 'Todos os meses');
+      }
+
+      const diaRows = currentBaseFiltered('dia');
+      fill('fDiaSemana', DOW.filter(d => diaRows.some(r => r.diaSemana === d)).map(d => ({value:d, text:d})), 'Todos os dias');
+
+      const semanaRows = currentBaseFiltered('semana');
+      const semanas = [...new Set(semanaRows.map(r => r.semana).filter(Boolean).map(String))]
+        .sort((a,b)=>Number(a)-Number(b)).map(v => ({value:v, text:v + 'ª semana'}));
+      fill('fSemana', semanas, 'Todas as semanas');
+
+      const faixaRows = currentBaseFiltered('faixa');
+      const faixas = [...new Set(faixaRows.map(r => r.faixa).filter(Boolean).map(String))]
+        .sort((a,b)=> (typeof parseFaixaStart === 'function' ? parseFaixaStart(a) : 0) - (typeof parseFaixaStart === 'function' ? parseFaixaStart(b) : 0))
+        .map(v => ({value:v, text:v}));
+      fill('fFaixa', faixas, 'Todas as faixas');
+    } finally {
+      refreshing = false;
+    }
+  }
+  function recGetFilters(){
+    const ano = selected('fAno');
+    const mes = selected('fMes');
+    const dia = selected('fDiaSemana');
+    const semana = selected('fSemana');
+    const faixa = selected('fFaixa');
+    let mesLabel = '';
+    if(mes){
+      if(ano) mesLabel = fullMonth(Number(mes));
+      else {
+        const found = rows().find(r => r._recMesKey === mes);
+        mesLabel = found ? found._recMesShort : mes;
+      }
+    }
+    return {
+      anos: ano ? [ano] : [],
+      meses: mes ? [mesLabel] : [],
+      diasSemana: dia ? [dia] : [],
+      semanas: semana ? [semana] : [],
+      faixas: faixa ? [faixa] : [],
+      _ano: ano,
+      _mes: mes,
+      _dia: dia,
+      _semana: semana,
+      _faixa: faixa
+    };
+  }
+  function recApplyFilters(list, f){
+    ensureMeta(list || []);
+    const ano = f && f._ano;
+    const mes = f && f._mes;
+    const dia = f && f._dia;
+    const semana = f && f._semana;
+    const faixa = f && f._faixa;
+    return (list || []).filter(r => {
+      if(ano && String(r._recAno) !== String(ano)) return false;
+      if(mes){
+        if(ano){ if(String(r._recMesNum) !== String(mes)) return false; }
+        else { if(String(r._recMesKey) !== String(mes)) return false; }
+      }
+      if(dia && String(r.diaSemana) !== String(dia)) return false;
+      if(semana && String(r.semana) !== String(semana)) return false;
+      if(faixa && String(r.faixa) !== String(faixa)) return false;
+      return true;
+    });
+  }
+  function clearOne(id, applyNow){
+    const s = sel(id);
+    if(s) s.value = '';
+    refreshFilterOptions();
+    if(applyNow) recGenerateDebounced(0);
+    else recRenderChips(recGetFilters());
+  }
+  function recRenderChips(f){
+    const chipsEl = el('chips');
+    if(!chipsEl) return;
+    chipsEl.innerHTML = '';
+    const chips = [];
+    if(f.anos.length) chips.push(['Ano', f.anos.join(', '), 'fAno']);
+    if(f.meses.length) chips.push(['Mês', f.meses.join(', '), 'fMes']);
+    if(f.diasSemana.length) chips.push(['Dia', f.diasSemana.join(', '), 'fDiaSemana']);
+    if(f.semanas.length) chips.push(['Semana', f.semanas.join(', '), 'fSemana']);
+    if(f.faixas.length) chips.push(['Faixa', f.faixas.join(', '), 'fFaixa']);
+    chips.forEach(([k,v,id]) => {
+      const div = document.createElement('div');
+      div.className = 'chip';
+      div.innerHTML = `<span>${esc(k)}: <b>${esc(v)}</b></span><button class="x" type="button" title="Remover">×</button>`;
+      div.querySelector('button').addEventListener('click', function(){ clearOne(id, true); });
+      chipsEl.appendChild(div);
+    });
+  }
+  function recGenerate(){
+    const list = rows();
+    ensureMeta(list);
+    const f = recGetFilters();
+    recRenderChips(f);
+    const filtered = recApplyFilters(list, f);
+    const selTxt = arr => (arr && arr.length) ? arr.join(', ') : 'Todos';
+    const metaExtra = el('metaFiltros');
+    if(metaExtra){
+      metaExtra.innerHTML = `Ano: <b>${esc(selTxt(f.anos))}</b> • Mês: <b>${esc(selTxt(f.meses))}</b> • Dia: <b>${esc(selTxt(f.diasSemana))}</b> • Semana: <b>${esc(selTxt(f.semanas))}</b> • Faixa: <b>${esc(selTxt(f.faixas))}</b> • Registros: <b>${filtered.length}</b>`;
+    }
+    const tagAtualizado = el('tagAtualizado');
+    if(tagAtualizado) tagAtualizado.textContent = new Date().toLocaleString('pt-BR');
+    const metaPeriodo = el('metaPeriodo');
+    const report = el('report');
+    if(typeof compute !== 'function' || !report) return;
+    const data = compute(filtered);
+    const days = data.days, daily = data.daily, dayFaixa = data.dayFaixa;
+    if(!daily.length){
+      if(metaPeriodo) metaPeriodo.innerHTML = 'Sem registros no recorte selecionado.';
+      report.innerHTML = `<div class="panel" style="margin-top:14px;"><div class="pc"><div class="foot"><b>Nenhum registro encontrado</b> com esses filtros. Tente remover um filtro ou ampliar o período.</div></div></div>`;
+      return;
+    }
+    const ini = daily[0].dateBR;
+    const fim = daily[daily.length-1].dateBR;
+    const months = [...new Set(daily.map(x => x.mes).filter(Boolean))];
+    const mesTxt = months.length === 1 ? months[0] : (months.length ? months[0] + ' … ' + months[months.length-1] : '—');
+    if(metaPeriodo) metaPeriodo.innerHTML = `Período: <b>${esc(ini)} a ${esc(fim)}</b> • Meses: <b>${esc(mesTxt)}</b>`;
+    const faixas = [...new Set(dayFaixa.map(r => r.faixa))].sort((a,b)=> (typeof parseFaixaStart === 'function' ? parseFaixaStart(a) : 0) - (typeof parseFaixaStart === 'function' ? parseFaixaStart(b) : 0));
+    let html = '';
+    if(typeof buildCards === 'function') html += buildCards(daily);
+    if(typeof buildCharts === 'function') html += buildCharts(daily);
+    if(typeof buildHeatmap === 'function') html += buildHeatmap(dayFaixa, days, faixas);
+    if(typeof buildResumoSemana === 'function') html += buildResumoSemana(daily, dayFaixa);
+    if(typeof buildResumoDia === 'function') html += buildResumoDia(daily, dayFaixa);
+    if(typeof buildJump === 'function') html += buildJump(daily);
+    if(typeof buildDayDetails === 'function') html += buildDayDetails(daily, dayFaixa);
+    report.innerHTML = html;
+    if(typeof initInteractiveChartLegends === 'function') initInteractiveChartLegends();
+  }
+  function recGenerateDebounced(delay){
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(recGenerate, delay == null ? 80 : delay);
+  }
+  function recClear(){
+    IDS.forEach(id => { const s = sel(id); if(s) s.value = ''; });
+    refreshFilterOptions();
+    recGenerateDebounced(0);
+  }
+  function replaceButton(id, handler, text){
+    const b = el(id);
+    if(!b || !b.parentNode) return null;
+    const clone = b.cloneNode(true);
+    if(text) clone.textContent = text;
+    b.parentNode.replaceChild(clone, b);
+    clone.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); handler(); });
+    return clone;
+  }
+  function expose(){
+    try{ getFilters = recGetFilters; }catch(e){}
+    try{ applyFilters = recApplyFilters; }catch(e){}
+    try{ renderChips = recRenderChips; }catch(e){}
+    try{ refreshFilterOptions = refreshFilterOptions; }catch(e){}
+    try{ limpar = recClear; }catch(e){}
+    try{ generate = recGenerate; }catch(e){}
+    window.getFilters = recGetFilters;
+    window.applyFilters = recApplyFilters;
+    window.renderChips = recRenderChips;
+    window.refreshFilterOptions = refreshFilterOptions;
+    window.limpar = recClear;
+    window.generate = recGenerate;
+    window.__recRefreshNativeFilters = refreshFilterOptions;
+  }
+  function init(){
+    IDS.forEach(makeSelect);
+    replaceButton('btnLimpar', recClear, 'Limpar');
+    replaceButton('btnAplicar', function(){ refreshFilterOptions(); recGenerateDebounced(0); }, 'Aplicar');
+    expose();
+    refreshFilterOptions();
+    recGenerateDebounced(0);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+
+
+<!-- ============================================================
      PATCH FINAL — PAGAMENTOS MOBILE: cabeçalhos maiores e com mais brilho
      Aplica somente no celular e somente em data/valor do cabeçalho do dia.
      ============================================================ -->
@@ -7667,183 +8305,6 @@ window._pagReady = false;
   }
 }
 </style>
-
-
-
-<!-- ============================================================
-     PATCH V10 — FILTROS MÚLTIPLOS REAIS (FATURAMENTO)
-     - Remove select nativo do Faturamento
-     - Checkbox mantém o filtro aberto no PC e no mobile
-     - Aplicação pelo botão Aplicar/OK, sem fechar a cada escolha
-     ============================================================ -->
-<style id="rec-multiselect-real-v10">
-#rec-page .rec-native-wrap,#rec-page .rec-native-select{display:none!important;}
-#rec-page .ms{position:relative!important;width:100%!important;}
-#rec-page .ms-btn{
-  width:100%!important;min-height:52px!important;border-radius:18px!important;
-  border:1px solid rgba(var(--edge-rgb,0,229,255),.26)!important;
-  border-top:4px solid rgba(var(--edge-rgb,0,229,255),.62)!important;
-  background:linear-gradient(180deg, rgba(var(--edge-rgb,0,229,255),.07), rgba(15,23,42,.96) 35%, rgba(15,23,42,.88))!important;
-  color:#F8FAFC!important;padding:10px 13px!important;font-size:14px!important;font-weight:950!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 28px rgba(0,0,0,.24),0 0 14px rgba(var(--edge-rgb,0,229,255),.055)!important;
-  cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
-}
-#rec-page .ms-btn .hint{font-size:14px!important;color:#F8FAFC!important;font-weight:950!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#rec-page .ms-pop{display:none!important;}
-#rec-page .ms-pop.open{
-  display:flex!important;flex-direction:column!important;position:absolute!important;left:0!important;top:calc(100% + 8px)!important;
-  z-index:2147482000!important;width:min(420px,92vw)!important;max-height:72vh!important;overflow:hidden!important;
-  border-radius:20px!important;border:1px solid rgba(var(--edge-rgb,0,229,255),.38)!important;background:#080b10!important;
-  box-shadow:0 28px 80px rgba(0,0,0,.72),0 0 30px rgba(var(--edge-rgb,0,229,255),.12)!important;
-}
-#rec-page .ms.is-open{z-index:2147482000!important;}
-#rec-page .ms-sheet-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:13px 15px!important;border-bottom:1px solid rgba(255,255,255,.10)!important;background:#0a111b!important;}
-#rec-page .ms-sheet-title{font-weight:1000!important;font-size:15px!important;color:#fff!important;letter-spacing:.02em!important;}
-#rec-page .ms-close{appearance:none!important;border:1px solid rgba(var(--edge-rgb,0,229,255),.35)!important;background:rgba(var(--edge-rgb,0,229,255),.09)!important;color:#fff!important;border-radius:999px!important;min-width:40px!important;min-height:38px!important;font-weight:1000!important;cursor:pointer!important;}
-#rec-page .ms-top{display:flex!important;gap:8px!important;padding:11px 12px!important;border-bottom:1px solid rgba(255,255,255,.10)!important;background:#080d15!important;}
-#rec-page .ms-search{display:block!important;min-width:0!important;flex:1 1 auto!important;min-height:42px!important;border-radius:14px!important;background:#101827!important;color:#fff!important;border:1px solid rgba(255,255,255,.14)!important;padding:9px 11px!important;font-size:14px!important;}
-#rec-page .ms-actions{display:flex!important;gap:7px!important;}
-#rec-page .ms-actions button,#rec-page .ms-sheet-apply,#rec-page .ms-sheet-cancel{appearance:none!important;border-radius:14px!important;border:1px solid rgba(var(--edge-rgb,0,229,255),.28)!important;background:rgba(var(--edge-rgb,0,229,255),.09)!important;color:#F8FAFC!important;font-weight:950!important;padding:9px 11px!important;cursor:pointer!important;}
-#rec-page .ms-list{flex:1 1 auto!important;min-height:0!important;max-height:380px!important;overflow:auto!important;-webkit-overflow-scrolling:touch!important;padding:8px 10px!important;background:#080b10!important;}
-#rec-page .ms-item{min-height:50px!important;display:flex!important;align-items:center!important;gap:13px!important;padding:11px 12px!important;border-bottom:1px solid rgba(148,163,184,.12)!important;background:#080b10!important;color:#F8FAFC!important;font-size:15px!important;font-weight:850!important;cursor:pointer!important;}
-#rec-page .ms-item:hover,#rec-page .ms-item.is-selected{background:linear-gradient(90deg,rgba(var(--edge-rgb,0,229,255),.13),rgba(255,255,255,.02))!important;}
-#rec-page .ms-item input{width:20px!important;height:20px!important;flex:0 0 20px!important;accent-color:#39FF14!important;}
-#rec-page .ms-foot{display:none!important;}
-#rec-page .ms-sheet-mobile-actions{display:flex!important;gap:8px!important;padding:11px 12px!important;border-top:1px solid rgba(255,255,255,.10)!important;background:#0a111b!important;}
-#rec-page .ms-sheet-mobile-actions button{flex:1!important;min-height:44px!important;}
-#rec-page #fAno{--edge-rgb:0,229,255;}
-#rec-page #fMes{--edge-rgb:57,255,20;}
-#rec-page #fDiaSemana{--edge-rgb:168,85,247;}
-#rec-page #fSemana{--edge-rgb:245,158,11;}
-#rec-page #fFaixa{--edge-rgb:251,54,93;}
-@media (max-width:760px){
-  body.rec-ms-open{overflow:hidden!important;touch-action:none!important;}
-  #rec-page .ms-pop.open{
-    position:fixed!important;left:0!important;right:0!important;top:104px!important;bottom:0!important;width:100vw!important;max-width:100vw!important;height:auto!important;max-height:none!important;transform:none!important;border-radius:22px 22px 0 0!important;border-left:0!important;border-right:0!important;border-bottom:0!important;z-index:2147483001!important;
-  }
-  #rec-page .ms-list{max-height:none!important;}
-  #rec-page .ms-item{min-height:58px!important;font-size:17px!important;}
-  #rec-page .ms-item input{width:22px!important;height:22px!important;flex-basis:22px!important;}
-  #rec-page .ms-btn{min-height:56px!important;font-size:16px!important;}
-}
-</style>
-<script id="rec-multiselect-real-v10-js">
-(function(){
-  const IDS = [
-    {id:'fAno', label:'Ano'},
-    {id:'fMes', label:'Mês'},
-    {id:'fDiaSemana', label:'Dia da semana'},
-    {id:'fSemana', label:'Nº semana (do mês)'},
-    {id:'fFaixa', label:'Faixa de hora'}
-  ];
-  function getMS(){ try{ return (typeof MS !== 'undefined') ? MS : (window.MS || null); }catch(e){ return window.MS || null; } }
-  function mobile(){return window.matchMedia && window.matchMedia('(max-width:760px)').matches;}
-  function esc(v){return String(v ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));}
-  function state(id){ const m=getMS(); return m ? m[id] : null; }
-  function closeAll(apply){
-    document.querySelectorAll('#rec-page .ms-pop.open').forEach(p=>p.classList.remove('open'));
-    document.querySelectorAll('#rec-page .ms.is-open').forEach(r=>r.classList.remove('is-open'));
-    document.querySelectorAll('#rec-page .ms-btn.open').forEach(b=>b.classList.remove('open'));
-    document.body.classList.remove('rec-ms-open','filter-sheet-open');
-    if(apply && typeof generate === 'function') generate();
-  }
-  function labelUpdate(id){
-    const st=state(id); if(!st || !st.hint) return;
-    const n=st.selected ? st.selected.size : 0;
-    if(!n) st.hint.textContent='Todos';
-    else if(n===1) st.hint.textContent=[...st.selected][0];
-    else st.hint.textContent=n+' selecionados';
-  }
-  function render(id, q){
-    const st=state(id); if(!st || !st.list) return;
-    const query=String(q||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-    const all=Array.isArray(st.all) ? st.all.map(String) : [];
-    const items=all.map((v,i)=>({v,i})).filter(o=>!query || o.v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query));
-    st.list.innerHTML = items.length ? items.map(o=>{
-      const ck=st.selected && st.selected.has(o.v);
-      return '<label class="ms-item '+(ck?'is-selected':'')+'" data-i="'+o.i+'"><input type="checkbox" '+(ck?'checked':'')+'><span class="txt">'+esc(o.v)+'</span></label>';
-    }).join('') : '<div class="ms-item"><span class="txt" style="color:rgba(255,255,255,.55)">Sem opções</span></div>';
-    st.list.querySelectorAll('.ms-item[data-i]').forEach(row=>{
-      const handler=function(ev){
-        ev.preventDefault(); ev.stopPropagation(); if(ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-        const i=Number(row.getAttribute('data-i')); const v=all[i]; if(v===undefined) return;
-        const y=st.list.scrollTop;
-        if(st.selected.has(v)) st.selected.delete(v); else st.selected.add(v);
-        render(id, st.search ? st.search.value : '');
-        st.list.scrollTop=y;
-        const root=st.root || document.getElementById(id); const pop=st.pop || (root && root.querySelector('.ms-pop'));
-        if(root) root.classList.add('is-open'); if(pop) pop.classList.add('open');
-        if(mobile()) document.body.classList.add('rec-ms-open','filter-sheet-open');
-      };
-      row.addEventListener('click', handler, true);
-      const cb=row.querySelector('input'); if(cb) cb.addEventListener('click', handler, true);
-    });
-    labelUpdate(id);
-  }
-  function rebuildOne(cfg){
-    const m=getMS(); const root=document.getElementById(cfg.id); if(!m || !root) return false;
-    if(!m[cfg.id]) m[cfg.id] = {selected:new Set(), all:[]};
-    const st=m[cfg.id];
-    const selected=st.selected instanceof Set ? st.selected : new Set(st.selected || []);
-    const all=Array.isArray(st.all) ? st.all.map(String) : [];
-    root.classList.add('ms');
-    root.innerHTML = '<button type="button" class="ms-btn" aria-haspopup="dialog" aria-expanded="false"><span>'+esc(cfg.label)+'</span><span class="hint">Todos</span><span class="caret">▾</span></button>'+
-      '<div class="ms-pop" role="dialog" aria-label="'+esc(cfg.label)+'">'+
-      '<div class="ms-sheet-head"><div class="ms-sheet-title">'+esc(cfg.label)+'</div><button type="button" class="ms-close">OK</button></div>'+
-      '<div class="ms-top"><input class="ms-search" type="text" placeholder="Buscar" autocomplete="off"><div class="ms-actions"><button type="button" data-act="all">Selecionar tudo</button><button type="button" data-act="none">Limpar filtro</button></div></div>'+
-      '<div class="ms-list"></div><div class="ms-sheet-mobile-actions"><button type="button" class="ms-sheet-cancel">Fechar</button><button type="button" class="ms-sheet-apply">Aplicar</button></div></div>';
-    st.root=root; st.pop=root.querySelector('.ms-pop'); st.list=root.querySelector('.ms-list'); st.search=root.querySelector('.ms-search'); st.hint=root.querySelector('.hint'); st.selected=selected; st.all=all;
-    const btn=root.querySelector('.ms-btn'); const pop=st.pop;
-    function open(){
-      const already=pop.classList.contains('open'); closeAll(false); if(already) return;
-      root.classList.add('is-open'); pop.classList.add('open'); btn.classList.add('open'); btn.setAttribute('aria-expanded','true');
-      if(mobile()) document.body.classList.add('rec-ms-open','filter-sheet-open');
-      if(st.search){ st.search.value=''; render(cfg.id,''); setTimeout(()=>{try{st.search.focus({preventScroll:true});}catch(e){}},50); }
-      else render(cfg.id,'');
-    }
-    function close(apply){ pop.classList.remove('open'); root.classList.remove('is-open'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); document.body.classList.remove('rec-ms-open','filter-sheet-open'); if(apply && typeof generate==='function') generate(); }
-    btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation(); open(); }, true);
-    pop.addEventListener('click', function(e){ e.stopPropagation(); }, true);
-    root.querySelector('.ms-close').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(true);});
-    root.querySelector('.ms-sheet-cancel').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(false);});
-    root.querySelector('.ms-sheet-apply').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();close(true);});
-    root.querySelector('[data-act="all"]').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();st.selected=new Set(st.all.map(String));render(cfg.id, st.search ? st.search.value : '');});
-    root.querySelector('[data-act="none"]').addEventListener('click', e=>{e.preventDefault();e.stopPropagation();st.selected.clear();render(cfg.id, st.search ? st.search.value : '');});
-    if(st.search) st.search.addEventListener('input', ()=>render(cfg.id, st.search.value));
-    render(cfg.id,''); return true;
-  }
-  function install(){
-    const m=getMS(); if(!m) return false;
-    IDS.forEach(rebuildOne);
-    try{ window.msRender = render; msRender = render; }catch(e){ window.msRender = render; }
-    const oldSet = (typeof msSetOptions === 'function') ? msSetOptions : window.msSetOptions;
-    if(!window.__recV10SetWrapped && typeof oldSet === 'function'){
-      const wrapped=function(id, options){
-        const m=getMS(); if(!m || !m[id]) return oldSet(id, options);
-        const st=m[id];
-        st.all=(options||[]).map(String);
-        st.selected=new Set([...st.selected].map(String).filter(x=>st.all.includes(x)));
-        render(id, st.search ? st.search.value : '');
-      };
-      try{ msSetOptions = wrapped; }catch(e){}
-      window.msSetOptions = wrapped;
-      window.__recV10SetWrapped = true;
-    }
-    try{ window.msClear = function(id){const st=state(id); if(st){st.selected.clear(); render(id,'');}}; msClear = window.msClear; }catch(e){}
-    try{ window.msGetSelected = function(id){const st=state(id); return st && st.selected ? [...st.selected] : [];}; msGetSelected = window.msGetSelected; }catch(e){}
-    document.addEventListener('click', function(e){ if(!e.target.closest('#rec-page .ms')) closeAll(false); }, true);
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAll(false); });
-    const applyBtn=document.getElementById('btnAplicar'); if(applyBtn && !applyBtn.__recV10){applyBtn.__recV10=true;applyBtn.addEventListener('click', e=>{closeAll(true);});}
-    const clearBtn=document.getElementById('btnLimpar'); if(clearBtn && !clearBtn.__recV10){clearBtn.__recV10=true;clearBtn.addEventListener('click', e=>{closeAll(false);});}
-    try{ if(typeof refreshFilterOptions === 'function') refreshFilterOptions(); }catch(e){}
-    IDS.forEach(c=>render(c.id,''));
-    return true;
-  }
-  function retry(n){ if(install()) return; if(n>0) setTimeout(()=>retry(n-1), 250); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ()=>setTimeout(()=>retry(12), 120));
-  else setTimeout(()=>retry(12), 120);
-})();
-</script>
 
 </body>
 </html>
