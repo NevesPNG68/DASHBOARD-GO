@@ -1,0 +1,139 @@
+name: Fix dashboard mobile filters
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-dashboard-filters.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Patch index.html filters
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re, html
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          # Faturamento: tornar o estado MS acessível aos patches carregados depois.
+          s = s.replace('const MS = {};\n\nfunction msInit', 'const MS = {};\nwindow.MS = MS;\n\nfunction msInit')
+
+          # Faturamento: não fechar o dropdown no mobile após marcar um checkbox.
+          s = s.replace("""      if(window.innerWidth <= 760){\n        st.pop.classList.remove('open');\n      }\n      generate();""", """      generate();""")
+
+          # Despesas: remover patch antigo que trocava checkbox múltiplo por select nativo no mobile.
+          iframe_re = re.compile(r'(<iframe id="desp-frame" srcdoc=")(.*?)("></iframe>)', re.S)
+          m = iframe_re.search(s)
+          if not m:
+            raise SystemExit('iframe desp-frame não encontrado')
+
+          inner = html.unescape(m.group(2))
+          inner2 = re.sub(
+            r'\n\n<!-- ============================================================\n     PATCH DEFINITIVO — DESPESAS MOBILE COM SELECT NATIVO.*?</script>\s*',
+            '\n',
+            inner,
+            flags=re.S,
+          )
+
+          final_patch = r'''
+
+<!-- PATCH FINAL — DESPESAS MOBILE COM MULTI-SELEÇÃO POR CHECKBOX -->
+<style id="despesas-mobile-multiselect-checkbox-final-v1">
+@media (max-width:860px){
+  .desp-native-wrap,
+  .desp-native-actions,
+  .desp-mobile-note{display:none !important;}
+  .filter-group .ms-btn{
+    display:flex !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    width:100% !important;
+    min-height:54px !important;
+  }
+  .filter-group .ms-dropdown{
+    visibility:visible !important;
+    pointer-events:auto !important;
+  }
+  .ms-dropdown.open{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    bottom:10px !important;
+    top:auto !important;
+    width:auto !important;
+    max-height:min(78vh,620px) !important;
+    display:flex !important;
+    flex-direction:column !important;
+    z-index:10060 !important;
+    border-radius:24px !important;
+    overflow:hidden !important;
+    background:rgba(8,12,18,.985) !important;
+    box-shadow:0 28px 90px rgba(0,0,0,.72) !important;
+  }
+  .ms-list{
+    max-height:calc(min(78vh,620px) - 120px) !important;
+    overflow:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+  .ms-item{
+    min-height:56px !important;
+    font-size:16px !important;
+  }
+  .ms-item input{
+    width:22px !important;
+    height:22px !important;
+  }
+}
+</style>
+<script id="despesas-mobile-multiselect-checkbox-final-v1-js">
+(function(){
+  const originalOnCheck = (typeof onCheck === 'function') ? onCheck : null;
+  if(originalOnCheck && !window.__despCheckboxNoClosePatched){
+    window.onCheck = function(key, val, checked){
+      originalOnCheck(key, val, checked);
+      const drop = document.getElementById('ms-drop-' + key);
+      const btn = drop ? drop.previousElementSibling : null;
+      const fg = document.getElementById('fg-' + key);
+      if(drop){ drop.classList.add('open'); }
+      if(btn){ btn.classList.add('open'); }
+      if(fg){ fg.classList.add('is-open'); }
+    };
+    try{ onCheck = window.onCheck; }catch(e){}
+    window.__despCheckboxNoClosePatched = true;
+  }
+})();
+</script>
+'''
+          if 'despesas-mobile-multiselect-checkbox-final-v1' not in inner2:
+            inner2 = inner2.replace('\n</body>\n</html>\n', final_patch + '\n</body>\n</html>\n')
+
+          s = s[:m.start(2)] + html.escape(inner2, quote=True) + s[m.end(2):]
+
+          if s == original:
+            print('Nenhuma alteração necessária.')
+          else:
+            p.write_text(s, encoding='utf-8')
+            print('index.html corrigido.')
+          PY
+      - name: Commit changes
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "Sem alterações para commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Corrige filtros multiplos no mobile"
+          git push
