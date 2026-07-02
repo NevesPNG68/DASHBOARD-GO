@@ -5169,8 +5169,8 @@ function switchTab(tab) {
     if(pagPage) pagPage.style.display='block';
     if(tabPag) tabPag.className='nav-tab active-rec';
     if(!window._pagReady){ pagSetupUpload(); window._pagReady = true; }
-    if(__lastFileBuffer && (!window.pagData || !window.pagData.length)){
-      try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx'); }catch(e){}
+    if(__lastFileBuffer){
+      try{ pagLoadFile(__lastFileBuffer, __lastFileName || 'planilha.xlsx', { preserveSelection:true }); }catch(e){}
     }
     if(window.pagData && window.pagData.length){
       try{
@@ -5206,7 +5206,7 @@ function switchTab(tab) {
           <div>
             <div id="pag-titulo">Pagamentos por dia</div>
             <div class="pag-meta">
-              Filtro aplicado: <b>Mês Pgto (coluna P)</b> = <span id="pag-meta-mes">—</span> e <b>Ano Pgto (coluna Q)</b> = <span id="pag-meta-ano">—</span> (aba <b>📋 Despesas</b>).<br>
+              Filtro aplicado: <b>Data a pagar (coluna O)</b> = <span id="pag-meta-mes">—</span>/<span id="pag-meta-ano">—</span> (aba <b>📋 Despesas</b>).<br>
               Conferência principal conforme a própria planilha: <b>linha 4</b>.<br>
               Regra exibida no HTML: <b>N = Total, L = Valor a Pagar, Pago = soma do Total (N) somente quando Status Pgto = PAGO, e Saldo = ΣL.</b>
             </div>
@@ -5242,154 +5242,420 @@ function switchTab(tab) {
 window.pagData = [];
 let pagMesAtivo = '';
 let pagAnoAtivo = '';
-const PAG_MONTH_ORDER = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+const PAG_MONTH_ORDER = [
+  'janeiro','fevereiro','marco','abril','maio','junho',
+  'julho','agosto','setembro','outubro','novembro','dezembro'
+];
+
 const PAG_MONTH_LABELS = {
-  janeiro:'Janeiro', fevereiro:'Fevereiro', marco:'Março', abril:'Abril', maio:'Maio', junho:'Junho',
-  julho:'Julho', agosto:'Agosto', setembro:'Setembro', outubro:'Outubro', novembro:'Novembro', dezembro:'Dezembro'
+  janeiro:'Janeiro',
+  fevereiro:'Fevereiro',
+  marco:'Março',
+  abril:'Abril',
+  maio:'Maio',
+  junho:'Junho',
+  julho:'Julho',
+  agosto:'Agosto',
+  setembro:'Setembro',
+  outubro:'Outubro',
+  novembro:'Novembro',
+  dezembro:'Dezembro'
 };
 
 function pagNormalize(s){
-  return String(s || '').replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]/gu,'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return String(s || '')
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]/gu,'')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'');
 }
+
 function pagMonthLabel(m){
   const key = pagNormalize(m);
-  return PAG_MONTH_LABELS[key] || (m ? String(m).charAt(0).toUpperCase()+String(m).slice(1) : '');
+  return PAG_MONTH_LABELS[key] || (m ? String(m).charAt(0).toUpperCase() + String(m).slice(1) : '');
 }
+
+function pagMonthIndex(m){
+  return PAG_MONTH_ORDER.indexOf(pagNormalize(m));
+}
+
 function pagFmt(v){
-  return 'R$ ' + Number(v || 0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
+
 function pagToNumber(v){
   if(typeof v === 'number') return v;
-  const s = String(v || '').trim();
+
+  const s = String(v || '')
+    .replace(/R\$/gi, '')
+    .replace(/\s/g, '')
+    .trim();
+
   if(!s) return 0;
-  return Number(s.replace(/\./g,'').replace(',', '.')) || 0;
+
+  return Number(s.replace(/\./g, '').replace(',', '.')) || 0;
 }
-function pagDateToBR(v){
-  if(v instanceof Date && !isNaN(v)) return v.toLocaleDateString('pt-BR');
+
+function pagPad2(n){
+  return String(n).padStart(2, '0');
+}
+
+/*
+  Regra principal de PAGAMENTOS:
+  Mês/Ano sempre vêm da coluna O — Data a pagar.
+  P/Q ficam apenas como fallback, caso a data O venha vazia em alguma linha antiga.
+*/
+function pagParseDate(v){
+  if(v instanceof Date && !isNaN(v)){
+    return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  }
+
   if(typeof v === 'number'){
     const d = XLSX.SSF.parse_date_code(v);
-    if(d && d.d && d.m && d.y) return String(d.d).padStart(2,'0')+'/'+String(d.m).padStart(2,'0')+'/'+String(d.y);
+    if(d && d.d && d.m && d.y){
+      return new Date(d.y, d.m - 1, d.d);
+    }
   }
+
+  const s = String(v || '').trim();
+  if(!s) return null;
+
+  // dd/mm/yyyy ou d/m/yyyy
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m){
+    return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  }
+
+  // yyyy-mm-dd
+  m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m){
+    return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  }
+
+  return null;
+}
+
+function pagDateToBR(v){
+  const d = pagParseDate(v);
+  if(d && !isNaN(d)){
+    return pagPad2(d.getDate()) + '/' + pagPad2(d.getMonth() + 1) + '/' + d.getFullYear();
+  }
+
   return String(v || '').trim();
 }
+
+function pagPeriodoFromVencimento(vencRaw, fallbackMes, fallbackAno){
+  const dt = pagParseDate(vencRaw);
+
+  if(dt && !isNaN(dt)){
+    return {
+      mesPgto: PAG_MONTH_ORDER[dt.getMonth()],
+      anoPgto: String(dt.getFullYear())
+    };
+  }
+
+  return {
+    mesPgto: pagNormalize(fallbackMes),
+    anoPgto: String(fallbackAno || '').trim().replace(/,0$/, '')
+  };
+}
+
 function pagSafeSetText(id, value){
   const el = document.getElementById(id);
   if(el) el.textContent = value;
 }
+
 function pagShowDashboard(){
   const up = document.getElementById('pag-upload-screen');
   const dash = document.getElementById('pag-dashboard');
+
   if(up) up.classList.add('hidden');
   if(dash) dash.classList.remove('hidden');
 }
+
 function pagShowUpload(){
   const up = document.getElementById('pag-upload-screen');
   const dash = document.getElementById('pag-dashboard');
+
   if(up) up.classList.remove('hidden');
   if(dash) dash.classList.add('hidden');
 }
-function pagLoadFile(arrayBuffer, fileName){
+
+function pagPeriodExists(ano, mes){
+  const m = pagNormalize(mes);
+  return window.pagData.some(d =>
+    String(d.anoPgto) === String(ano) &&
+    pagNormalize(d.mesPgto) === m
+  );
+}
+
+function pagLoadFile(arrayBuffer, fileName, opts = {}){
   try{
-    const wb = XLSX.read(arrayBuffer, {type:'array', cellDates:true});
-    const sheetName = wb.SheetNames.find(n => pagNormalize(n) === 'despesas') || wb.SheetNames.find(n => pagNormalize(n).includes('despesa'));
-    if(!sheetName){ alert('A aba Despesas não foi encontrada na planilha.'); return; }
+    const preserveSelection = !!opts.preserveSelection;
+    const oldAno = pagAnoAtivo;
+    const oldMes = pagMesAtivo;
+
+    const wb = XLSX.read(arrayBuffer, {
+      type: 'array',
+      cellDates: true
+    });
+
+    const sheetName =
+      wb.SheetNames.find(n => pagNormalize(n) === 'despesas') ||
+      wb.SheetNames.find(n => pagNormalize(n).includes('despesa'));
+
+    if(!sheetName){
+      alert('A aba Despesas não foi encontrada na planilha.');
+      return;
+    }
+
     const ws = wb.Sheets[sheetName];
-    const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', range:6});
+
+    // A tabela real começa depois do cabeçalho visual.
+    // Mantém a estrutura atual da sua planilha.
+    const raw = XLSX.utils.sheet_to_json(ws, {
+      header: 1,
+      defval: '',
+      range: 6
+    });
+
     window.pagData = [];
-    for(let i=1;i<raw.length;i++){
+
+    for(let i = 1; i < raw.length; i++){
       const r = raw[i] || [];
-      const mesPgto = pagNormalize(r[15]);      // P
-      const anoPgto = String(r[16] || '').trim().replace(/,0$/, ''); // Q
-      const status = String(r[18] || '').trim().toUpperCase();       // S
-      const item = String(r[5] || '').trim();   // F
+
+      /*
+        Colunas da aba Despesas, zero-based:
+        B=1 Data
+        C=2 Mês
+        D=3 Ano
+        F=5 Item
+        H=7 Fornecedor
+        K=10 Total
+        L=11 Valor a Pagar
+        M=12 Forma de Pgto
+        N=13 Total conferência
+        O=14 Data a pagar
+        P=15 Mês Pgto
+        Q=16 Ano Pgto
+        R=17 NF/Pedido
+        S=18 Status Pgto
+      */
+
+      const item = String(r[5] || '').trim();      // F
+      const vencRaw = r[14];                       // O - Data a pagar
+      const vencimento = pagDateToBR(vencRaw);     // O formatada
+
+      const periodo = pagPeriodoFromVencimento(
+        vencRaw,
+        r[15], // fallback P
+        r[16]  // fallback Q
+      );
+
+      const mesPgto = periodo.mesPgto;
+      const anoPgto = periodo.anoPgto;
+
       if(!mesPgto || !anoPgto || !item) continue;
-      const fornec = String(r[7] || '').trim(); // H
-      const nf = String(r[17] || '').trim();    // R
-      const forma = String(r[12] || '').trim(); // M
-      const totalN = pagToNumber(r[13]);        // N
-      const totalK = pagToNumber(r[10]);        // K
-      const valorL = pagToNumber(r[11]);        // L
+
+      const fornec = String(r[7] || '').trim();    // H
+      const nf = String(r[17] || '').trim();       // R
+      const forma = String(r[12] || '').trim();    // M
+      const statusRaw = String(r[18] || '').trim().toUpperCase(); // S
+
+      const totalN = pagToNumber(r[13]);           // N
+      const totalK = pagToNumber(r[10]);           // K
+      const valorL = pagToNumber(r[11]);           // L
+
       const total = totalN || totalK;
       const aPagar = valorL;
-      const vencimento = pagDateToBR(r[14]);    // O
+
       if(!vencimento && !total && !aPagar) continue;
+
+      let status = statusRaw;
+      if(status !== 'PAGO' && status !== 'A PAGAR'){
+        status = statusRaw || (aPagar <= 0 ? 'PAGO' : 'A PAGAR');
+      }
+
       window.pagData.push({
-        mesPgto, anoPgto, fornec, nf, item, forma,
-        status: status === 'PAGO' ? 'PAGO' : (status === 'A PAGAR' ? 'A PAGAR' : status),
-        total, aPagar, vencimento
+        mesPgto,
+        anoPgto,
+        fornec,
+        nf,
+        item,
+        forma,
+        status,
+        total,
+        aPagar,
+        vencimento
       });
     }
+
     pagPopularFiltros();
-    pagSetCurrentPeriod();
+
+    if(
+      preserveSelection &&
+      oldAno &&
+      oldMes &&
+      pagPeriodExists(oldAno, oldMes)
+    ){
+      pagAnoAtivo = oldAno;
+      pagMesAtivo = oldMes;
+
+      const anoSel = document.getElementById('pag-filtro-ano');
+      const mesSel = document.getElementById('pag-filtro-mes');
+
+      if(anoSel) anoSel.value = pagAnoAtivo;
+      pagPopularMesesDoAno();
+      if(mesSel) mesSel.value = pagMesAtivo;
+    } else {
+      pagSetCurrentPeriod();
+    }
+
     pagShowDashboard();
     pagRender();
-  }catch(err){
+
+    console.log('[PAGAMENTOS] Planilha carregada:', fileName || '');
+    console.log('[PAGAMENTOS] Lançamentos lidos:', window.pagData.length);
+    console.table(
+      window.pagData.reduce((acc, d) => {
+        const key = `${d.mesPgto}/${d.anoPgto}`;
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {})
+    );
+
+  } catch(err){
     console.error('Erro pagamentos:', err);
     alert('Não foi possível ler a aba Despesas da planilha.');
   }
 }
+
 function pagSetCurrentPeriod(){
   const anoSel = document.getElementById('pag-filtro-ano');
   const mesSel = document.getElementById('pag-filtro-mes');
+
   const combos = window.pagData
     .filter(d => d && d.mesPgto && d.anoPgto)
-    .map(d => ({ano:String(d.anoPgto).trim(), mes:String(d.mesPgto).trim()}))
-    .sort((a,b)=>{
-      if(Number(a.ano)!==Number(b.ano)) return Number(a.ano)-Number(b.ano);
-      return PAG_MONTH_ORDER.indexOf(a.mes)-PAG_MONTH_ORDER.indexOf(b.mes);
+    .map(d => ({
+      ano: String(d.anoPgto).trim(),
+      mes: pagNormalize(d.mesPgto)
+    }))
+    .filter(c => pagMonthIndex(c.mes) >= 0)
+    .sort((a, b) => {
+      if(Number(a.ano) !== Number(b.ano)){
+        return Number(a.ano) - Number(b.ano);
+      }
+
+      return pagMonthIndex(a.mes) - pagMonthIndex(b.mes);
     });
+
   if(!combos.length) return;
+
   const now = new Date();
   const currentAno = String(now.getFullYear());
   const currentMes = PAG_MONTH_ORDER[now.getMonth()];
+
   const current = combos.find(c => c.ano === currentAno && c.mes === currentMes);
-  const chosen = current || combos[combos.length-1];
+  const chosen = current || combos[combos.length - 1];
+
   pagAnoAtivo = chosen.ano;
   pagMesAtivo = chosen.mes;
+
   if(anoSel) anoSel.value = pagAnoAtivo;
+
   pagPopularMesesDoAno();
+
   if(mesSel) mesSel.value = pagMesAtivo;
 }
+
 function pagPopularFiltros(){
   const anoSel = document.getElementById('pag-filtro-ano');
   const mesSel = document.getElementById('pag-filtro-mes');
+
   if(!anoSel || !mesSel) return;
-  const anos = [...new Set(window.pagData.map(d => d.anoPgto).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
-  anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
-  pagSetCurrentPeriod();
+
+  const anos = [...new Set(
+    window.pagData
+      .map(d => String(d.anoPgto || '').trim())
+      .filter(Boolean)
+  )].sort((a, b) => Number(a) - Number(b));
+
+  anoSel.innerHTML = anos
+    .map(ano => `<option value="${ano}">${ano}</option>`)
+    .join('');
 }
+
 function pagPopularMesesDoAno(){
   const mesSel = document.getElementById('pag-filtro-mes');
   if(!mesSel) return;
-  const meses = [...new Set(window.pagData.filter(d => String(d.anoPgto) === String(pagAnoAtivo)).map(d => d.mesPgto).filter(Boolean))]
-    .sort((a,b)=>PAG_MONTH_ORDER.indexOf(a)-PAG_MONTH_ORDER.indexOf(b));
-  mesSel.innerHTML = meses.map(m => `<option value="${m}">${pagMonthLabel(m)}</option>`).join('');
+
+  const meses = [...new Set(
+    window.pagData
+      .filter(d => String(d.anoPgto) === String(pagAnoAtivo))
+      .map(d => pagNormalize(d.mesPgto))
+      .filter(Boolean)
+      .filter(m => pagMonthIndex(m) >= 0)
+  )].sort((a, b) => pagMonthIndex(a) - pagMonthIndex(b));
+
+  mesSel.innerHTML = meses
+    .map(m => `<option value="${m}">${pagMonthLabel(m)}</option>`)
+    .join('');
+
   if(!meses.includes(pagMesAtivo)){
     const now = new Date();
     const currentMes = PAG_MONTH_ORDER[now.getMonth()];
-    pagMesAtivo = meses.includes(currentMes) ? currentMes : (meses[meses.length-1] || '');
+    pagMesAtivo = meses.includes(currentMes)
+      ? currentMes
+      : (meses[meses.length - 1] || '');
   }
+
   mesSel.value = pagMesAtivo;
 }
+
 function pagFiltrar(){
   const anoSel = document.getElementById('pag-filtro-ano');
   const mesSel = document.getElementById('pag-filtro-mes');
+
   const novoAno = anoSel ? anoSel.value : pagAnoAtivo;
   const anoMudou = novoAno !== pagAnoAtivo;
+
   pagAnoAtivo = novoAno;
-  if(anoMudou) pagPopularMesesDoAno();
+
+  if(anoMudou){
+    pagPopularMesesDoAno();
+  }
+
   pagMesAtivo = mesSel ? mesSel.value : pagMesAtivo;
+
   pagRender();
 }
+
 function pagRender(){
-  const filtered = window.pagData.filter(d => d.mesPgto === pagMesAtivo && String(d.anoPgto) === String(pagAnoAtivo));
-  const totalMes = filtered.reduce((s,d)=>s + Number(d.total || 0), 0);
-  const saldoMes = filtered.reduce((s,d)=>s + Number(d.aPagar || 0), 0);
-  const pagoMes = filtered.reduce((s,d)=>s + Math.max(0, Number(d.total || 0) - Number(d.aPagar || 0)), 0);
-  const diasCount = [...new Set(filtered.map(d => d.vencimento).filter(Boolean))].length;
+  const filtered = window.pagData.filter(d =>
+    pagNormalize(d.mesPgto) === pagNormalize(pagMesAtivo) &&
+    String(d.anoPgto) === String(pagAnoAtivo)
+  );
+
+  const totalMes = filtered.reduce((s, d) => s + Number(d.total || 0), 0);
+  const saldoMes = filtered.reduce((s, d) => s + Number(d.aPagar || 0), 0);
+  const pagoMes = filtered.reduce((s, d) => {
+    const isPago = String(d.status || '').toUpperCase() === 'PAGO' ||
+      (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+
+    return s + (isPago ? Number(d.total || 0) : 0);
+  }, 0);
+
+  const diasCount = [...new Set(
+    filtered.map(d => d.vencimento).filter(Boolean)
+  )].length;
 
   pagSafeSetText('pag-titulo', 'Pagamentos por dia — ' + pagMonthLabel(pagMesAtivo) + '/' + pagAnoAtivo);
-  pagSafeSetText('pag-meta-mes', pagMesAtivo || '—');
+  pagSafeSetText('pag-meta-mes', pagMonthLabel(pagMesAtivo) || '—');
   pagSafeSetText('pag-meta-ano', pagAnoAtivo || '—');
   pagSafeSetText('pag-pill-itens', String(filtered.length));
   pagSafeSetText('pag-pill-dias', String(diasCount));
@@ -5399,44 +5665,63 @@ function pagRender(){
   pagSafeSetText('pag-kpi-conf', filtered.length + ' lançamentos');
 
   const byDate = {};
+
   filtered.forEach(d => {
     const key = d.vencimento || 'Sem vencimento';
     if(!byDate[key]) byDate[key] = [];
     byDate[key].push(d);
   });
 
-  const dates = Object.keys(byDate).sort((a,b)=>{
-    const pa = a.split('/'), pb = b.split('/');
-    if(pa.length===3 && pb.length===3){
-      return new Date(pa[2], pa[1]-1, pa[0]) - new Date(pb[2], pb[1]-1, pb[0]);
+  const dates = Object.keys(byDate).sort((a, b) => {
+    const pa = a.split('/');
+    const pb = b.split('/');
+
+    if(pa.length === 3 && pb.length === 3){
+      return new Date(pa[2], pa[1] - 1, pa[0]) - new Date(pb[2], pb[1] - 1, pb[0]);
     }
+
     if(a === 'Sem vencimento') return 1;
     if(b === 'Sem vencimento') return -1;
+
     return a.localeCompare(b);
   });
 
   const weekdays = ['dom','seg','ter','qua','qui','sex','sáb'];
   const container = document.getElementById('pag-days');
+
   if(!container) return;
+
   container.innerHTML = '';
 
   dates.forEach(date => {
     const items = byDate[date];
-    const aPagarDia = items.reduce((s,d)=>s + Number(d.aPagar || 0), 0);
-    const pagoDia = items.reduce((s,d)=>s + Math.max(0, Number(d.total || 0) - Number(d.aPagar || 0)), 0);
+
+    const aPagarDia = items.reduce((s, d) => s + Number(d.aPagar || 0), 0);
+
+    const pagoDia = items.reduce((s, d) => {
+      const isPago = String(d.status || '').toUpperCase() === 'PAGO' ||
+        (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+
+      return s + (isPago ? Number(d.total || 0) : 0);
+    }, 0);
 
     let diasem = '';
     const p = date.split('/');
+
     if(p.length === 3){
-      const dt = new Date(p[2], p[1]-1, p[0]);
+      const dt = new Date(p[2], p[1] - 1, p[0]);
       if(!isNaN(dt)) diasem = ' • ' + weekdays[dt.getDay()];
     }
 
     const rows = items.map(d => {
       const st = String(d.status || '').toUpperCase();
-      const isPago = st === 'PAGO' || (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+
+      const isPago = st === 'PAGO' ||
+        (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+
       const badgeClass = isPago ? 'pag-badge ok' : 'pag-badge due';
       const rowClass = isPago ? 'pag-row-pago' : '';
+
       return `<tr class="${rowClass}">
         <td>${d.fornec || ''}</td>
         <td>${d.nf || ''}</td>
@@ -5457,6 +5742,7 @@ function pagRender(){
           </div>
           <div class="pag-dayTotal">${pagFmt(aPagarDia)}</div>
         </summary>
+
         <div class="pag-tableWrap">
           <table class="pag-table">
             <thead>
@@ -5480,51 +5766,87 @@ function pagRender(){
     container.innerHTML = '<div class="pag-empty">Nenhum registro encontrado para este mês.</div>';
   }
 }
+
 function pagSetupUpload(){
   const zone = document.getElementById('pag-drop-zone');
   const input = document.getElementById('pag-file-input');
   const anoSel = document.getElementById('pag-filtro-ano');
   const mesSel = document.getElementById('pag-filtro-mes');
+
   if(anoSel) anoSel.onchange = pagFiltrar;
   if(mesSel) mesSel.onchange = pagFiltrar;
+
   if(!zone || !input) return;
+
   input.addEventListener('change', e => {
     if(e.target.files && e.target.files[0]){
       const r = new FileReader();
-      r.onload = ev => pagLoadFile(ev.target.result);
+      r.onload = ev => pagLoadFile(ev.target.result, e.target.files[0].name);
       r.readAsArrayBuffer(e.target.files[0]);
     }
   });
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
-  zone.addEventListener('dragleave', ()=> zone.classList.remove('drag'));
+
+  zone.addEventListener('dragover', e => {
+    e.preventDefault();
+    zone.classList.add('drag');
+  });
+
+  zone.addEventListener('dragleave', () => {
+    zone.classList.remove('drag');
+  });
+
   zone.addEventListener('drop', e => {
     e.preventDefault();
     zone.classList.remove('drag');
+
     if(e.dataTransfer.files && e.dataTransfer.files[0]){
       const r = new FileReader();
-      r.onload = ev => pagLoadFile(ev.target.result);
+      r.onload = ev => pagLoadFile(ev.target.result, e.dataTransfer.files[0].name);
       r.readAsArrayBuffer(e.dataTransfer.files[0]);
     }
   });
-  zone.addEventListener('click', e => { if(e.target.tagName !== 'BUTTON') input.click(); });
-  if(window.pagData && window.pagData.length) pagShowDashboard(); else pagShowUpload();
+
+  zone.addEventListener('click', e => {
+    if(e.target.tagName !== 'BUTTON') input.click();
+  });
+
+  if(window.pagData && window.pagData.length){
+    pagShowDashboard();
+  } else {
+    pagShowUpload();
+  }
 }
+
 window._pagReady = false;
+
 (function(){
   if(window.__pagRowTouchGlow) return;
+
   window.__pagRowTouchGlow = true;
+
   let lastRow = null;
+
   function clearLast(){
-    if(lastRow){ lastRow.classList.remove('row-touch'); lastRow = null; }
+    if(lastRow){
+      lastRow.classList.remove('row-touch');
+      lastRow = null;
+    }
   }
+
   document.addEventListener('touchstart', function(e){
     const row = e.target.closest && e.target.closest('#pag-page .pag-table tbody tr');
     if(!row) return;
+
     clearLast();
+
     row.classList.add('row-touch');
     lastRow = row;
   }, {passive:true});
-  document.addEventListener('touchend', function(){ setTimeout(clearLast, 180); }, {passive:true});
+
+  document.addEventListener('touchend', function(){
+    setTimeout(clearLast, 180);
+  }, {passive:true});
+
   document.addEventListener('touchcancel', clearLast, {passive:true});
 })();
 </script>
