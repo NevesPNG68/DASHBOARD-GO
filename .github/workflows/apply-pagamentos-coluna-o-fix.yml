@@ -1,0 +1,302 @@
+name: Apply pagamentos coluna O fix
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Patch index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index = Path('index.html')
+          s = index.read_text(encoding='utf-8')
+
+          marker = '<script id="pagamentos-coluna-o-fix-v1">'
+          fix = r'''
+<script id="pagamentos-coluna-o-fix-v1">
+(function(){
+  if(window.__pagColunaOFixV1) return;
+  window.__pagColunaOFixV1 = true;
+
+  const ORDER = ['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const LABELS = {janeiro:'Janeiro',fevereiro:'Fevereiro',marco:'Março',abril:'Abril',maio:'Maio',junho:'Junho',julho:'Julho',agosto:'Agosto',setembro:'Setembro',outubro:'Outubro',novembro:'Novembro',dezembro:'Dezembro'};
+
+  function norm(v){
+    return String(v || '').replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]/gu,'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+  function monthLabel(m){ const k = norm(m); return LABELS[k] || (m ? String(m).charAt(0).toUpperCase()+String(m).slice(1) : ''); }
+  function monthIndex(m){ return ORDER.indexOf(norm(m)); }
+  function fmt(v){ return 'R$ ' + Number(v || 0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function num(v){
+    if(typeof v === 'number') return v;
+    const s = String(v || '').replace(/R\$/gi,'').replace(/\s/g,'').trim();
+    if(!s) return 0;
+    return Number(s.replace(/\./g,'').replace(',', '.')) || 0;
+  }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function parseDate(v){
+    if(v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+    if(typeof v === 'number'){
+      const d = XLSX.SSF.parse_date_code(v);
+      if(d && d.d && d.m && d.y) return new Date(d.y, d.m - 1, d.d);
+    }
+    const s = String(v || '').trim();
+    if(!s) return null;
+    let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+    m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if(m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return null;
+  }
+  function dateBR(v){
+    const d = parseDate(v);
+    if(d && !isNaN(d)) return pad2(d.getDate()) + '/' + pad2(d.getMonth()+1) + '/' + d.getFullYear();
+    return String(v || '').trim();
+  }
+  function periodFromO(vencRaw, fallbackMes, fallbackAno){
+    const d = parseDate(vencRaw);
+    if(d && !isNaN(d)) return {mesPgto:ORDER[d.getMonth()], anoPgto:String(d.getFullYear())};
+    return {mesPgto:norm(fallbackMes), anoPgto:String(fallbackAno || '').trim().replace(/,0$/,'')};
+  }
+  function setText(id, value){ const el = document.getElementById(id); if(el) el.textContent = value; }
+  function showDashboard(){
+    const up = document.getElementById('pag-upload-screen');
+    const dash = document.getElementById('pag-dashboard');
+    if(up) up.classList.add('hidden');
+    if(dash) dash.classList.remove('hidden');
+  }
+  function showUpload(){
+    const up = document.getElementById('pag-upload-screen');
+    const dash = document.getElementById('pag-dashboard');
+    if(up) up.classList.remove('hidden');
+    if(dash) dash.classList.add('hidden');
+  }
+  function periodExists(ano, mes){
+    const m = norm(mes);
+    return (window.pagData || []).some(d => String(d.anoPgto) === String(ano) && norm(d.mesPgto) === m);
+  }
+
+  window.pagLoadFile = function(arrayBuffer, fileName, opts = {}){
+    try{
+      const preserveSelection = !!opts.preserveSelection;
+      const oldAno = window.pagAnoAtivo || pagAnoAtivo;
+      const oldMes = window.pagMesAtivo || pagMesAtivo;
+      const wb = XLSX.read(arrayBuffer, {type:'array', cellDates:true});
+      const sheetName = wb.SheetNames.find(n => norm(n) === 'despesas') || wb.SheetNames.find(n => norm(n).includes('despesa'));
+      if(!sheetName){ alert('A aba Despesas não foi encontrada na planilha.'); return; }
+      const ws = wb.Sheets[sheetName];
+      const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', range:6});
+      window.pagData = [];
+      for(let i=1;i<raw.length;i++){
+        const r = raw[i] || [];
+        const item = String(r[5] || '').trim();
+        const vencRaw = r[14]; // O - Data a pagar
+        const vencimento = dateBR(vencRaw);
+        const p = periodFromO(vencRaw, r[15], r[16]);
+        const mesPgto = p.mesPgto;
+        const anoPgto = p.anoPgto;
+        if(!mesPgto || !anoPgto || !item) continue;
+        const fornec = String(r[7] || '').trim();
+        const nf = String(r[17] || '').trim();
+        const forma = String(r[12] || '').trim();
+        const statusRaw = String(r[18] || '').trim().toUpperCase();
+        const total = num(r[13]) || num(r[10]);
+        const aPagar = num(r[11]);
+        if(!vencimento && !total && !aPagar) continue;
+        let status = statusRaw;
+        if(status !== 'PAGO' && status !== 'A PAGAR') status = statusRaw || (aPagar <= 0 ? 'PAGO' : 'A PAGAR');
+        window.pagData.push({mesPgto, anoPgto, fornec, nf, item, forma, status, total, aPagar, vencimento});
+      }
+      window.pagPopularFiltros();
+      if(preserveSelection && oldAno && oldMes && periodExists(oldAno, oldMes)){
+        pagAnoAtivo = oldAno;
+        pagMesAtivo = oldMes;
+        window.pagAnoAtivo = oldAno;
+        window.pagMesAtivo = oldMes;
+        const anoSel = document.getElementById('pag-filtro-ano');
+        const mesSel = document.getElementById('pag-filtro-mes');
+        if(anoSel) anoSel.value = pagAnoAtivo;
+        window.pagPopularMesesDoAno();
+        if(mesSel) mesSel.value = pagMesAtivo;
+      }else{
+        window.pagSetCurrentPeriod();
+      }
+      showDashboard();
+      window.pagRender();
+      console.log('[PAGAMENTOS] Correção coluna O ativa. Lançamentos:', window.pagData.length);
+    }catch(err){
+      console.error('Erro pagamentos:', err);
+      alert('Não foi possível ler a aba Despesas da planilha.');
+    }
+  };
+
+  window.pagSetCurrentPeriod = function(){
+    const anoSel = document.getElementById('pag-filtro-ano');
+    const mesSel = document.getElementById('pag-filtro-mes');
+    const combos = (window.pagData || [])
+      .filter(d => d && d.mesPgto && d.anoPgto)
+      .map(d => ({ano:String(d.anoPgto).trim(), mes:norm(d.mesPgto)}))
+      .filter(c => monthIndex(c.mes) >= 0)
+      .sort((a,b) => Number(a.ano) !== Number(b.ano) ? Number(a.ano)-Number(b.ano) : monthIndex(a.mes)-monthIndex(b.mes));
+    if(!combos.length) return;
+    const now = new Date();
+    const currentAno = String(now.getFullYear());
+    const currentMes = ORDER[now.getMonth()];
+    const chosen = combos.find(c => c.ano === currentAno && c.mes === currentMes) || combos[combos.length-1];
+    pagAnoAtivo = chosen.ano;
+    pagMesAtivo = chosen.mes;
+    window.pagAnoAtivo = pagAnoAtivo;
+    window.pagMesAtivo = pagMesAtivo;
+    if(anoSel) anoSel.value = pagAnoAtivo;
+    window.pagPopularMesesDoAno();
+    if(mesSel) mesSel.value = pagMesAtivo;
+  };
+
+  window.pagPopularFiltros = function(){
+    const anoSel = document.getElementById('pag-filtro-ano');
+    const mesSel = document.getElementById('pag-filtro-mes');
+    if(!anoSel || !mesSel) return;
+    const anos = [...new Set((window.pagData || []).map(d => String(d.anoPgto || '').trim()).filter(Boolean))].sort((a,b)=>Number(a)-Number(b));
+    anoSel.innerHTML = anos.map(ano => `<option value="${ano}">${ano}</option>`).join('');
+  };
+
+  window.pagPopularMesesDoAno = function(){
+    const mesSel = document.getElementById('pag-filtro-mes');
+    if(!mesSel) return;
+    const meses = [...new Set((window.pagData || [])
+      .filter(d => String(d.anoPgto) === String(pagAnoAtivo))
+      .map(d => norm(d.mesPgto)).filter(Boolean).filter(m => monthIndex(m) >= 0))]
+      .sort((a,b)=>monthIndex(a)-monthIndex(b));
+    mesSel.innerHTML = meses.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
+    if(!meses.includes(pagMesAtivo)){
+      const now = new Date();
+      const currentMes = ORDER[now.getMonth()];
+      pagMesAtivo = meses.includes(currentMes) ? currentMes : (meses[meses.length-1] || '');
+      window.pagMesAtivo = pagMesAtivo;
+    }
+    mesSel.value = pagMesAtivo;
+  };
+
+  window.pagFiltrar = function(){
+    const anoSel = document.getElementById('pag-filtro-ano');
+    const mesSel = document.getElementById('pag-filtro-mes');
+    const novoAno = anoSel ? anoSel.value : pagAnoAtivo;
+    const anoMudou = novoAno !== pagAnoAtivo;
+    pagAnoAtivo = novoAno;
+    window.pagAnoAtivo = pagAnoAtivo;
+    if(anoMudou) window.pagPopularMesesDoAno();
+    pagMesAtivo = mesSel ? mesSel.value : pagMesAtivo;
+    window.pagMesAtivo = pagMesAtivo;
+    window.pagRender();
+  };
+
+  window.pagRender = function(){
+    const filtered = (window.pagData || []).filter(d => norm(d.mesPgto) === norm(pagMesAtivo) && String(d.anoPgto) === String(pagAnoAtivo));
+    const totalMes = filtered.reduce((s,d)=>s + Number(d.total || 0), 0);
+    const saldoMes = filtered.reduce((s,d)=>s + Number(d.aPagar || 0), 0);
+    const pagoMes = filtered.reduce((s,d)=>{
+      const isPago = String(d.status || '').toUpperCase() === 'PAGO' || (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+      return s + (isPago ? Number(d.total || 0) : 0);
+    }, 0);
+    const diasCount = [...new Set(filtered.map(d => d.vencimento).filter(Boolean))].length;
+    setText('pag-titulo', 'Pagamentos por dia — ' + monthLabel(pagMesAtivo) + '/' + pagAnoAtivo);
+    setText('pag-meta-mes', monthLabel(pagMesAtivo) || '—');
+    setText('pag-meta-ano', pagAnoAtivo || '—');
+    setText('pag-pill-itens', String(filtered.length));
+    setText('pag-pill-dias', String(diasCount));
+    setText('pag-kpi-total', fmt(totalMes));
+    setText('pag-kpi-pago', fmt(pagoMes));
+    setText('pag-kpi-apagar', fmt(saldoMes));
+    setText('pag-kpi-conf', filtered.length + ' lançamentos');
+    const byDate = {};
+    filtered.forEach(d => { const key = d.vencimento || 'Sem vencimento'; if(!byDate[key]) byDate[key] = []; byDate[key].push(d); });
+    const dates = Object.keys(byDate).sort((a,b)=>{
+      const pa=a.split('/'), pb=b.split('/');
+      if(pa.length===3 && pb.length===3) return new Date(pa[2], pa[1]-1, pa[0]) - new Date(pb[2], pb[1]-1, pb[0]);
+      if(a === 'Sem vencimento') return 1;
+      if(b === 'Sem vencimento') return -1;
+      return a.localeCompare(b);
+    });
+    const weekdays = ['dom','seg','ter','qua','qui','sex','sáb'];
+    const container = document.getElementById('pag-days');
+    if(!container) return;
+    container.innerHTML = '';
+    dates.forEach(date => {
+      const items = byDate[date];
+      const aPagarDia = items.reduce((s,d)=>s + Number(d.aPagar || 0), 0);
+      const pagoDia = items.reduce((s,d)=>{
+        const isPago = String(d.status || '').toUpperCase() === 'PAGO' || (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+        return s + (isPago ? Number(d.total || 0) : 0);
+      }, 0);
+      let diasem = '';
+      const p = date.split('/');
+      if(p.length === 3){ const dt = new Date(p[2], p[1]-1, p[0]); if(!isNaN(dt)) diasem = ' • ' + weekdays[dt.getDay()]; }
+      const rows = items.map(d => {
+        const st = String(d.status || '').toUpperCase();
+        const isPago = st === 'PAGO' || (Number(d.total || 0) > 0 && Number(d.aPagar || 0) <= 0);
+        const badgeClass = isPago ? 'pag-badge ok' : 'pag-badge due';
+        const rowClass = isPago ? 'pag-row-pago' : '';
+        return `<tr class="${rowClass}"><td>${d.fornec || ''}</td><td>${d.nf || ''}</td><td>${d.item || ''}</td><td>${d.forma || ''}</td><td><span class="${badgeClass}">${st || ''}</span></td><td>${fmt(d.total)}</td><td>${fmt(d.aPagar)}</td></tr>`;
+      }).join('');
+      container.innerHTML += `<details class="pag-day" open><summary><div><div class="pag-dayDate">${date}${diasem}</div><div class="pag-dayHint">A pagar: ${fmt(aPagarDia)} • Pago: ${fmt(pagoDia)}</div></div><div class="pag-dayTotal">${fmt(aPagarDia)}</div></summary><div class="pag-tableWrap"><table class="pag-table"><thead><tr><th>Fornecedor</th><th>NF/Pedido</th><th>Item</th><th>Forma</th><th>Status</th><th>Total (N)</th><th>A pagar (L)</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+    });
+    if(!dates.length) container.innerHTML = '<div class="pag-empty">Nenhum registro encontrado para este mês.</div>';
+  };
+
+  const oldSwitchTab = window.switchTab;
+  if(typeof oldSwitchTab === 'function' && !oldSwitchTab.__pagColunaOFixV1){
+    window.switchTab = function(tab){
+      oldSwitchTab(tab);
+      if(tab === 'pag' && window.__lastFileBuffer){
+        try{ window.pagLoadFile(window.__lastFileBuffer, window.__lastFileName || 'planilha.xlsx', {preserveSelection:true}); }catch(e){}
+      }
+    };
+    window.switchTab.__pagColunaOFixV1 = true;
+  }
+
+  function patchMeta(){
+    const meta = document.querySelector('#pag-page .pag-meta');
+    if(meta){
+      meta.innerHTML = meta.innerHTML.replace('Mês Pgto (coluna P)', 'Data a pagar (coluna O)').replace(' e <b>Ano Pgto (coluna Q)</b> = ', '/');
+    }
+  }
+  patchMeta();
+  document.addEventListener('DOMContentLoaded', patchMeta);
+})();
+</script>
+'''
+
+          old_meta = 'Filtro aplicado: <b>Mês Pgto (coluna P)</b> = <span id="pag-meta-mes">—</span> e <b>Ano Pgto (coluna Q)</b> = <span id="pag-meta-ano">—</span> (aba <b>📋 Despesas</b>).<br>'
+          new_meta = 'Filtro aplicado: <b>Data a pagar (coluna O)</b> = <span id="pag-meta-mes">—</span>/<span id="pag-meta-ano">—</span> (aba <b>📋 Despesas</b>).<br>'
+          s = s.replace(old_meta, new_meta)
+
+          if marker not in s:
+              if '</body>' in s:
+                  s = s.replace('</body>', fix + '\n</body>')
+              else:
+                  s += '\n' + fix + '\n'
+
+          workflow = Path('.github/workflows/apply-pagamentos-coluna-o-fix.yml')
+          if workflow.exists():
+              workflow.unlink()
+
+          index.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/apply-pagamentos-coluna-o-fix.yml
+          git commit -m "Corrige pagamentos pela data da coluna O" || echo "Sem alterações para commit"
+          git push
